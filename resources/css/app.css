@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&display=swap');
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Cinzel', serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-cinzel: 'Cinzel', serif;
+    --color-pawikanBlue: #1e3c72;
+    --color-pawikanBlueDark: #0f1f3d;
+    --color-pawikanTeal: #4ECDC4;
+    --color-pawikanTealDark: #44A08D;
+    --color-pawikanPurple: #667eea;
+    --color-pawikanPurple2: #764ba2;
+    --animate-float: float 3s ease-in-out infinite;
+    --animate-fadeInUp: fadeInUp 0.9s ease-out both;
+}
+
+/* Global Cinzel font application */
+html {
+    font-family: 'Cinzel', serif;
+}
+
+/* Smooth font rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Headings with Cinzel */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+/* Cinzel font utility classes */
+.cinzel {
+    font-family: 'Cinzel', serif;
+}
+
+.cinzel-bold {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+}
+
+.cinzel-black {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+}
+
+/* Ensure form elements inherit the font */
+button, input, optgroup, select, textarea {
+    font-family: inherit;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
