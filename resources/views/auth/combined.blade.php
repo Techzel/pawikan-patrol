@@ -431,7 +431,7 @@
 
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-white hover:text-ocean-400 focus:outline-none focus:text-ocean-400 p-2">
+                    <button id="mobile-menu-button" type="button" aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation menu" class="text-white hover:text-ocean-400 focus:outline-none focus:text-ocean-400 p-2">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -766,6 +766,52 @@
     </section>
     
     <script>
+        // Mobile navigation handling
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileAccountToggle = document.querySelector('.mobile-account-toggle');
+        const mobileAccountMenu = document.querySelector('.mobile-account-menu');
+
+        if (mobileMenuButton && mobileMenu) {
+            const iconPath = mobileMenuButton.querySelector('path');
+            const hamburgerPath = 'M4 6h16M4 12h16M4 18h16';
+            const closePath = 'M6 18L18 6M6 6L18 18';
+
+            const setMenuState = (isOpen) => {
+                mobileMenu.classList.toggle('hidden', !isOpen);
+                mobileMenuButton.setAttribute('aria-expanded', isOpen.toString());
+                mobileMenuButton.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+                if (iconPath) {
+                    iconPath.setAttribute('d', isOpen ? closePath : hamburgerPath);
+                }
+                if (!isOpen && mobileAccountMenu && !mobileAccountMenu.classList.contains('hidden')) {
+                    mobileAccountMenu.classList.add('hidden');
+                    const accountIcon = mobileAccountToggle?.querySelector('svg');
+                    accountIcon?.classList.remove('rotate-180');
+                }
+            };
+
+            mobileMenuButton.addEventListener('click', () => {
+                const isCurrentlyOpen = !mobileMenu.classList.contains('hidden');
+                setMenuState(!isCurrentlyOpen);
+            });
+
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => setMenuState(false));
+            });
+        }
+
+        if (mobileAccountToggle && mobileAccountMenu) {
+            mobileAccountToggle.addEventListener('click', () => {
+                const willOpen = mobileAccountMenu.classList.contains('hidden');
+                mobileAccountMenu.classList.toggle('hidden');
+                const icon = mobileAccountToggle.querySelector('svg');
+                if (icon) {
+                    icon.classList.toggle('rotate-180', willOpen);
+                }
+            });
+        }
+
         // Simple form switching that actually works
         const loginTab = document.getElementById('loginTab');
         const registerTab = document.getElementById('registerTab');

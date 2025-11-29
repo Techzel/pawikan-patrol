@@ -286,7 +286,7 @@
     <!-- Vision Section -->
     <section class="py-20 px-4 bg-gradient-to-br from-ocean-900/20 to-deep-900/50 fade-in-up visible" id="vision">
         <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-5xl font-bold mb-12 text-ocean-400">Vission and Mission</h2>
+            <h2 class="text-5xl font-bold mb-12 text-ocean-400">Vission and Goals</h2>
             
             <div class="grid md:grid-cols-2 gap-12 items-start">
                 <div class="glass-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-ocean-500/30">
@@ -305,25 +305,21 @@
                 <div class="glass-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-green-500/30">
                     <h3 class="text-3xl font-bold mb-6 text-green-300">Our Goals</h3>
                     <ul class="text-left space-y-3 text-gray-300">
-                        <li class="flex items-start gap-3">
+                         <li class="flex items-start gap-3">
                             <span class="text-green-400 mt-1">✓</span>
-                            <span>Protect 100% of nesting sites in Dahican</span>
+                            <span>Educate Community Members</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-green-400 mt-1">✓</span>
-                            <span>Release 10,000+ hatchlings annually</span>
+                            <span>Explore the Species with the 3D Explorer</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-green-400 mt-1">✓</span>
-                            <span>Establish a marine protected area</span>
+                            <span>Monitor Reported sites using the Patrol Map</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-green-400 mt-1">✓</span>
-                            <span>Educate 50,000+ community members</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-green-400 mt-1">✓</span>
-                            <span>Create sustainable eco-tourism programs</span>
+                            <span>Learn conservation through interactive Games</span>
                         </li>
                     </ul>
                 </div>

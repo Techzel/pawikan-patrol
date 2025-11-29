@@ -72,7 +72,8 @@
                                     @if($patrolReport->priority == 'critical') bg-red-500/20 text-red-300
                                     @elseif($patrolReport->priority == 'high') bg-orange-500/20 text-orange-300
                                     @elseif($patrolReport->priority == 'medium') bg-yellow-500/20 text-yellow-300
-                                    @else bg-green-500/20 text-green-300 @endif">
+                                    @elseif($patrolReport->priority == 'low') bg-green-500/20 text-green-300
+                                    @else bg-gray-500/20 text-gray-300 @endif">
                                     {{ ucfirst($patrolReport->priority) }} Priority
                                 </span>
                                 <span class="px-2 py-1 text-xs rounded-full cinzel-text

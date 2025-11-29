@@ -260,6 +260,8 @@ class PatrollerController extends Controller
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'priority' => 'required|in:low,medium,high,critical',
+            'egg_count' => 'nullable|integer|min:0',
+            'gender' => 'nullable|in:male,female,unknown',
             'turtle_count' => 'nullable|integer|min:0',
             'turtle_species' => 'nullable|string|max:255',
             'turtle_condition' => 'nullable|in:healthy,injured,dead,unknown',

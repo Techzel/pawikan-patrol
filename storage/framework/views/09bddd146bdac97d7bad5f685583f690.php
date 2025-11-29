@@ -71,7 +71,8 @@
                                     <?php if($patrolReport->priority == 'critical'): ?> bg-red-500/20 text-red-300
                                     <?php elseif($patrolReport->priority == 'high'): ?> bg-orange-500/20 text-orange-300
                                     <?php elseif($patrolReport->priority == 'medium'): ?> bg-yellow-500/20 text-yellow-300
-                                    <?php else: ?> bg-green-500/20 text-green-300 <?php endif; ?>">
+                                    <?php elseif($patrolReport->priority == 'low'): ?> bg-green-500/20 text-green-300
+                                    <?php else: ?> bg-gray-500/20 text-gray-300 <?php endif; ?>">
                                     <?php echo e(ucfirst($patrolReport->priority)); ?> Priority
                                 </span>
                                 <span class="px-2 py-1 text-xs rounded-full cinzel-text

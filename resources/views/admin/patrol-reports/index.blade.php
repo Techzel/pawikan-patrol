@@ -156,31 +156,24 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-300 cinzel-text">
-                                        @if(in_array($report->status, ['accepted', 'verified', 'validated']))
-                                            {{ $report->patroller->name ?? 'N/A' }}
-                                        @else
-                                            <span class="text-gray-500 text-xs italic">--</span>
-                                        @endif
+                                        {{ $report->patroller->name ?? 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        @if(in_array($report->status, ['accepted', 'verified', 'validated']))
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cinzel-text
-                                                @if($report->report_type == 'rescue') bg-blue-500/20 text-blue-300
-                                                @elseif($report->report_type == 'stranding') bg-orange-500/20 text-orange-300
-                                                @elseif($report->report_type == 'nesting') bg-green-500/20 text-green-300
-                                                @else bg-gray-500/20 text-gray-300 @endif">
-                                                {{ ucfirst($report->report_type) }}
-                                            </span>
-                                        @else
-                                            <span class="text-gray-500 text-xs italic">--</span>
-                                        @endif
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cinzel-text
+                                            @if($report->report_type == 'rescue') bg-blue-500/20 text-blue-300
+                                            @elseif($report->report_type == 'stranding') bg-orange-500/20 text-orange-300
+                                            @elseif($report->report_type == 'nesting') bg-green-500/20 text-green-300
+                                            @else bg-gray-500/20 text-gray-300 @endif">
+                                            {{ ucfirst($report->report_type) }}
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cinzel-text
                                             @if($report->priority == 'critical') bg-red-500/20 text-red-300
                                             @elseif($report->priority == 'high') bg-orange-500/20 text-orange-300
                                             @elseif($report->priority == 'medium') bg-yellow-500/20 text-yellow-300
-                                            @else bg-green-500/20 text-green-300 @endif">
+                                            @elseif($report->priority == 'low') bg-green-500/20 text-green-300
+                                            @else bg-gray-500/20 text-gray-300 @endif">
                                             {{ ucfirst($report->priority) }}
                                         </span>
                                     </td>
@@ -491,7 +484,6 @@ function quickApprove(reportId) {
         body: JSON.stringify({
             status: 'validated',
             validation_notes: 'Quick validated by admin',
-            priority: 'medium',
             evidence_verified: true,
             location_verified: true
         })

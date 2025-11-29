@@ -1,32 +1,140 @@
 <?php $__env->startSection('title', 'Edit Report'); ?>
 <?php $__env->startSection('container-class', 'max-w-4xl'); ?>
 
+<?php $__env->startPush('styles'); ?>
+<style>
+    /* Base form input styling - only for dropdowns */
+    select.form-input {
+        background-color: #1f2937 !important;
+        color: #f3f4f6 !important;
+        border: 1px solid #4b5563 !important;
+        border-radius: 0.375rem !important;
+        padding: 0.5rem 2.5rem 0.5rem 0.75rem !important;
+        width: 100% !important;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+        background-position: right 0.5rem center !important;
+        background-repeat: no-repeat !important;
+        background-size: 1.5em 1.5em !important;
+    }
+    
+    /* Focus state */
+    .form-input:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+        outline: none !important;
+    }
+    
+    /* Select dropdown options */
+    select.form-input option {
+        background-color: #1f2937;
+        color: #f3f4f6;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Text inputs and textareas */
+    input.form-input,
+    textarea.form-input {
+        background-color: #1f2937 !important;
+        color: #f3f4f6 !important;
+        border: 1px solid #4b5563 !important;
+        border-radius: 0.375rem !important;
+        padding: 0.5rem 0.75rem !important;
+    }
+    
+    input.form-input:focus,
+    textarea.form-input:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+        outline: none !important;
+    }
+    
+    /* Hover states */
+    select.form-input:hover,
+    input.form-input:hover,
+    textarea.form-input:hover {
+        border-color: #6b7280 !important;
+    }
+</style>
+<?php $__env->stopPush(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+    // Get current location for coordinates
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+            });
+        }
+    }
+
+    // Add button to get current location and toggle egg count field
+    document.addEventListener('DOMContentLoaded', function() {
+        const latitudeInput = document.getElementById('latitude');
+        const locationButton = document.createElement('button');
+        locationButton.type = 'button';
+        locationButton.className = 'mt-2 px-3 py-1 bg-ocean-600 hover:bg-ocean-700 text-white text-sm rounded cinzel-text';
+        locationButton.innerHTML = '<i class="fas fa-map-marker-alt mr-1"></i>Get Current Location';
+        locationButton.onclick = getCurrentLocation;
+        
+        latitudeInput.parentNode.appendChild(locationButton);
+
+        const reportTypeSelect = document.getElementById('report_type');
+        const eggCountWrapper = document.getElementById('egg-count-wrapper');
+        const eggCountInput = document.getElementById('egg_count');
+
+        function toggleEggCountField() {
+            if (!reportTypeSelect || !eggCountWrapper) {
+                return;
+            }
+
+            const isNesting = reportTypeSelect.value === 'nesting';
+            eggCountWrapper.classList.toggle('hidden', !isNesting);
+
+            if (eggCountInput) {
+                eggCountInput.disabled = !isNesting;
+                if (!isNesting) {
+                    eggCountInput.value = '';
+                }
+            }
+        }
+
+        if (reportTypeSelect) {
+            reportTypeSelect.addEventListener('change', toggleEggCountField);
+            toggleEggCountField();
+        }
+    });
+</script>
+<?php $__env->stopPush(); ?>
+
 <?php $__env->startSection('content'); ?>
             <!-- Header -->
             <div class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-3xl font-bold text-white mb-2 cinzel-heading">
-                            <i class="fas fa-edit mr-3 text-ocean-400"></i>Edit Report
-                        </h1>
-                        <p class="text-gray-300 cinzel-text">Update your patrol report details</p>
-                    </div>
-                    <a href="<?php echo e(route('patroller.reports.show', $report)); ?>" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors cinzel-text">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Report
+                <div class="flex items-center mb-4">
+                    <a href="<?php echo e(route('patroller.reports.show', $report)); ?>" class="text-ocean-400 hover:text-ocean-300 mr-4">
+                        <i class="fas fa-arrow-left"></i>
                     </a>
+                    <h1 class="text-3xl font-bold text-white cinzel-heading">
+                        <i class="fas fa-edit mr-3 text-ocean-400"></i>Edit Report
+                    </h1>
                 </div>
+                <p class="text-gray-300 cinzel-text">Update your patrol report details.</p>
             </div>
 
             <!-- Error Messages -->
             <?php if($errors->any()): ?>
-                <div class="mb-6 glass-dark border-l-4 border-red-500 p-4 rounded">
+                <div class="mb-6 glass-morphism border-l-4 border-red-500 p-4 rounded">
                     <div class="flex">
                         <div class="flex-shrink-0">
                             <i class="fas fa-exclamation-circle text-red-400"></i>
                         </div>
                         <div class="ml-3">
-                            <h3 class="text-sm font-medium text-red-100 cinzel-text">Please correct the following errors:</h3>
-                            <ul class="mt-2 text-sm text-red-100 list-disc list-inside cinzel-text">
+                            <h3 class="text-red-100 font-medium cinzel-text">Please correct the following errors:</h3>
+                            <ul class="mt-2 text-red-200 text-sm list-disc list-inside cinzel-text">
                                 <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <li><?php echo e($error); ?></li>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -36,114 +144,144 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Edit Form -->
-            <form method="POST" action="<?php echo e(route('patroller.reports.update', $report)); ?>" enctype="multipart/form-data" class="space-y-6">
+            <!-- Report Form -->
+            <?php (
+                $reportTypeOptions = collect(\App\Models\PatrolReport::getReportTypeOptions())
+                    ->except(['hatchling', 'hazard'])
+                    ->map(function ($label, $value) {
+                        return $value === 'rescue'
+                            ? 'Rescue / Threat & Hazard'
+                            : $label;
+                    })
+                    ->toArray()
+            ); ?>
+            <form action="<?php echo e(route('patroller.reports.update', $report)); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
                 <?php echo csrf_field(); ?>
                 <?php echo method_field('PUT'); ?>
-
-                <!-- Basic Information -->
-                <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
+                
+                <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
-                        <i class="fas fa-info-circle mr-2 text-ocean-400"></i>Basic Information
+                        <i class="fas fa-info-circle mr-2 text-teal-400"></i>Basic Information
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Report Type -->
                         <div>
                             <label for="report_type" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Report Type *</label>
-                            <select name="report_type" id="report_type" required class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text">
-                                <option value="">Select Type</option>
-                                <option value="incident" <?php echo e(old('report_type', $report->report_type) == 'incident' ? 'selected' : ''); ?>>Incident</option>
-                                <option value="observation" <?php echo e(old('report_type', $report->report_type) == 'observation' ? 'selected' : ''); ?>>Observation</option>
-                                <option value="maintenance" <?php echo e(old('report_type', $report->report_type) == 'maintenance' ? 'selected' : ''); ?>>Maintenance</option>
-                                <option value="emergency" <?php echo e(old('report_type', $report->report_type) == 'emergency' ? 'selected' : ''); ?>>Emergency</option>
+                            <select id="report_type" name="report_type" required class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                                <option value="">Select report type</option>
+                                <?php $__currentLoopData = $reportTypeOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($value); ?>" <?php echo e(old('report_type', $report->report_type) == $value ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
                         <!-- Priority -->
                         <div>
-                            <label for="priority" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Priority *</label>
-                            <select name="priority" id="priority" required class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text">
-                                <option value="">Select Priority</option>
+                            <label for="priority" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Priority Level *</label>
+                            <select id="priority" name="priority" required class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                                <option value="">Select priority</option>
                                 <option value="low" <?php echo e(old('priority', $report->priority) == 'low' ? 'selected' : ''); ?>>Low</option>
                                 <option value="medium" <?php echo e(old('priority', $report->priority) == 'medium' ? 'selected' : ''); ?>>Medium</option>
                                 <option value="high" <?php echo e(old('priority', $report->priority) == 'high' ? 'selected' : ''); ?>>High</option>
                                 <option value="critical" <?php echo e(old('priority', $report->priority) == 'critical' ? 'selected' : ''); ?>>Critical</option>
                             </select>
                         </div>
-                    </div>
 
-                    <!-- Title -->
-                    <div class="mt-6">
-                        <label for="title" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Report Title *</label>
-                        <input type="text" name="title" id="title" value="<?php echo e(old('title', $report->title)); ?>" required maxlength="255" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text" placeholder="Brief title describing the report">
-                    </div>
-
-                    <!-- Description -->
-                    <div class="mt-6">
-                        <label for="description" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Description *</label>
-                        <textarea name="description" id="description" rows="4" required minlength="10" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text" placeholder="Detailed description of the incident, observation, or maintenance issue"><?php echo e(old('description', $report->description)); ?></textarea>
-                    </div>
-                </div>
-
-                <!-- Location Information -->
-                <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
-                    <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
-                        <i class="fas fa-map-marker-alt mr-2 text-ocean-400"></i>Location Information
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Location -->
-                        <div class="md:col-span-1">
-                            <label for="location" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Location *</label>
-                            <input type="text" name="location" id="location" value="<?php echo e(old('location', $report->location)); ?>" required maxlength="255" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text" placeholder="e.g., Dahican Beach, Section A">
+                        <!-- Title -->
+                        <div class="md:col-span-2">
+                            <label for="title" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Report Title *</label>
+                            <input type="text" id="title" name="title" value="<?php echo e(old('title', $report->title)); ?>" required 
+                                   class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   placeholder="Brief description of the report">
                         </div>
 
-                        <!-- Latitude -->
+                        <!-- Location -->
+                        <div class="md:col-span-2">
+                            <label for="location" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Location *</label>
+                            <input type="text" id="location" name="location" value="<?php echo e(old('location', $report->location)); ?>" required 
+                                   class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   placeholder="Specific location or area">
+                        </div>
+
+                        <!-- Coordinates -->
                         <div>
                             <label for="latitude" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Latitude</label>
-                            <input type="number" name="latitude" id="latitude" value="<?php echo e(old('latitude', $report->latitude)); ?>" step="0.000001" min="-90" max="90" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text" placeholder="e.g., 7.123456">
+                            <input type="number" id="latitude" name="latitude" value="<?php echo e(old('latitude', $report->latitude)); ?>" 
+                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   placeholder="e.g., 6.9363">
                         </div>
 
-                        <!-- Longitude -->
                         <div>
                             <label for="longitude" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Longitude</label>
-                            <input type="number" name="longitude" id="longitude" value="<?php echo e(old('longitude', $report->longitude)); ?>" step="0.000001" min="-180" max="180" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text" placeholder="e.g., 126.123456">
+                            <input type="number" id="longitude" name="longitude" value="<?php echo e(old('longitude', $report->longitude)); ?>" 
+                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   placeholder="e.g., 126.2742">
                         </div>
-                    </div>
 
-                    <!-- Get Current Location Button -->
-                    <div class="mt-4">
-                        <button type="button" id="getCurrentLocation" class="bg-ocean-500 hover:bg-ocean-600 text-white px-4 py-2 rounded-lg font-medium transition-colors cinzel-text">
-                            <i class="fas fa-crosshairs mr-2"></i>Get Current Location
-                        </button>
+                        <!-- Incident Date/Time -->
+                        <div class="md:col-span-2">
+                            <label for="incident_datetime" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Incident Date & Time</label>
+                            <input type="datetime-local" id="incident_datetime" name="incident_datetime" 
+                                   value="<?php echo e(old('incident_datetime', $report->incident_datetime ? $report->incident_datetime->format('Y-m-d\TH:i') : '')); ?>" 
+                                   class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Turtle Information -->
-                <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
+                <!-- Turtle Information (if applicable) -->
+                <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
-                        <i class="fas fa-turtle mr-2 text-ocean-400"></i>Turtle Information (Optional)
+                        <i class="fas fa-turtle mr-2 text-teal-400"></i>Turtle Information
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Turtle Count -->
                         <div>
-                            <label for="turtle_count" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Turtle Count</label>
-                            <input type="number" name="turtle_count" id="turtle_count" value="<?php echo e(old('turtle_count', $report->turtle_count)); ?>" min="0" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text" placeholder="Number of turtles">
+                            <label for="turtle_count" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Number of Turtles</label>
+                            <input type="number" id="turtle_count" name="turtle_count" value="<?php echo e(old('turtle_count', $report->turtle_count)); ?>" 
+                                   min="0" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   placeholder="0">
+                        </div>
+
+                        <!-- Nesting Egg Count (Nesting Only) -->
+                        <div id="egg-count-wrapper" class="col-span-1 <?php echo e(old('report_type', $report->report_type) === 'nesting' ? '' : 'hidden'); ?>">
+                            <label for="egg_count" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Egg Count (Nesting Only)</label>
+                            <input type="number" id="egg_count" name="egg_count" value="<?php echo e(old('egg_count', $report->egg_count)); ?>"
+                                   min="0" class="form-input w-full px-3 py-2 rounded-md cinzel-text"
+                                   placeholder="Approx. number of eggs">
+                            <p class="text-xs text-gray-400 mt-1 cinzel-text">Visible only for nesting reports.</p>
                         </div>
 
                         <!-- Turtle Species -->
                         <div>
                             <label for="turtle_species" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Species</label>
-                            <input type="text" name="turtle_species" id="turtle_species" value="<?php echo e(old('turtle_species', $report->turtle_species)); ?>" maxlength="255" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text" placeholder="e.g., Olive Ridley">
+                            <select id="turtle_species" name="turtle_species" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                                <option value="">Select species</option>
+                                <option value="olive_ridley" <?php echo e(old('turtle_species', $report->turtle_species) == 'olive_ridley' ? 'selected' : ''); ?>>Olive Ridley</option>
+                                <option value="green_sea_turtle" <?php echo e(old('turtle_species', $report->turtle_species) == 'green_sea_turtle' ? 'selected' : ''); ?>>Green Sea Turtle</option>
+                                <option value="hawksbill" <?php echo e(old('turtle_species', $report->turtle_species) == 'hawksbill' ? 'selected' : ''); ?>>Hawksbill</option>
+                                <option value="leatherback" <?php echo e(old('turtle_species', $report->turtle_species) == 'leatherback' ? 'selected' : ''); ?>>Leatherback</option>
+                                <option value="loggerhead" <?php echo e(old('turtle_species', $report->turtle_species) == 'loggerhead' ? 'selected' : ''); ?>>Loggerhead</option>
+                            </select>
+                        </div>
+
+                        <!-- Turtle Gender -->
+                        <div>
+                            <label for="gender" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Turtle Gender</label>
+                            <select id="gender" name="gender" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                                <option value="" <?php echo e(old('gender', $report->gender) == '' ? 'selected' : ''); ?>>Select gender</option>
+                                <option value="male" <?php echo e(old('gender', $report->gender) == 'male' ? 'selected' : ''); ?>>Male</option>
+                                <option value="female" <?php echo e(old('gender', $report->gender) == 'female' ? 'selected' : ''); ?>>Female</option>
+                                <option value="unknown" <?php echo e(old('gender', $report->gender) == 'unknown' ? 'selected' : ''); ?>>Unknown</option>
+                            </select>
                         </div>
 
                         <!-- Turtle Condition -->
                         <div>
                             <label for="turtle_condition" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Condition</label>
-                            <select name="turtle_condition" id="turtle_condition" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text">
-                                <option value="">Select Condition</option>
+                            <select id="turtle_condition" name="turtle_condition" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                                <option value="">Select condition</option>
                                 <option value="healthy" <?php echo e(old('turtle_condition', $report->turtle_condition) == 'healthy' ? 'selected' : ''); ?>>Healthy</option>
                                 <option value="injured" <?php echo e(old('turtle_condition', $report->turtle_condition) == 'injured' ? 'selected' : ''); ?>>Injured</option>
                                 <option value="dead" <?php echo e(old('turtle_condition', $report->turtle_condition) == 'dead' ? 'selected' : ''); ?>>Dead</option>
@@ -153,16 +291,25 @@
                     </div>
                 </div>
 
-                <!-- Additional Information -->
-                <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
+                <!-- Detailed Description -->
+                <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
-                        <i class="fas fa-clipboard-list mr-2 text-ocean-400"></i>Additional Information
+                        <i class="fas fa-file-text mr-2 text-teal-400"></i>Detailed Information
                     </h3>
                     
-                    <!-- Weather Conditions -->
-                    <div class="mb-6">
-                        <label for="weather_conditions" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Weather Conditions</label>
-                        <select id="weather_conditions" name="weather_conditions" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                    <div class="space-y-6">
+                        <!-- Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Detailed Description *</label>
+                            <textarea id="description" name="description" rows="4" required 
+                                      class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                      placeholder="Provide a detailed description of what you observed or the incident that occurred"><?php echo e(old('description', $report->description)); ?></textarea>
+                        </div>
+
+                        <!-- Weather Conditions -->
+                        <div>
+                            <label for="weather_conditions" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Weather Conditions</label>
+                            <select id="weather_conditions" name="weather_conditions" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
                             <option value="" <?php echo e(old('weather_conditions', $report->weather_conditions) == '' ? 'selected' : ''); ?>>Select weather condition</option>
                             <option value="Sunny" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Sunny' ? 'selected' : ''); ?>>☀️ Sunny</option>
                             <option value="Partly Cloudy" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Partly Cloudy' ? 'selected' : ''); ?>>⛅ Partly Cloudy</option>
@@ -175,19 +322,7 @@
                             <option value="Clear Night" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Clear Night' ? 'selected' : ''); ?>>🌙 Clear Night</option>
                             <option value="Other" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Other' ? 'selected' : ''); ?>>Other (specify in notes)</option>
                         </select>
-                    </div>
 
-
-                    <!-- Incident Date/Time -->
-                    <div class="mb-6">
-                        <label for="incident_datetime" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Incident Date & Time</label>
-                        <input type="datetime-local" name="incident_datetime" id="incident_datetime" value="<?php echo e(old('incident_datetime', $report->incident_datetime ? $report->incident_datetime->format('Y-m-d\TH:i') : '')); ?>" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text">
-                    </div>
-
-                    <!-- Requires Follow-up -->
-                    <div class="flex items-center">
-                        <input type="checkbox" name="requires_followup" id="requires_followup" value="1" <?php echo e(old('requires_followup', $report->requires_followup) ? 'checked' : ''); ?> class="h-4 w-4 text-ocean-500 focus:ring-ocean-500 border-ocean-300 rounded">
-                        <label for="requires_followup" class="ml-2 block text-sm text-gray-300 cinzel-text">This report requires follow-up action</label>
                     </div>
                 </div>
 
@@ -239,17 +374,237 @@
 </div>
 
 <script>
+// Get Current Location functionality
 document.getElementById('getCurrentLocation').addEventListener('click', function() {
+    const button = this;
+    const originalText = button.innerHTML;
+    
+    // Show loading state
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Getting location...';
+    
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
             document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+            
+            // Show success feedback
+            button.innerHTML = '<i class="fas fa-check mr-2"></i>Location obtained!';
+            button.classList.add('bg-green-600');
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.classList.remove('bg-green-600');
+            }, 2000);
         }, function(error) {
-            alert('Error getting location: ' + error.message);
+            let errorMessage = 'Error getting location';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage = 'Location permission denied. Please enable location access.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage = 'Location information unavailable.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage = 'Location request timed out.';
+                    break;
+            }
+            alert(errorMessage);
+            button.innerHTML = originalText;
+            button.disabled = false;
         });
     } else {
         alert('Geolocation is not supported by this browser.');
+        button.innerHTML = originalText;
+        button.disabled = false;
     }
+});
+
+// Toggle egg count field based on report type
+const reportTypeSelect = document.getElementById('report_type');
+const eggCountWrapper = document.getElementById('egg-count-wrapper');
+const eggCountInput = document.getElementById('egg_count');
+
+function toggleEggCountField() {
+    if (!reportTypeSelect || !eggCountWrapper) {
+        return;
+    }
+
+    const isNesting = reportTypeSelect.value === 'nesting';
+    eggCountWrapper.classList.toggle('hidden', !isNesting);
+
+    if (eggCountInput) {
+        eggCountInput.disabled = !isNesting;
+        if (!isNesting) {
+            eggCountInput.value = '';
+        }
+    }
+}
+
+if (reportTypeSelect) {
+    reportTypeSelect.addEventListener('change', toggleEggCountField);
+    // Run on page load to set initial state
+    toggleEggCountField();
+}
+
+// Form validation
+const form = document.querySelector('form');
+form.addEventListener('submit', function(e) {
+    let isValid = true;
+    let errorMessages = [];
+    
+    // Validate required fields
+    const reportType = document.getElementById('report_type').value;
+    const priority = document.getElementById('priority').value;
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const location = document.getElementById('location').value.trim();
+    
+    if (!reportType) {
+        errorMessages.push('Please select a report type');
+        isValid = false;
+    }
+    
+    if (!priority) {
+        errorMessages.push('Please select a priority level');
+        isValid = false;
+    }
+    
+    if (!title) {
+        errorMessages.push('Please enter a report title');
+        isValid = false;
+    } else if (title.length > 255) {
+        errorMessages.push('Report title must not exceed 255 characters');
+        isValid = false;
+    }
+    
+    if (!description) {
+        errorMessages.push('Please enter a description');
+        isValid = false;
+    } else if (description.length < 10) {
+        errorMessages.push('Description must be at least 10 characters long');
+        isValid = false;
+    }
+    
+    if (!location) {
+        errorMessages.push('Please enter a location');
+        isValid = false;
+    }
+    
+    // Validate coordinates if provided
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
+    
+    if (latitude && (parseFloat(latitude) < -90 || parseFloat(latitude) > 90)) {
+        errorMessages.push('Latitude must be between -90 and 90');
+        isValid = false;
+    }
+    
+    if (longitude && (parseFloat(longitude) < -180 || parseFloat(longitude) > 180)) {
+        errorMessages.push('Longitude must be between -180 and 180');
+        isValid = false;
+    }
+    
+    // Validate turtle count if provided
+    const turtleCount = document.getElementById('turtle_count').value;
+    if (turtleCount && parseInt(turtleCount) < 0) {
+        errorMessages.push('Turtle count cannot be negative');
+        isValid = false;
+    }
+    
+    // Validate egg count if provided and report type is nesting
+    if (reportType === 'nesting' && eggCountInput) {
+        const eggCount = eggCountInput.value;
+        if (eggCount && parseInt(eggCount) < 0) {
+            errorMessages.push('Egg count cannot be negative');
+            isValid = false;
+        }
+    }
+    
+    // Validate incident datetime if provided
+    const incidentDatetime = document.getElementById('incident_datetime').value;
+    if (incidentDatetime) {
+        const selectedDate = new Date(incidentDatetime);
+        const now = new Date();
+        if (selectedDate > now) {
+            errorMessages.push('Incident date/time cannot be in the future');
+            isValid = false;
+        }
+    }
+    
+    // Validate images if provided
+    const imagesInput = document.getElementById('images');
+    if (imagesInput.files.length > 0) {
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        
+        for (let i = 0; i < imagesInput.files.length; i++) {
+            const file = imagesInput.files[i];
+            
+            if (!allowedTypes.includes(file.type)) {
+                errorMessages.push(`Image ${i + 1}: Only JPEG, PNG, JPG, and GIF files are allowed`);
+                isValid = false;
+            }
+            
+            if (file.size > maxSize) {
+                errorMessages.push(`Image ${i + 1}: File size must not exceed 2MB`);
+                isValid = false;
+            }
+        }
+    }
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('Please correct the following errors:\n\n' + errorMessages.join('\n'));
+        
+        // Scroll to top to show error messages
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+});
+
+// Real-time character count for description
+const descriptionField = document.getElementById('description');
+const descriptionLabel = descriptionField.previousElementSibling;
+
+descriptionField.addEventListener('input', function() {
+    const length = this.value.length;
+    const minLength = 10;
+    
+    // Remove existing counter if any
+    const existingCounter = descriptionLabel.querySelector('.char-counter');
+    if (existingCounter) {
+        existingCounter.remove();
+    }
+    
+    // Add character counter
+    const counter = document.createElement('span');
+    counter.className = 'char-counter text-xs ml-2';
+    counter.style.color = length < minLength ? '#ef4444' : '#10b981';
+    counter.textContent = `(${length} characters${length < minLength ? ', minimum ' + minLength : ''})`;
+    descriptionLabel.appendChild(counter);
+});
+
+// Real-time character count for title
+const titleField = document.getElementById('title');
+const titleLabel = titleField.previousElementSibling;
+
+titleField.addEventListener('input', function() {
+    const length = this.value.length;
+    const maxLength = 255;
+    
+    // Remove existing counter if any
+    const existingCounter = titleLabel.querySelector('.char-counter');
+    if (existingCounter) {
+        existingCounter.remove();
+    }
+    
+    // Add character counter
+    const counter = document.createElement('span');
+    counter.className = 'char-counter text-xs ml-2';
+    counter.style.color = length > maxLength ? '#ef4444' : '#94a3b8';
+    counter.textContent = `(${length}/${maxLength})`;
+    titleLabel.appendChild(counter);
 });
 </script>
 <?php $__env->stopSection(); ?>

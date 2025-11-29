@@ -13,7 +13,10 @@ class PatrolMapController extends Controller
     public function index()
     {
         // Get all validated reports with latitude and longitude
-        $validatedReports = PatrolReport::where('validation_status', PatrolReport::VALIDATION_APPROVED)
+        $validatedReports = PatrolReport::where(function($query) {
+                $query->where('validation_status', PatrolReport::VALIDATION_APPROVED)
+                      ->orWhere('status', 'validated');
+            })
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->with(['patroller', 'user'])
@@ -48,7 +51,10 @@ class PatrolMapController extends Controller
      */
     public function getValidatedReports()
     {
-        $reports = PatrolReport::where('validation_status', PatrolReport::VALIDATION_APPROVED)
+        $reports = PatrolReport::where(function($query) {
+                $query->where('validation_status', PatrolReport::VALIDATION_APPROVED)
+                      ->orWhere('status', 'validated');
+            })
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->with(['patroller', 'user'])
@@ -83,13 +89,15 @@ class PatrolMapController extends Controller
      */
     public function gallery()
     {
-        // Get only 3 most recent validated reports with images
-        $reports = PatrolReport::where('validation_status', PatrolReport::VALIDATION_APPROVED)
+        // Get all validated reports with images
+        $reports = PatrolReport::where(function($query) {
+                $query->where('validation_status', PatrolReport::VALIDATION_APPROVED)
+                      ->orWhere('status', 'validated');
+            })
             ->whereNotNull('images')
             ->where('images', '!=', '[]')
             ->with(['patroller', 'user'])
             ->orderBy('created_at', 'desc')
-            ->limit(3)
             ->get()
             ->map(function ($report) {
                 return [

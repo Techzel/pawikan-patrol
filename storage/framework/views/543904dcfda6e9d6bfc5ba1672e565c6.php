@@ -155,33 +155,26 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-300 cinzel-text">
-                                        <?php if(in_array($report->status, ['accepted', 'verified', 'validated'])): ?>
-                                            <?php echo e($report->patroller->name ?? 'N/A'); ?>
+                                        <?php echo e($report->patroller->name ?? 'N/A'); ?>
 
-                                        <?php else: ?>
-                                            <span class="text-gray-500 text-xs italic">--</span>
-                                        <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <?php if(in_array($report->status, ['accepted', 'verified', 'validated'])): ?>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cinzel-text
-                                                <?php if($report->report_type == 'rescue'): ?> bg-blue-500/20 text-blue-300
-                                                <?php elseif($report->report_type == 'stranding'): ?> bg-orange-500/20 text-orange-300
-                                                <?php elseif($report->report_type == 'nesting'): ?> bg-green-500/20 text-green-300
-                                                <?php else: ?> bg-gray-500/20 text-gray-300 <?php endif; ?>">
-                                                <?php echo e(ucfirst($report->report_type)); ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cinzel-text
+                                            <?php if($report->report_type == 'rescue'): ?> bg-blue-500/20 text-blue-300
+                                            <?php elseif($report->report_type == 'stranding'): ?> bg-orange-500/20 text-orange-300
+                                            <?php elseif($report->report_type == 'nesting'): ?> bg-green-500/20 text-green-300
+                                            <?php else: ?> bg-gray-500/20 text-gray-300 <?php endif; ?>">
+                                            <?php echo e(ucfirst($report->report_type)); ?>
 
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-gray-500 text-xs italic">--</span>
-                                        <?php endif; ?>
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cinzel-text
                                             <?php if($report->priority == 'critical'): ?> bg-red-500/20 text-red-300
                                             <?php elseif($report->priority == 'high'): ?> bg-orange-500/20 text-orange-300
                                             <?php elseif($report->priority == 'medium'): ?> bg-yellow-500/20 text-yellow-300
-                                            <?php else: ?> bg-green-500/20 text-green-300 <?php endif; ?>">
+                                            <?php elseif($report->priority == 'low'): ?> bg-green-500/20 text-green-300
+                                            <?php else: ?> bg-gray-500/20 text-gray-300 <?php endif; ?>">
                                             <?php echo e(ucfirst($report->priority)); ?>
 
                                         </span>
@@ -496,7 +489,6 @@ function quickApprove(reportId) {
         body: JSON.stringify({
             status: 'validated',
             validation_notes: 'Quick validated by admin',
-            priority: 'medium',
             evidence_verified: true,
             location_verified: true
         })
