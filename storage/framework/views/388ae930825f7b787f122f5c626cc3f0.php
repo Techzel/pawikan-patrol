@@ -6,10 +6,10 @@
     <title>Pawikan Educational Games - Learn & Play</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/web_lg.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/web_lg.png">
-    <link rel="apple-touch-icon" href="/img/web_lg.png">
-    <link rel="shortcut icon" href="/img/web_lg.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="shortcut icon" href="<?php echo e(asset('img/lg.png')); ?>">
     
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -254,27 +254,35 @@
                         <!-- Dropdown Menu -->
                         <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                             <div class="p-4 space-y-2">
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">🐢</span>
-                                    <span>Species Guide</span>
-                                </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#vision')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌟</span>
                                     <span>Vision & Mission</span>
                                 </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#video-showcase')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">🎬</span>
+                                    <span>Conservation Video</span>
+                                </a>
+                                <a href="<?php echo e(url('/#lifecycle')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌊</span>
                                     <span>Life Cycle</span>
                                 </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#threats')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">⚠️</span>
                                     <span>Threats</span>
                                 </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#species')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">🐢</span>
+                                    <span>Species Guide</span>
+                                </a>
+                                <a href="<?php echo e(url('/#guidelines')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">📋</span>
                                     <span>Guidelines</span>
                                 </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#dos-donts')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">✓✗</span>
+                                    <span>DOs & DON'Ts</span>
+                                </a>
+                                <a href="<?php echo e(url('/#help')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-lg">🤝</span>
                                     <span>How to Help</span>
                                 </a>
@@ -419,27 +427,31 @@
                     
                     <!-- Home Sub-items -->
                     <div class="ml-8 space-y-1">
-                        <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🐢</span>
-                            <span>Species Guide</span>
-                        </a>
-                        <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#vision')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌟</span>
                             <span>Vision & Mission</span>
                         </a>
-                        <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#video-showcase')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">🎬</span>
+                            <span>Conservation Video</span>
+                        </a>
+                        <a href="<?php echo e(url('/#lifecycle')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌊</span>
                             <span>Life Cycle</span>
                         </a>
-                        <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#threats')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">⚠️</span>
                             <span>Threats</span>
                         </a>
-                        <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#species')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">🐢</span>
+                            <span>Species Guide</span>
+                        </a>
+                        <a href="<?php echo e(url('/#guidelines')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">📋</span>
                             <span>Guidelines</span>
                         </a>
-                        <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#help')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🤝</span>
                             <span>How to Help</span>
                         </a>
@@ -597,6 +609,10 @@
                                 <span class="text-2xl text-ocean-400 feature-icon">🏆</span>
                                 <span class="font-medium">Score Tracking & Results</span>
                             </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🎯</span>
+                                <span class="font-medium">Each question worth 10 points</span>
+                            </div>
                         </div>
                         
                         <!-- Play Button -->
@@ -633,6 +649,10 @@
                             <div class="flex items-center gap-4 text-gray-300 group/feature">
                                 <span class="text-2xl text-ocean-400 feature-icon">🎯</span>
                                 <span class="font-medium">Streak Scoring System</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">➕</span>
+                                <span class="font-medium">Each word solved earns 10 points</span>
                             </div>
                         </div>
                         

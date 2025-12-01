@@ -12,7 +12,7 @@
                         <p class="text-gray-300 cinzel-text">Report #<?php echo e($report->id); ?> - <?php echo e($report->title); ?></p>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <?php if($report->status == 'submitted'): ?>
+                        <?php if(in_array($report->status, ['submitted', 'rejected', 'needs_correction'])): ?>
                             <a href="<?php echo e(route('patroller.reports.edit', $report)); ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium transition-colors cinzel-text">
                                 <i class="fas fa-edit mr-2"></i>Edit
                             </a>
@@ -88,7 +88,9 @@
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium cinzel-text
                                     <?php if($report->status == 'submitted'): ?> bg-blue-500/20 text-blue-300
                                     <?php elseif($report->status == 'under_review'): ?> bg-yellow-500/20 text-yellow-300
-                                    <?php elseif($report->status == 'resolved'): ?> bg-green-500/20 text-green-300
+                                    <?php elseif($report->status == 'resolved' || $report->status == 'accepted'): ?> bg-green-500/20 text-green-300
+                                    <?php elseif($report->status == 'rejected'): ?> bg-red-500/20 text-red-300
+                                    <?php elseif($report->status == 'needs_correction'): ?> bg-orange-500/20 text-orange-300
                                     <?php else: ?> bg-gray-500/20 text-gray-300 <?php endif; ?>">
                                     <?php echo e(ucfirst(str_replace('_', ' ', $report->status))); ?>
 
@@ -238,7 +240,9 @@
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cinzel-text
                                     <?php if($report->status == 'submitted'): ?> bg-blue-500/20 text-blue-300
                                     <?php elseif($report->status == 'under_review'): ?> bg-yellow-500/20 text-yellow-300
-                                    <?php elseif($report->status == 'resolved'): ?> bg-green-500/20 text-green-300
+                                    <?php elseif($report->status == 'resolved' || $report->status == 'accepted'): ?> bg-green-500/20 text-green-300
+                                    <?php elseif($report->status == 'rejected'): ?> bg-red-500/20 text-red-300
+                                    <?php elseif($report->status == 'needs_correction'): ?> bg-orange-500/20 text-orange-300
                                     <?php else: ?> bg-gray-500/20 text-gray-300 <?php endif; ?>">
                                     <?php echo e(ucfirst(str_replace('_', ' ', $report->status))); ?>
 
@@ -270,7 +274,7 @@
                     <?php endif; ?>
 
                     <!-- Actions -->
-                    <?php if($report->status == 'submitted'): ?>
+                    <?php if(in_array($report->status, ['submitted', 'rejected', 'needs_correction'])): ?>
                         <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                             <h3 class="text-lg font-semibold text-white mb-4 cinzel-subheading">
                                 <i class="fas fa-cogs mr-2 text-ocean-400"></i>Actions

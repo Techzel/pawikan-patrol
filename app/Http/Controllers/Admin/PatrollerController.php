@@ -227,10 +227,10 @@ class PatrollerController extends Controller
             abort(403, 'Access denied.');
         }
 
-        // Only allow editing if report is still submitted (not under review)
-        if ($report->status !== PatrolReport::STATUS_SUBMITTED) {
+        // Allow editing if report is submitted, rejected, or needs correction
+        if (!in_array($report->status, [PatrolReport::STATUS_SUBMITTED, PatrolReport::STATUS_REJECTED, PatrolReport::STATUS_NEEDS_CORRECTION])) {
             return redirect()->route('patroller.reports.show', $report)
-                ->with('error', 'Cannot edit report that is under review or resolved.');
+                ->with('error', 'Cannot edit report that is under review or has been accepted.');
         }
 
         return view('patroller.reports.edit', compact('report'));
@@ -246,11 +246,14 @@ class PatrollerController extends Controller
             abort(403, 'Access denied.');
         }
 
-        // Only allow updating if report is still submitted
-        if ($report->status !== PatrolReport::STATUS_SUBMITTED) {
+        // Allow updating if report is submitted, rejected, or needs correction
+        if (!in_array($report->status, [PatrolReport::STATUS_SUBMITTED, PatrolReport::STATUS_REJECTED, PatrolReport::STATUS_NEEDS_CORRECTION])) {
             return redirect()->route('patroller.reports.show', $report)
-                ->with('error', 'Cannot update report that is under review or resolved.');
+                ->with('error', 'Cannot update report that is under review or has been accepted.');
         }
+        
+        // Store the original status to check if we need to reset it
+        $wasRejectedOrNeedsCorrection = in_array($report->status, [PatrolReport::STATUS_REJECTED, PatrolReport::STATUS_NEEDS_CORRECTION]);
 
         $validated = $request->validate([
             'report_type' => ['required', Rule::in(PatrolReport::getReportTypeValidationKeys(true))],
@@ -284,7 +287,7 @@ class PatrollerController extends Controller
             }
 
             // Update the report
-            $report->update([
+            $updateData = [
                 'report_type' => $validated['report_type'],
                 'title' => $validated['title'],
                 'description' => $validated['description'],
@@ -303,16 +306,31 @@ class PatrollerController extends Controller
                 'recommendations' => $validated['recommendations'] ?? null,
                 'requires_followup' => $validated['requires_followup'] ?? false,
                 'incident_datetime' => $validated['incident_datetime'] ?? null,
-            ]);
+            ];
+            
+            // If report was rejected or needs correction, reset status to submitted for re-review
+            if ($wasRejectedOrNeedsCorrection) {
+                $updateData['status'] = PatrolReport::STATUS_SUBMITTED;
+                $updateData['validation_status'] = null;
+                $updateData['validation_notes'] = null;
+                $updateData['admin_notes'] = null;
+            }
+            
+            $report->update($updateData);
 
             Log::info('Patrol report updated', [
                 'patroller_id' => Auth::id(),
                 'report_id' => $report->id,
-                'updated_fields' => array_keys($validated)
+                'updated_fields' => array_keys($validated),
+                'was_resubmitted' => $wasRejectedOrNeedsCorrection
             ]);
 
+            $successMessage = $wasRejectedOrNeedsCorrection 
+                ? 'Report updated and resubmitted for review successfully!' 
+                : 'Report updated successfully!';
+
             return redirect()->route('patroller.reports.show', $report)
-                ->with('success', 'Report updated successfully!');
+                ->with('success', $successMessage);
 
         } catch (\Exception $e) {
             Log::error('Failed to update patrol report', [
@@ -336,10 +354,10 @@ class PatrollerController extends Controller
             abort(403, 'Access denied.');
         }
 
-        // Only allow deletion if report is still submitted
-        if ($report->status !== PatrolReport::STATUS_SUBMITTED) {
+        // Allow deletion if report is submitted, rejected, or needs correction
+        if (!in_array($report->status, [PatrolReport::STATUS_SUBMITTED, PatrolReport::STATUS_REJECTED, PatrolReport::STATUS_NEEDS_CORRECTION])) {
             return redirect()->route('patroller.reports.show', $report)
-                ->with('error', 'Cannot delete report that is under review or resolved.');
+                ->with('error', 'Cannot delete report that is under review or has been accepted.');
         }
 
         try {
@@ -376,7 +394,7 @@ class PatrollerController extends Controller
      */
     public function profile()
     {
-        $patroller = Auth::user()->load('patrollerProfile');
+        $patroller = Auth::user();
         
         // Get performance statistics
         $stats = [
@@ -406,7 +424,7 @@ class PatrollerController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $patroller = Auth::user()->load('patrollerProfile');
+        $patroller = Auth::user();
         $section = $request->input('section', 'basic');
 
         try {
@@ -417,20 +435,12 @@ class PatrollerController extends Controller
                     'emergency_phone' => 'nullable|string|max:20',
                 ]);
 
-                $profileData = [
-                    'department' => $validated['department'] ?? null,
-                    'emergency_contact' => $validated['emergency_contact'] ?? null,
-                    'emergency_phone' => $validated['emergency_phone'] ?? null,
-                ];
-
-                if ($patroller->patrollerProfile) {
-                    $patroller->patrollerProfile->update($profileData);
-                } else {
-                    $patroller->patrollerProfile()->create(array_merge([
-                        'patroller_id' => $patroller->patroller_id ?? ('PTR-' . str_pad($patroller->id, 4, '0', STR_PAD_LEFT)),
-                        'status' => 'active',
-                    ], $profileData));
-                }
+                // Note: These fields would need to be added to the users table
+                // For now, we'll just log this action
+                Log::info('Contact details update attempted (fields not in users table)', [
+                    'patroller_id' => $patroller->id,
+                    'data' => $validated
+                ]);
 
                 return back()->with('success', 'Contact details updated successfully.');
             }

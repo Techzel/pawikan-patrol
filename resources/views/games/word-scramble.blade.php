@@ -118,27 +118,31 @@
                         <!-- Dropdown Menu -->
                         <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                             <div class="p-4 space-y-2">
-                                <a href="#species" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">🐢</span>
-                                    <span>Species Guide</span>
-                                </a>
-                                <a href="#vision" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="{{ url('/#vision') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌟</span>
                                     <span>Vision & Mission</span>
                                 </a>
-                                <a href="#lifecycle" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="{{ url('/#video-showcase') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">🎬</span>
+                                    <span>Conservation Video</span>
+                                </a>
+                                <a href="{{ url('/#lifecycle') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌊</span>
                                     <span>Life Cycle</span>
                                 </a>
-                                <a href="#threats" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="{{ url('/#threats') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">⚠️</span>
                                     <span>Threats</span>
                                 </a>
-                                <a href="#guidelines" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="{{ url('/#species') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">🐢</span>
+                                    <span>Species Guide</span>
+                                </a>
+                                <a href="{{ url('/#guidelines') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">📋</span>
                                     <span>Guidelines</span>
                                 </a>
-                                <a href="#help" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="{{ url('/#help') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-lg">🤝</span>
                                     <span>How to Help</span>
                                 </a>
@@ -152,11 +156,26 @@
                         <span class="text-sm font-medium">3D Explorer</span>
                     </a>
 
-                    <!-- Patrol Map -->
-                    <a href="/patrol-map" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
-                        <span class="text-base">🗺️</span>
-                        <span class="text-sm font-medium">Patrol Map</span>
-                    </a>
+                    <!-- Patrol Map with Dropdown -->
+                    <div class="relative group">
+                        <a href="/patrol-map" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
+                            <span class="text-base">🗺️</span>
+                            <span class="text-sm font-medium">Patrol Map</span>
+                            <svg class="w-3.5 h-3.5 mt-0.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </a>
+
+                        <!-- Dropdown Menu -->
+                        <div class="absolute top-full left-0 mt-2 w-48 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div class="p-2 space-y-1">
+                                <a href="/patrol-map/gallery" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-lg">📸</span>
+                                    <span class="text-sm font-medium">Gallery Report</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Games -->
                     <a href="/games" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg bg-ocean-600/30 hover:bg-ocean-600/40">
@@ -178,11 +197,11 @@
                             <!-- Account Dropdown Menu -->
                             <div class="absolute top-full right-0 mt-2 w-48 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                                 <div class="p-2 space-y-1">
-                                    <a href="/auth" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
+                                    <a href="/auth" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
                                         <span class="text-lg">🔑</span>
                                         <span>Login</span>
                                     </a>
-                                    <a href="/auth#register" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
+                                    <a href="/auth#register" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
                                         <span class="text-lg">📝</span>
                                         <span>Register</span>
                                     </a>
@@ -263,27 +282,31 @@
                     
                     <!-- Home Sub-items -->
                     <div class="ml-8 space-y-1">
-                        <a href="#species" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🐢</span>
-                            <span>Species Guide</span>
-                        </a>
-                        <a href="#vision" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="{{ url('/#vision') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌟</span>
                             <span>Vision & Mission</span>
                         </a>
-                        <a href="#lifecycle" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="{{ url('/#video-showcase') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">🎬</span>
+                            <span>Conservation Video</span>
+                        </a>
+                        <a href="{{ url('/#lifecycle') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌊</span>
                             <span>Life Cycle</span>
                         </a>
-                        <a href="#threats" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="{{ url('/#threats') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">⚠️</span>
                             <span>Threats</span>
                         </a>
-                        <a href="#guidelines" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="{{ url('/#species') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">🐢</span>
+                            <span>Species Guide</span>
+                        </a>
+                        <a href="{{ url('/#guidelines') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">📋</span>
                             <span>Guidelines</span>
                         </a>
-                        <a href="#help" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="{{ url('/#help') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🤝</span>
                             <span>How to Help</span>
                         </a>
@@ -296,10 +319,18 @@
                     <span>3D Explorer</span>
                 </a>
                 
-                <a href="/patrol-map" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                    <span class="text-lg">🗺️</span>
-                    <span>Patrol Map</span>
-                </a>
+                <div class="space-y-1">
+                    <a href="/patrol-map" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <span class="text-lg">🗺️</span>
+                        <span>Patrol Map</span>
+                    </a>
+                    <div class="ml-8 space-y-1">
+                        <a href="/patrol-map/gallery" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">📸</span>
+                            <span>Gallery Report</span>
+                        </a>
+                    </div>
+                </div>
                 
                 <a href="/games" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                     <span class="text-lg">🎮</span>
@@ -1151,6 +1182,30 @@
         };
     </script>
     
+    <!-- Mobile Navigation Handling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileAccountToggles = document.querySelectorAll('.mobile-account-toggle');
+            const accountMenus = document.querySelectorAll('.mobile-account-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            if (mobileAccountToggles.length && accountMenus.length) {
+                mobileAccountToggles.forEach((toggle) => {
+                    toggle.addEventListener('click', () => {
+                        accountMenus.forEach(menu => menu.classList.toggle('hidden'));
+                    });
+                });
+            }
+        });
+    </script>
+
     <!-- Game Activity Helper -->
     <script src="{{ asset('js/game-activity.js') }}"></script>
 </body>

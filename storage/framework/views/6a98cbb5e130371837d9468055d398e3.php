@@ -187,6 +187,13 @@
 .sidebar-container .overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
 }
+
+/* Enforce Poppins for report details sidebar */
+#sidebar-content,
+#sidebar-content * {
+    font-family: 'Poppins', sans-serif !important;
+    letter-spacing: 0.01em;
+}
 </style>
 
 <!-- Leaflet JS -->
@@ -256,7 +263,7 @@ function createSidebarContent(report) {
     ` : '';
 
     return `
-        <div class="space-y-3">
+        <div class="space-y-3" style="font-family: 'Poppins', sans-serif;">
             <!-- Title -->
             <div class="border-b border-white/20 pb-2">
                 <h2 class="text-lg font-bold text-white leading-tight">${report.title || 'Patrol Report'}</h2>

@@ -24,6 +24,67 @@
         #landing-page h6 {
             font-family: 'Cinzel', serif !important;
         }
+
+        #landing-page .carousel {
+            height: clamp(300px, 80vh, 600px);
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 0 !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #landing-page .carousel-track {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        #landing-page .carousel-slide {
+            flex: 0 0 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #landing-page .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0 !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        #landing-page .carousel-slide .slide-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.65) 100%);
+            color: #fff;
+            z-index: 2;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        #landing-page .carousel-slide .slide-overlay h2 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 3rem;
+        }
+
+        #landing-page .carousel-slide .slide-overlay p {
+            max-width: 36rem;
+            font-size: clamp(1rem, 2vw, 1.15rem);
+            line-height: 1.5;
+            font-family: 'Poppins', sans-serif !important;
+            letter-spacing: 0.01em;
+            font-weight: 300;
+        }
     </style>
 @endpush
 
@@ -34,17 +95,49 @@
         <div class="max-w-6xl w-full mx-auto z-10">
             <div class="carousel relative overflow-hidden rounded-2xl">
                 <div class="carousel-track">
-                    <div class="carousel-slide">
-                        <img src="{{ asset('img/carousel_1.jpg') }}" alt="Sea Turtle Swimming" class="rounded-2xl shadow-2xl">
+                    <div class="carousel-slide" style="--slide-bg: url('{{ asset('img/dahican2-view.avif') }}');">
+                        <img src="{{ asset('img/dahican2-view.avif') }}" alt="Sea Turtle Swimming" class="rounded-2xl shadow-2xl">
+                        <div class="slide-overlay">
+                            <h2 class="font-bold text-white text-lg">Dahican Marine Turtle</h2>
+                            <p class="text-gray-100 text-xs">
+                                Experience the magic of Dahican Beach, home to majestic sea turtles. 
+                                Here, conservation meets community as we protect these gentle giants and share their remarkable journey 
+                                with visitors from around the world.
+                            </p>
+                        </div>
                     </div>
-                    <div class="carousel-slide">
-                        <img src="{{ asset('img/carousel_2.jpg') }}" alt="Sea Turtle Nesting" class="rounded-2xl shadow-2xl">
+                    <div class="carousel-slide" style="--slide-bg: url('{{ asset('img/hatch_1.jpg') }}');">
+                        <img src="{{ asset('img/bb-turtle.jpg') }}" alt="Sea Turtle Nesting" class="rounded-2xl shadow-2xl">
+                        <div class="slide-overlay">
+                            <h2 class="font-bold text-white text-lg">Dahican Marine Turtle Species</h2>
+                            <p class="text-gray-100 text-xs">
+                                According to Dahican locals, three magnificent sea turtle species call these waters home:
+                                the Green Sea Turtle, Hawksbill, and Olive Ridley. Each plays a vital role in maintaining
+                                the delicate balance of our marine ecosystem.
+                            </p>
+                        </div>
                     </div>
-                    <div class="carousel-slide">
-                        <img src="{{ asset('img/carousel_1.jpg') }}" alt="Baby Sea Turtles" class="rounded-2xl shadow-2xl">
+                    <div class="carousel-slide" style="--slide-bg: url('{{ asset('img/hatch2.jpg') }}');">
+                        <img src="{{ asset('img/hatch3.jpg') }}" alt="Baby Sea Turtles" class="rounded-2xl shadow-2xl">
+                        <div class="slide-overlay">
+                            <h2 class="font-bold text-white text-lg">Dahican Turtle Hatchery</h2>
+                            <p class="text-gray-100 text-xs">
+                                Our dedicated hatchery protects and nurtures sea turtle nests, ensuring the safe journey 
+                                of hatchlings to the ocean. Through careful monitoring and community involvement, 
+                                we safeguard the future of these endangered species.
+                            </p>
+                        </div>
                     </div>
-                    <div class="carousel-slide">
-                        <img src="{{ asset('img/carousel_2.jpg') }}" alt="Pawikan Patrol Team" class="rounded-2xl shadow-2xl">
+                    <div class="carousel-slide" style="--slide-bg: url('{{ asset('img/hatch3.jpg') }}');">
+                        <img src="{{ asset('img/respect.jpg') }}" alt="Pawikan Patrol Team" class="rounded-2xl shadow-2xl">
+                        <div class="slide-overlay">
+                            <h2 class="font-bold text-white text-lg">Respect & Protect</h2>
+                            <p class="text-gray-100 text-xs">
+                                Become part of the Pawikan Patrol community and help protect these magnificent creatures. 
+                                Together, we can ensure that future generations will continue to marvel at the beauty 
+                                and wonder of sea turtles in Dahican.
+                            </p>
+                        </div>
                     </div>
                 </div>
                 
@@ -249,7 +342,7 @@
                 </div>
                 
                 <div class="relative">
-                    <img src="{{ asset('img/carousel_2.jpg') }}" alt="Pawikan Patrol Sanctuary" class="rounded-2xl shadow-2xl w-full h-96 object-cover">
+                    <img src="{{ asset('img/hatch3.jpg') }}" alt="Pawikan Patrol Sanctuary" class="rounded-2xl shadow-2xl w-full h-96 object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl"></div>
                     <div class="absolute bottom-6 left-6 right-6">
                         <div class="glass-dark rounded-xl p-4">
@@ -327,158 +420,286 @@
         </div>
     </section>
 
+    <!-- Video Showcase Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-deep-900/30 to-ocean-900/40" id="video-showcase">
+        <div class="max-w-7xl mx-auto">
+            <h  2 class="text-5xl font-bold text-center mb-12 text-ocean-400">Quest for Love: Amihan sa Dahican</h2>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Video Container -->
+                <div class="relative group">
+                    <div class="glass-dark rounded-3xl p-4 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-ocean-500/30">
+                        <div class="relative rounded-2xl overflow-hidden" style="padding-bottom: 56.25%; height: 0;">
+                            <!-- YouTube Video Embed -->
+                            <iframe 
+                                id="amihan-video"
+                                class="absolute top-0 left-0 w-full h-full rounded-xl" 
+                                src="https://www.youtube.com/embed/nzKU4c66uP8?enablejsapi=1" 
+                                title="Quest for Love: Amihan sa Dahican" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
+                        </div>
+                        
+                        <!-- Video Attribution -->
+                        <div class="mt-4 text-center">
+                            <p class="text-sm text-gray-400">
+                                <span class="text-ocean-300">📹 Video Source:</span> 
+                                <a href="https://www.youtube.com/watch?v=nzKU4c66uP8" target="_blank" rel="noopener noreferrer" class="font-semibold text-gray-300 hover:text-ocean-300 transition-colors duration-300">
+                                    YouTube - Jebel Musa
+                                </a>
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                © Amihan sa Dahican People's Organization. All rights reserved.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Description Container -->
+                <div class="glass-dark rounded-3xl p-8 lg:p-10 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-ocean-500/30">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-ocean-500/20 rounded-full flex items-center justify-center">
+                            <span class="text-2xl">🌊</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-ocean-300">Community Conservation</h3>
+                    </div>
+                    
+                    <div class="space-y-4 text-gray-300">
+                        <p class="leading-relaxed">
+                            Discover the inspiring story of <strong class="text-ocean-300">Amihan sa Dahican</strong>, 
+                            a dedicated People's Organization in Brgy. Dahican, Mati City, Davao Oriental. 
+                            This video showcases their unwavering commitment to the protection and conservation 
+                            of sea turtles and marine ecosystems.
+                        </p>
+                        
+                        <p class="leading-relaxed">
+                            Through community-driven initiatives and passionate advocacy, Amihan sa Dahican 
+                            demonstrates how local organizations can make a significant impact in preserving 
+                            our natural heritage. Their work embodies the spirit of environmental stewardship 
+                            and community collaboration.
+                        </p>
+                        
+                        <div class="pt-4 border-t border-ocean-500/30 mt-6">
+                            <h4 class="text-xl font-bold text-ocean-300 mb-3">Featured in This Video:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Community-based conservation efforts in Dahican</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Local advocacy for sea turtle protection</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Environmental stewardship and education</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Collaborative approach to marine conservation</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Info Banner -->
+            <div class="mt-12 text-center">
+                <div class="glass-dark rounded-2xl p-6 max-w-4xl mx-auto border border-ocean-500/20">
+                    <p class="text-gray-300">
+                         "Together, communities like Amihan sa Dahican are creating a sustainable 
+                            future where sea turtles and marine life can thrive for generations to come."
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- YouTube IFrame API Script -->
+        <script>
+            // Load YouTube IFrame API
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            
+            // Create YouTube player when API is ready
+            var player;
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player('amihan-video', {
+                    events: {
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            }
+            
+            // Monitor video playback and pause at 1:38 (98 seconds)
+            var pauseTime = 98; // 1 minute 38 seconds
+            var hasPaused = false;
+            
+            function onPlayerStateChange(event) {
+                if (event.data == YT.PlayerState.PLAYING && !hasPaused) {
+                    // Check current time every 100ms while playing
+                    var checkTime = setInterval(function() {
+                        if (player && player.getCurrentTime) {
+                            var currentTime = player.getCurrentTime();
+                            
+                            // Pause when reaching 1:38
+                            if (currentTime >= pauseTime && !hasPaused) {
+                                player.pauseVideo();
+                                hasPaused = true;
+                                clearInterval(checkTime);
+                            }
+                            
+                            // Stop checking if video is paused or ended
+                            if (player.getPlayerState() != YT.PlayerState.PLAYING) {
+                                clearInterval(checkTime);
+                            }
+                        }
+                    }, 100);
+                }
+            }
+        </script>
+    </section>
+
     <!-- Lifecycle Section -->
     <section class="py-20 px-4 bg-gradient-to-br from-deep-900/50 to-ocean-900/30 fade-in-up visible" id="lifecycle">
         <div class="max-w-7xl mx-auto">
-            <h2 class="text-5xl font-bold text-center mb-12 text-ocean-400">The Journey of Life</h2>
+            <h2 class="text-5xl font-bold text-center mb-12 text-ocean-400">Pawikan Life Journey</h2>
             
             <!-- Enhanced Lifecycle Timeline -->
             <div class="relative">
-                <!-- Animated Timeline -->
-                <div class="absolute left-1/2 transform -translate-x-1/2 w-2 h-full bg-gradient-to-b from-ocean-400 via-ocean-500 to-ocean-600 rounded-full shadow-lg">
+                <!-- Animated Timeline (desktop only) -->
+                <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-2 h-full bg-gradient-to-b from-ocean-400 via-ocean-500 to-ocean-600 rounded-full shadow-lg">
                     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-transparent animate-pulse"></div>
                 </div>
                 
-                <div class="space-y-20">
+                <div class="space-y-14 lg:space-y-20">
                     <!-- Stage 1: Nesting -->
-                    <div class="relative flex items-center">
-                        <div class="w-1/2 text-right pr-12">
-                            <div class="glass-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-ocean-500/30">
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-ocean-500 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
+                            <div class="glass-dark rounded-3xl p-6 lg:p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-ocean-500/30">
                                 <div class="flex items-center gap-4 mb-4">
                                     <span class="text-4xl">🥚</span>
-                                    <h3 class="text-3xl font-bold text-ocean-300">1. Nesting</h3>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-ocean-300">1. Nesting</h3>
                                 </div>
-                                <p class="text-gray-300 mb-4">
-                                    Female sea turtles return to the same beach where they were born to lay their eggs. 
-                                    They emerge from the ocean at night, dig deep nests in the sand, and deposit 
-                                    50-200 eggs in a single clutch.
+                                <p class="text-gray-300 mb-4 text-base leading-relaxed">
+                                    Mother turtles return to Dahican Beach to lay their eggs, 
+                                    continuing an ancient cycle that connects generations of Pawikan.
                                 </p>
-                                <div class="text-sm text-gray-400">
-                                    <strong>Season:</strong> November to March<br>
-                                    <strong>Duration:</strong> 2-3 hours per nest
+                                <div class="text-sm text-gray-400 space-y-1">
+                                    <div><strong>Season:</strong> November to March</div>
+                                    <div><strong>Duration:</strong> 2-3 hours per nest</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-ocean-500 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-1/2 pl-12"></div>
+                        <div class="hidden lg:block w-1/2 pl-12"></div>
                     </div>
 
                     <!-- Stage 2: Incubation -->
-                    <div class="relative flex items-center">
-                        <div class="w-1/2 pr-12"></div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-1/2 text-left pl-12">
-                            <div class="glass-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-green-500/30">
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block w-1/2 pr-12"></div>
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:pl-12">
+                            <div class="glass-dark rounded-3xl p-6 lg:p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-green-500/30">
                                 <div class="flex items-center gap-4 mb-4">
                                     <span class="text-4xl">🌡️</span>
-                                    <h3 class="text-3xl font-bold text-green-300">2. Incubation</h3>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-300">2. Incubation</h3>
                                 </div>
-                                <p class="text-gray-300 mb-4">
-                                    The eggs incubate in the warm sand for 45-70 days. The temperature of the nest 
-                                    determines the sex of the hatchlings - warmer temperatures produce females, 
-                                    while cooler temperatures produce males.
+                                <p class="text-gray-300 mb-4 text-base leading-relaxed">
+                                    Eggs incubate in warm sand for 45-70 days, with temperature 
+                                    determining the hatchlings' gender - warmer for females, cooler for males.
                                 </p>
-                                <div class="text-sm text-gray-400">
-                                    <strong>Temperature:</strong> 29-30°C optimal<br>
-                                    <strong>Success Rate:</strong> 80-90% in protected nests
+                                <div class="text-sm text-gray-400 space-y-1">
+                                    <div><strong>Temperature:</strong> 29-30°C optimal</div>
+                                    <div><strong>Success Rate:</strong> 80-90% in protected nests</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Stage 3: Hatching -->
-                    <div class="relative flex items-center">
-                        <div class="w-1/2 text-right pr-12">
-                            <div class="glass-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-yellow-500/30">
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-yellow-500 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
+                            <div class="glass-dark rounded-3xl p-6 lg:p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-yellow-500/30">
                                 <div class="flex items-center gap-4 mb-4">
                                     <span class="text-4xl">🐣</span>
-                                    <h3 class="text-3xl font-bold text-yellow-300">3. Hatching</h3>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-yellow-300">3. Hatching</h3>
                                 </div>
-                                <p class="text-gray-300 mb-4">
-                                    After incubation, the hatchlings emerge together in a group. They use their 
-                                    temporary egg tooth to break through the shell and work together to dig 
-                                    their way to the surface.
+                                <p class="text-gray-300 mb-4 text-base leading-relaxed">
+                                    Hatchlings emerge together at night, using their egg tooth 
+                                    to break shells and dig their way to the surface as a team.
                                 </p>
-                                <div class="text-sm text-gray-400">
-                                    <strong>Emergence:</strong> Usually at night<br>
-                                    <strong>Group Size:</strong> 50-200 hatchlings
+                                <div class="text-sm text-gray-400 space-y-1">
+                                    <div><strong>Emergence:</strong> Usually at night</div>
+                                    <div><strong>Group Size:</strong> 50-200 hatchlings</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-yellow-500 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-1/2 pl-12"></div>
+                        <div class="hidden lg:block w-1/2 pl-12"></div>
                     </div>
 
                     <!-- Stage 4: The Lost Years -->
-                    <div class="relative flex items-center">
-                        <div class="w-1/2 pr-12"></div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-1/2 text-left pl-12">
-                            <div class="glass-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-blue-500/30">
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block w-1/2 pr-12"></div>
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:pl-12">
+                            <div class="glass-dark rounded-3xl p-6 lg:p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-blue-500/30">
                                 <div class="flex items-center gap-4 mb-4">
                                     <span class="text-4xl">🌊</span>
-                                    <h3 class="text-3xl font-bold text-blue-300">4. The Lost Years</h3>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-blue-300">4. The Lost Years</h3>
                                 </div>
-                                <p class="text-gray-300 mb-4">
-                                    Once in the ocean, hatchlings enter a mysterious phase called "the lost years." 
-                                    They drift with ocean currents, feeding on plankton and small organisms, growing 
-                                    rapidly in the open ocean.
+                                <p class="text-gray-300 mb-4 text-base leading-relaxed">
+                                    Young turtles drift with ocean currents for 1-10 years, 
+                                    feeding on plankton and growing rapidly in the open sea.
                                 </p>
-                                <div class="text-sm text-gray-400">
-                                    <strong>Duration:</strong> 1-10 years<br>
-                                    <strong>Location:</strong> Open ocean currents
+                                <div class="text-sm text-gray-400 space-y-1">
+                                    <div><strong>Duration:</strong> 1-10 years</div>
+                                    <div><strong>Location:</strong> Open ocean currents</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Stage 5: Adulthood -->
-                    <div class="relative flex items-center">
-                        <div class="w-1/2 text-right pr-12">
-                            <div class="glass-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-purple-500/30">
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-purple-500 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
+                            <div class="glass-dark rounded-3xl p-6 lg:p-8 transform hover:scale-105 transition-all duration-500 shadow-2xl border border-purple-500/30">
                                 <div class="flex items-center gap-4 mb-4">
                                     <span class="text-4xl">🐢</span>
-                                    <h3 class="text-3xl font-bold text-purple-300">5. Adulthood</h3>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-purple-300">5. Adulthood</h3>
                                 </div>
-                                <p class="text-gray-300 mb-4">
-                                    After the lost years, juvenile turtles move to coastal feeding grounds where 
-                                    they mature into adults. They reach sexual maturity at 20-50 years old and 
-                                    begin the cycle anew by returning to nest.
+                                <p class="text-gray-300 mb-4 text-base leading-relaxed">
+                                    Mature turtles return to coastal waters at 20-50 years old, 
+                                    ready to nest and continue the ancient cycle of life.
                                 </p>
-                                <div class="text-sm text-gray-400">
-                                    <strong>Maturity:</strong> 20-50 years<br>
-                                    <strong>Lifespan:</strong> 50-100+ years
+                                <div class="text-sm text-gray-400 space-y-1">
+                                    <div><strong>Maturity:</strong> 20-50 years</div>
+                                    <div><strong>Lifespan:</strong> 50-100+ years</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-purple-500 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-1/2 pl-12"></div>
+                        <div class="hidden lg:block w-1/2 pl-12"></div>
                     </div>
                 </div>
             </div>
             
-            <!-- Lifecycle Statistics -->
+            <!-- Conservation Impact Text -->
             <div class="mt-20 text-center">
                 <div class="glass-dark rounded-3xl p-10 max-w-6xl mx-auto shadow-2xl border border-ocean-500/30">
-                    <h3 class="text-3xl font-bold mb-8 text-ocean-300">Conservation Impact</h3>
-                    <div class="grid md:grid-cols-4 gap-8">
-                        <div class="text-center">
-                            <div class="text-4xl font-bold text-ocean-400 mb-2">10,000+</div>
-                            <div class="text-gray-300">Hatchlings Released</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-4xl font-bold text-green-400 mb-2">500+</div>
-                            <div class="text-gray-300">Nests Protected</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-4xl font-bold text-yellow-400 mb-2">50+</div>
-                            <div class="text-gray-300">Turtles Rescued</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-4xl font-bold text-blue-400 mb-2">15+</div>
-                            <div class="text-gray-300">Years of Conservation</div>
-                        </div>
-                    </div>
+                    <h3 class="text-3xl font-bold mb-8 text-ocean-300">Protecting the Pawikan Journey</h3>
+                    <p class="text-gray-300 text-lg leading-relaxed max-w-4xl mx-auto">
+                        Every Pawikan's life journey begins with a fragile nest on sandy shores. 
+                        Our conservation work ensures these ancient mariners can safely complete their cycle 
+                        from nesting mothers to ocean-adventuring hatchlings, and finally to returning adults 
+                        that will continue this sacred journey for generations to come.
+                    </p>
                 </div>
             </div>
         </div>
@@ -797,8 +1018,182 @@
                     <div class="space-y-2 text-gray-300">
                         <p><strong>Pawikan Patrol Hotline:</strong> +63 912 345 6789</p>
                         <p><strong>Local DENR Office:</strong> +63 923 456 7890</p>
-                        <p><strong>Coast Guard:</strong> +63 934 567 8901</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOs and DON'Ts Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-deep-900/50 to-ocean-900/30 fade-in-up visible" id="dos-donts">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-5xl font-bold text-center mb-12 text-ocean-400">DOs and DON'Ts</h2>  
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- DOs Column -->
+                <div class="glass-dark rounded-3xl p-8 border-l-4 border-green-500">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                            <span class="text-2xl">✓</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-green-400">DO</h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                            <span class="text-green-400 text-xl mt-1">✓</span>
+                            <div>
+                                <h4 class="font-bold text-green-300 mb-1">Observe from a Distance</h4>
+                                <p class="text-gray-300 text-sm">Maintain at least 10 meters (33 feet) away from nesting turtles and hatchlings to avoid disturbing them.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                            <span class="text-green-400 text-xl mt-1">✓</span>
+                            <div>
+                                <h4 class="font-bold text-green-300 mb-1">Use Red Lights Only</h4>
+                                <p class="text-gray-300 text-sm">If you need light at night, use red-filtered flashlights which don't disturb turtles.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                            <span class="text-green-400 text-xl mt-1">✓</span>
+                            <div>
+                                <h4 class="font-bold text-green-300 mb-1">Report Sightings</h4>
+                                <p class="text-gray-300 text-sm">Contact Pawikan Patrol immediately if you spot nesting turtles or injured animals.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                            <span class="text-green-400 text-xl mt-1">✓</span>
+                            <div>
+                                <h4 class="font-bold text-green-300 mb-1">Keep the Beach Clean</h4>
+                                <p class="text-gray-300 text-sm">Always take your trash with you and participate in beach cleanup activities.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                            <span class="text-green-400 text-xl mt-1">✓</span>
+                            <div>
+                                <h4 class="font-bold text-green-300 mb-1">Stay Quiet and Calm</h4>
+                                <p class="text-gray-300 text-sm">Speak in low voices and move slowly to avoid startling the turtles.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                            <span class="text-green-400 text-xl mt-1">✓</span>
+                            <div>
+                                <h4 class="font-bold text-green-300 mb-1">Follow Guide Instructions</h4>
+                                <p class="text-gray-300 text-sm">Always listen to and follow the instructions of authorized Pawikan Patrol guides.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                            <span class="text-green-400 text-xl mt-1">✓</span>
+                            <div>
+                                <h4 class="font-bold text-green-300 mb-1">Fill in Beach Holes</h4>
+                                <p class="text-gray-300 text-sm">Fill any holes or sandcastles before leaving to prevent hatchlings from getting trapped.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                            <span class="text-green-400 text-xl mt-1">✓</span>
+                            <div>
+                                <h4 class="font-bold text-green-300 mb-1">Educate Others</h4>
+                                <p class="text-gray-300 text-sm">Share conservation knowledge with friends and family to spread awareness.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DON'Ts Column -->
+                <div class="glass-dark rounded-3xl p-8 border-l-4 border-red-500">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+                            <span class="text-2xl">✗</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-red-400">DON'T</h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                            <span class="text-red-400 text-xl mt-1">✗</span>
+                            <div>
+                                <h4 class="font-bold text-red-300 mb-1">Don't Touch or Ride Turtles</h4>
+                                <p class="text-gray-300 text-sm">Never touch, ride, or harass sea turtles. This causes stress and can harm them.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                            <span class="text-red-400 text-xl mt-1">✗</span>
+                            <div>
+                                <h4 class="font-bold text-red-300 mb-1">Don't Use Flash Photography</h4>
+                                <p class="text-gray-300 text-sm">Flash lights and camera flashes disorient turtles and can cause them to abandon nesting.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                            <span class="text-red-400 text-xl mt-1">✗</span>
+                            <div>
+                                <h4 class="font-bold text-red-300 mb-1">Don't Block Their Path</h4>
+                                <p class="text-gray-300 text-sm">Never stand between a turtle and the ocean, or block their nesting path.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                            <span class="text-red-400 text-xl mt-1">✗</span>
+                            <div>
+                                <h4 class="font-bold text-red-300 mb-1">Don't Leave Trash on Beach</h4>
+                                <p class="text-gray-300 text-sm">Plastic bags and debris can be mistaken for food and harm or kill turtles.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                            <span class="text-red-400 text-xl mt-1">✗</span>
+                            <div>
+                                <h4 class="font-bold text-red-300 mb-1">Don't Disturb Nests</h4>
+                                <p class="text-gray-300 text-sm">Never dig up or disturb turtle nests. This is illegal and harmful to eggs.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                            <span class="text-red-400 text-xl mt-1">✗</span>
+                            <div>
+                                <h4 class="font-bold text-red-300 mb-1">Don't Make Loud Noises</h4>
+                                <p class="text-gray-300 text-sm">Loud sounds and sudden movements can scare turtles away from nesting.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                            <span class="text-red-400 text-xl mt-1">✗</span>
+                            <div>
+                                <h4 class="font-bold text-red-300 mb-1">Don't Use White Lights at Night</h4>
+                                <p class="text-gray-300 text-sm">White lights confuse hatchlings and lead them away from the ocean.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                            <span class="text-red-400 text-xl mt-1">✗</span>
+                            <div>
+                                <h4 class="font-bold text-red-300 mb-1">Don't Take Selfies with Turtles</h4>
+                                <p class="text-gray-300 text-sm">Getting close for photos stresses turtles and interrupts critical behaviors.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Important Notice -->
+            <div class="mt-12 text-center">
+                <div class="glass-dark rounded-2xl p-8 max-w-4xl mx-auto border border-ocean-500/30">
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <span class="text-4xl">⚠️</span>
+                        <h3 class="text-2xl font-bold text-ocean-300">Remember</h3>
+                    </div>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        Sea turtles are precious endangered creatures that have survived for millions of years. 
+                        Your respectful actions and mindful behavior can help ensure their survival for future generations. 
+                        Together, we can make a difference in protecting Dahican's precious marine life.
+                    </p>
                 </div>
             </div>
         </div>
@@ -849,16 +1244,16 @@
                     </ul>
                 </div>
                 
-                <!-- Adopt a Turtle -->
+                <!-- Beach Cleanup -->
                 <div class="glass-dark rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border-l-4 border-yellow-500">
-                    <div class="text-5xl mb-4">🐢</div>
-                    <h3 class="text-2xl font-bold mb-3 text-yellow-400">Adopt a Turtle</h3>
-                    <p class="text-gray-300 mb-4">Symbolically adopt a sea turtle and receive updates on its journey. Your adoption helps fund our conservation programs.</p>
+                    <div class="text-5xl mb-4">🏖️</div>
+                    <h3 class="text-2xl font-bold mb-3 text-yellow-400">Beach Cleanup</h3>
+                    <p class="text-gray-300 mb-4">Join our regular beach cleanup activities to protect turtle habitats. Remove plastic waste and debris that harm marine life.</p>
                     <ul class="text-sm text-gray-400 space-y-2 mb-4">
-                        <li>• Adoption certificate</li>
-                        <li>• Regular updates</li>
-                        <li>• Turtle tracking information</li>
-                        <li>• Conservation impact report</li>
+                        <li>• Monthly cleanup drives</li>
+                        <li>• Plastic waste sorting</li>
+                        <li>• Habitat restoration</li>
+                        <li>• Marine debris monitoring</li>
                     </ul>
                 </div>
                 
@@ -905,31 +1300,21 @@
     <!-- Professional Footer -->
     <footer class="bg-gradient-to-b from-deep-900 to-black text-white py-12 px-4 border-t border-ocean-500/30">
         <div class="max-w-7xl mx-auto">
-            <div class="grid md:grid-cols-3 gap-8 mb-8">
+            <div class="grid md:grid-cols-3 gap-10 md:gap-12 xl:gap-16 mb-8">
                 <!-- Organization Info -->
                 <div class="col-span-1">
                     <div class="flex items-center mb-4">
-                        <img src="{{ asset('img/web_lg.png') }}" alt="Pawikan Patrol Logo" class="w-12 h-12 mr-3">
+                        <img src="{{ asset('img/lg.png') }}" alt="Pawikan Patrol Logo" class="w-12 h-12 mr-3">
                         <h3 class="text-2xl font-bold text-ocean-400">Pawikan Patrol</h3>
                     </div>
                     <p class="text-gray-400 mb-4">Dedicated to the conservation and protection of sea turtles in Dahican, City of Mati, Davao Oriental.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/></svg>
-                        </a>
-                    </div>
+                    <div class="flex space-x-4"></div>
                 </div>
 
                 <!-- Quick Links -->
-                <div class="col-span-1">
+                <div class="col-span-1 text-left md:text-center">
                     <h4 class="text-lg font-semibold mb-4 text-ocean-400">Quick Links</h4>
-                    <ul class="space-y-2">
+                    <ul class="space-y-2 flex flex-col items-start md:items-center">
                         <li><a href="#hero" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Home</a></li>
                         <li><a href="#about" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">About Us</a></li>
                         <li><a href="#species" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Species</a></li>
@@ -959,16 +1344,9 @@
             </div>
 
             <!-- Bottom Bar -->
-            <div class="border-t border-gray-800 pt-8">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="text-gray-400 text-sm mb-4 md:mb-0">
-                        &copy; 2025 Pawikan Patrol. All rights reserved. | City of Mati – Dahican, est. 2020
-                    </div>
-                    <div class="flex space-x-6 text-sm">
-                        <a href="#" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Privacy Policy</a>
-                        <a href="#" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Terms of Service</a>
-                        <a href="#" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Cookie Policy</a>
-                    </div>
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <div class="text-gray-400 text-sm">
+                    &copy; 2025 Pawikan Patrol. All rights reserved. | City of Mati – Dahican, est. 2020
                 </div>
             </div>
         </div>

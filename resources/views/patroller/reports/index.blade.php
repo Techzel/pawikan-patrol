@@ -122,7 +122,9 @@
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cinzel-text
                                                 @if($report->status == 'submitted') bg-blue-500/20 text-blue-300
                                                 @elseif($report->status == 'under_review') bg-yellow-500/20 text-yellow-300
-                                                @elseif($report->status == 'resolved') bg-green-500/20 text-green-300
+                                                @elseif($report->status == 'resolved' || $report->status == 'accepted') bg-green-500/20 text-green-300
+                                                @elseif($report->status == 'rejected') bg-red-500/20 text-red-300
+                                                @elseif($report->status == 'needs_correction') bg-orange-500/20 text-orange-300
                                                 @else bg-gray-500/20 text-gray-300 @endif">
                                                 {{ ucfirst(str_replace('_', ' ', $report->status)) }}
                                             </span>
@@ -135,14 +137,14 @@
                                                 <a href="{{ route('patroller.reports.show', $report) }}" class="text-ocean-400 hover:text-ocean-300 transition-colors">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                @if($report->status == 'submitted')
-                                                    <a href="{{ route('patroller.reports.edit', $report) }}" class="text-yellow-400 hover:text-yellow-300 transition-colors">
+                                                @if(in_array($report->status, ['submitted', 'rejected', 'needs_correction']))
+                                                    <a href="{{ route('patroller.reports.edit', $report) }}" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit Report">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     <form method="POST" action="{{ route('patroller.reports.destroy', $report) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this report?')">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="text-red-400 hover:text-red-300 transition-colors">
+                                                        <button type="submit" class="text-red-400 hover:text-red-300 transition-colors" title="Delete Report">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </form>

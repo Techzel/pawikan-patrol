@@ -415,7 +415,7 @@
                         id="password" 
                         name="password" 
                         class="form-input w-full px-4 py-3 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none pr-12"
-                        placeholder="Create a strong password"
+                        placeholder="Min 8 chars, 1 Upper, 1 Lower, 1 Number, 1 Special (@$!%*?&)"
                         required
                         minlength="8"
                     >
@@ -459,7 +459,7 @@
                         id="password_confirmation" 
                         name="password_confirmation" 
                         class="form-input w-full px-4 py-3 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none pr-12"
-                        placeholder="Confirm your password"
+                        placeholder="Min 8 chars, 1 Upper, 1 Lower, 1 Number, 1 Special (@$!%*?&)"
                         required
                     >
                     <button 

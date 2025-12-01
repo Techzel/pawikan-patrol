@@ -17,6 +17,11 @@ class StandardizePatrollerDataSeeder extends Seeder
      */
     public function run()
     {
+        $this->command->info('This seeder is deprecated and no longer needed.');
+        $this->command->info('The patroller_profiles table has been removed and all data is now in the users table.');
+        return;
+        
+        /* DEPRECATED CODE - Patroller model and patrollerProfile relationship no longer exist
         $this->command->info('Starting patroller data standardization...');
         
         // Get all patroller users
@@ -138,5 +143,6 @@ class StandardizePatrollerDataSeeder extends Seeder
             'profiles_updated' => $updatedProfiles,
             'orphaned_deleted' => $orphanedProfiles
         ]);
+        */
     }
 }

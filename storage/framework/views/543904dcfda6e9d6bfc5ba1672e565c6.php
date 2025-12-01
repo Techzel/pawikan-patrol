@@ -215,9 +215,11 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             <?php endif; ?>
-                                            <button onclick="showDeleteModal(<?php echo e($report->id); ?>)" class="text-red-400 hover:text-red-300 transition-colors" title="Delete Report">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
+                                            <?php if($report->status !== 'rejected'): ?>
+                                                <button onclick="showDeleteModal(<?php echo e($report->id); ?>)" class="text-red-400 hover:text-red-300 transition-colors" title="Reject Report">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </button>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
@@ -524,51 +526,56 @@ function showDeleteModal(reportId) {
     deleteReportId = reportId;
     
     // Show simple confirmation dialog
-    const confirmed = confirm('Are you sure you want to delete this patrol report?');
+    const confirmed = confirm('Are you sure you want to reject this patrol report? The report will be marked as rejected and will not be deleted.');
     
     if (!confirmed) {
-        console.log('Delete cancelled by user');
+        console.log('Reject cancelled by user');
         return;
     }
     
-    deleteReport(reportId);
+    rejectReport(reportId);
 }
 
-function deleteReport(reportId) {
-    console.log('Deleting report #' + reportId);
-    showToast('Deleting report...', 'info');
+function rejectReport(reportId) {
+    console.log('Rejecting report #' + reportId);
+    showToast('Rejecting report...', 'info');
     
-    fetch(`/admin/patrol-reports/${reportId}`, {
-        method: 'DELETE',
+    fetch(`/admin/patrol-reports/${reportId}/status`, {
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'Accept': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+            status: 'rejected',
+            validation_notes: 'Report rejected by admin'
+        })
     })
     .then(response => {
-        console.log('Delete response status:', response.status);
+        console.log('Reject response status:', response.status);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
-        console.log('Delete response data:', data);
+        console.log('Reject response data:', data);
         if (data.success || data.message) {
-            showToast('Report deleted successfully', 'success');
+            showToast('Report rejected successfully', 'success');
             setTimeout(() => {
                 window.location.reload();
             }, 1500);
         } else {
-            showToast('Failed to delete report', 'error');
+            showToast('Failed to reject report', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showToast('An error occurred while deleting the report', 'error');
+        showToast('An error occurred while rejecting the report', 'error');
     });
 }
+
 </script>
 <?php $__env->stopSection(); ?>
 

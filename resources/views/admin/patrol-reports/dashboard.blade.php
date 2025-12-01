@@ -25,6 +25,42 @@
         --glass-border: rgba(255, 255, 255, 0.08);
     }
 
+    /* Restore Cinzel typography */
+    #patrolReportsDashboard,
+    #patrolReportsDashboard * {
+        font-family: 'Cinzel', serif !important;
+        letter-spacing: 0.02em;
+    }
+
+    .section-heading {
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .section-subheading {
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
+
+    .stat-label {
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+
+    .body-text {
+        font-weight: 400;
+        letter-spacing: 0.01em;
+    }
+
+    .body-muted {
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        color: rgba(226, 232, 240, 0.85);
+    }
+
     /* Glass Card */
     .glass-card {
         background: var(--glass-bg);
@@ -299,11 +335,11 @@
                             <div class="p-2 bg-indigo-500/20 rounded-lg border border-indigo-400/30 transition-all duration-300 hover:bg-indigo-500/30">
                                 <i class="fas fa-file-alt text-2xl text-indigo-400"></i>
                             </div>
-                            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-purple-300 header-title cinzel-heading">
+                            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-purple-300 header-title cinzel-heading section-heading">
                                 Patrol Reports Hub
                             </h1>
                         </div>
-                        <p class="text-purple-200 text-sm sm:text-base max-w-2xl">
+                        <p class="text-purple-200 text-sm sm:text-base max-w-2xl body-text">
                             Monitor and manage patroller reports with comprehensive oversight and approval workflows
                         </p>
                     </div>
@@ -312,33 +348,39 @@
                     <div class="flex flex-wrap justify-center gap-4 header-stats">
                         <!-- Quick Stats -->
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-indigo-400">{{ $totalReports }}</div>
-                            <div class="text-xs text-gray-400 cinzel-text">Total Reports</div>
+                            <div class="text-2xl font-bold text-indigo-400">
+                                {{ $totalReports }}
+                            </div>
+                            <div class="text-xs text-gray-400 cinzel-text stat-label">Total Reports</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-yellow-400">{{ $pendingReports }}</div>
-                            <div class="text-xs text-gray-400 cinzel-text">Pending</div>
+                            <div class="text-2xl font-bold text-yellow-400">
+                                {{ $pendingReports }}
+                            </div>
+                            <div class="text-xs text-gray-400 cinzel-text stat-label">Pending</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-green-400">{{ $approvedReports }}</div>
-                            <div class="text-xs text-gray-400 cinzel-text">Approved</div>
+                            <div class="text-2xl font-bold text-green-400">
+                                {{ $approvedReports }}
+                            </div>
+                            <div class="text-xs text-gray-400 cinzel-text stat-label">Approved</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Status bar -->
-                <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-center gap-4 text-xs text-gray-300 status-info">
-                    <div class="flex items-center gap-2">
+                <div class="mt-6 pt-4 border-t border-white/10hi flex flex-wrap items-center justify-center gap-4 text-xs text-gray-300 status-info body-text">
+                    <div class="flex items-center gap-2 body-text">
                         <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
                         <span>System Status: <span class="font-medium text-white">Operational</span></span>
                     </div>
                     <div class="hidden sm:block w-px h-4 bg-white/20"></div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 body-text">
                         <i class="fas fa-shield-alt text-purple-400"></i>
                         <span>Reports: <span class="font-medium text-white">{{ $pendingReports }} Pending</span></span>
                     </div>
                     <div class="hidden sm:block w-px h-4 bg-white/20"></div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 body-text">
                         <i class="fas fa-user-tie text-indigo-400"></i>
                         <span>Admin: <span class="font-medium text-white">{{ Auth::user()->name }}</span></span>
                     </div>
@@ -352,16 +394,16 @@
             <div class="glass-card p-6 stat-card hover:shadow-lg transform transition-all duration-300 hover:border-indigo-400/50 border border-white/10 rounded-xl backdrop-blur-lg bg-gradient-to-br from-indigo-900/30 to-purple-900/30">
                 <div class="flex items-center justify-between">
                     <div class="fade-in">
-                        <p class="text-gray-400 text-sm uppercase tracking-wider mb-2 cinzel-text">Total Reports</p>
-                        <h3 class="text-4xl font-bold text-white mb-1">{{ $totalReports }}</h3>
-                        <p class="text-xs text-gray-400">All patrol submissions</p>
+                        <p class="text-gray-400 text-sm uppercase tracking-wider mb-2 cinzel-text stat-label">Total Reports</p>
+                        <h3 class="text-4xl font-bold text-white mb-1 section-subheading">{{ $totalReports }}</h3>
+                        <p class="text-xs text-gray-400 body-muted">All patrol submissions</p>
                     </div>
                     <div class="stat-icon bg-gradient-to-br from-indigo-500/20 to-indigo-600/20 border border-indigo-500/30 hover:shadow-lg">
                         <i class="fas fa-file-alt text-indigo-400"></i>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+                    <div class="flex items-center justify-between text-xs text-gray-400 mb-1 body-text">
                         <span>Active reports</span>
                         <span class="flex items-center">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
@@ -378,16 +420,16 @@
             <div class="glass-card p-6 stat-card hover:shadow-lg transform transition-all duration-300 hover:border-yellow-400/50 border border-white/10 rounded-xl backdrop-blur-lg bg-gradient-to-br from-amber-900/30 to-yellow-900/30">
                 <div class="flex items-center justify-between">
                     <div class="fade-in">
-                        <p class="text-gray-400 text-sm uppercase tracking-wider mb-2 cinzel-text">Pending Review</p>
-                        <h3 class="text-4xl font-bold text-yellow-400 mb-1">{{ $pendingReports }}</h3>
-                        <p class="text-xs text-gray-400">{{ $pendingPercentage }}% of total</p>
+                        <p class="text-gray-400 text-sm uppercase tracking-wider mb-2 cinzel-text stat-label">Pending Review</p>
+                        <h3 class="text-4xl font-bold text-yellow-400 mb-1 section-subheading">{{ $pendingReports }}</h3>
+                        <p class="text-xs text-gray-400 body-muted">{{ $pendingPercentage }}% of total</p>
                     </div>
                     <div class="stat-icon bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 hover:shadow-lg">
                         <i class="fas fa-clock text-yellow-400"></i>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+                    <div class="flex items-center justify-between text-xs text-gray-400 mb-1 body-text">
                         <span>Requires action</span>
                         <span class="flex items-center">
                             <span class="w-2 h-2 bg-yellow-400 rounded-full mr-1 animate-pulse"></span>
@@ -404,16 +446,16 @@
             <div class="glass-card p-6 stat-card hover:shadow-lg transform transition-all duration-300 hover:border-green-400/50 border border-white/10 rounded-xl backdrop-blur-lg bg-gradient-to-br from-emerald-900/30 to-green-900/30">
                 <div class="flex items-center justify-between">
                     <div class="fade-in">
-                        <p class="text-gray-400 text-sm uppercase tracking-wider mb-2 cinzel-text">Approved</p>
-                        <h3 class="text-4xl font-bold text-green-400 mb-1">{{ $approvedReports }}</h3>
-                        <p class="text-xs text-gray-400">{{ $approvedPercentage }}% of total</p>
+                        <p class="text-gray-400 text-sm uppercase tracking-wider mb-2 cinzel-text stat-label">Approved</p>
+                        <h3 class="text-4xl font-bold text-green-400 mb-1 section-subheading">{{ $approvedReports }}</h3>
+                        <p class="text-xs text-gray-400 body-muted">{{ $approvedPercentage }}% of total</p>
                     </div>
                     <div class="stat-icon bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 hover:shadow-lg">
                         <i class="fas fa-check-circle text-green-400"></i>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+                    <div class="flex items-center justify-between text-xs text-gray-400 mb-1 body-text">
                         <span>This month</span>
                         <span>{{ $approvedReports }}</span>
                     </div>
@@ -427,9 +469,9 @@
             <div class="glass-card p-6 stat-card hover:shadow-lg transform transition-all duration-300 hover:border-red-400/50 border border-white/10 rounded-xl backdrop-blur-lg bg-gradient-to-br from-rose-900/30 to-red-900/30">
                 <div class="flex items-center justify-between">
                     <div class="fade-in">
-                        <p class="text-gray-400 text-sm uppercase tracking-wider mb-2 cinzel-text">Rejected</p>
-                        <h3 class="text-4xl font-bold text-red-400 mb-1">{{ $rejectedReports }}</h3>
-                        <p class="text-xs text-gray-400">{{ $rejectedPercentage }}% of total</p>
+                        <p class="text-gray-400 text-sm uppercase tracking-wider mb-2 cinzel-text stat-label">Rejected</p>
+                        <h3 class="text-4xl font-bold text-red-400 mb-1 section-subheading">{{ $rejectedReports }}</h3>
+                        <p class="text-xs text-gray-400 body-muted">{{ $rejectedPercentage }}% of total</p>
                     </div>
                     <div class="stat-icon bg-gradient-to-br from-red-500/20 to-red-600/20 border border-red-500/30 hover:shadow-lg">
                         <i class="fas fa-times-circle text-red-400"></i>
@@ -451,8 +493,8 @@
         <div class="glass-card rounded-2xl shadow-xl overflow-hidden mt-8">
             <div class="p-6 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-indigo-900/30 to-purple-900/30">
                 <div>
-                    <h2 class="text-2xl font-bold text-white cinzel-subheading">Recent Patrol Reports</h2>
-                    <p class="text-gray-400 text-sm mt-1">Latest patrol submissions and their status</p>
+                    <h2 class="text-2xl font-bold text-white cinzel-subheading section-heading">Recent Patrol Reports</h2>
+                    <p class="text-gray-400 text-sm mt-1 body-muted">Latest patrol submissions and their status</p>
                 </div>
                 <div class="flex gap-2">
                     <a href="{{ route('admin.patrol-reports.index') }}" class="px-4 py-2 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 border border-indigo-500/30 rounded-lg transition-colors text-sm font-medium">
@@ -465,12 +507,12 @@
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-white/10">
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text">Patroller</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text">Report Title</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text">Status</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text">Priority</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text">Date</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text">Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text stat-label">Patroller</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text stat-label">Report Title</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text stat-label">Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text stat-label">Priority</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text stat-label">Date</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-white/80 uppercase tracking-wider bg-white/5 cinzel-text stat-label">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -482,15 +524,15 @@
                                              alt="{{ $report->patroller->name }}"
                                              class="w-10 h-10 rounded-full border-2 border-indigo-500/30">
                                         <div>
-                                            <span class="text-white font-medium">{{ $report->patroller->name }}</span>
-                                            <div class="text-xs text-gray-400">{{ $report->patroller->patroller_id ?? 'N/A' }}</div>
+                                            <span class="text-white font-medium section-subheading">{{ $report->patroller->name }}</span>
+                                            <div class="text-xs text-gray-400 body-muted">{{ $report->patroller->patroller_id ?? 'N/A' }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-gray-300">
                                     <div>
-                                        <div class="font-medium text-white">{{ $report->title }}</div>
-                                        <div class="text-sm text-gray-400">{{ Str::limit($report->description, 40) }}</div>
+                                        <div class="font-medium text-white section-subheading">{{ $report->title }}</div>
+                                        <div class="text-sm text-gray-400 body-muted">{{ Str::limit($report->description, 40) }}</div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-white/90">
@@ -550,9 +592,9 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-gray-300">
-                                    <div class="flex flex-col">
-                                        <span>{{ $report->created_at->format('M d, Y') }}</span>
-                                        <span class="text-xs text-gray-500">{{ $report->created_at->format('H:i') }}</span>
+                                    <div class="flex flex-col body-text">
+                                        <span class="section-subheading">{{ $report->created_at->format('M d, Y') }}</span>
+                                        <span class="text-xs text-gray-500 body-muted">{{ $report->created_at->format('H:i') }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
@@ -599,8 +641,8 @@
                                 <td colspan="6" class="px-6 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center">
                                         <i class="fas fa-file-alt text-gray-600 text-5xl mb-4"></i>
-                                        <p class="text-gray-400 text-lg">No patrol reports found</p>
-                                        <p class="text-gray-500 text-sm mt-2">New reports will appear here when submitted</p>
+                                        <p class="text-gray-400 text-lg section-subheading">No patrol reports found</p>
+                                        <p class="text-gray-500 text-sm mt-2 body-muted">New reports will appear here when submitted</p>
                                     </div>
                                 </td>
                             </tr>

@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>Pawikan Quiz Challenge - Test Your Knowledge</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="shortcut icon" href="<?php echo e(asset('img/lg.png')); ?>">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -80,7 +86,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <img src="/img/lg.png" alt="Pawikan Patrol Logo" class="w-16 h-16 rounded-full">
+                        <img src="<?php echo e(asset('img/lg.png')); ?>" alt="Pawikan Patrol Logo" class="w-16 h-16 rounded-full">
                         <div>
                             <span class="text-lg sm:text-xl font-bold text-white">
                                Dahican Pawikan Patrol
@@ -105,27 +111,35 @@
                         <!-- Dropdown Menu -->
                         <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                             <div class="p-4 space-y-2">
-                                <a href="#species" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">🐢</span>
-                                    <span>Species Guide</span>
-                                </a>
-                                <a href="#vision" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#vision')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌟</span>
                                     <span>Vision & Mission</span>
                                 </a>
-                                <a href="#lifecycle" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#video-showcase')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">🎬</span>
+                                    <span>Conservation Video</span>
+                                </a>
+                                <a href="<?php echo e(url('/#lifecycle')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌊</span>
                                     <span>Life Cycle</span>
                                 </a>
-                                <a href="#threats" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#threats')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">⚠️</span>
                                     <span>Threats</span>
                                 </a>
-                                <a href="#guidelines" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#species')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">🐢</span>
+                                    <span>Species Guide</span>
+                                </a>
+                                <a href="<?php echo e(url('/#guidelines')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">📋</span>
                                     <span>Guidelines</span>
                                 </a>
-                                <a href="#help" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#dos-donts')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">✓✗</span>
+                                    <span>DOs & DON'Ts</span>
+                                </a>
+                                <a href="<?php echo e(url('/#help')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-lg">🤝</span>
                                     <span>How to Help</span>
                                 </a>
@@ -137,11 +151,26 @@
                         <span class="text-base">🌐</span>
                         <span class="text-sm font-medium">3D Explorer</span>
                     </a>
-                    <!-- Patrol Map -->
-                    <a href="/patrol-map" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
-                        <span class="text-base">🗺️</span>
-                        <span class="text-sm font-medium">Patrol Map</span>
-                    </a>
+                    <!-- Patrol Map with Dropdown -->
+                    <div class="relative group">
+                        <a href="/patrol-map" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
+                            <span class="text-base">🗺️</span>
+                            <span class="text-sm font-medium">Patrol Map</span>
+                            <svg class="w-3.5 h-3.5 mt-0.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </a>
+
+                        <!-- Dropdown Menu -->
+                        <div class="absolute top-full left-0 mt-2 w-48 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div class="p-2 space-y-1">
+                                <a href="/patrol-map/gallery" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-lg">📸</span>
+                                    <span class="text-sm font-medium">Gallery Report</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Games -->
                     <a href="/games" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg bg-ocean-600/30 hover:bg-ocean-600/40">
                         <span class="text-base">🎮</span>
@@ -246,27 +275,31 @@
                     
                     <!-- Home Sub-items -->
                     <div class="ml-8 space-y-1">
-                        <a href="#species" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🐢</span>
-                            <span>Species Guide</span>
-                        </a>
-                        <a href="#vision" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#vision')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌟</span>
                             <span>Vision & Mission</span>
                         </a>
-                        <a href="#lifecycle" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#video-showcase')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">🎬</span>
+                            <span>Conservation Video</span>
+                        </a>
+                        <a href="<?php echo e(url('/#lifecycle')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌊</span>
                             <span>Life Cycle</span>
                         </a>
-                        <a href="#threats" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#threats')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">⚠️</span>
                             <span>Threats</span>
                         </a>
-                        <a href="#guidelines" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#species')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">🐢</span>
+                            <span>Species Guide</span>
+                        </a>
+                        <a href="<?php echo e(url('/#guidelines')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">📋</span>
                             <span>Guidelines</span>
                         </a>
-                        <a href="#help" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#help')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🤝</span>
                             <span>How to Help</span>
                         </a>
@@ -279,10 +312,18 @@
                     <span>3D Explorer</span>
                 </a>
                 
-                <a href="/patrol-map" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                    <span class="text-lg">🗺️</span>
-                    <span>Patrol Map</span>
-                </a>
+                <div class="space-y-1">
+                    <a href="/patrol-map" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <span class="text-lg">🗺️</span>
+                        <span>Patrol Map</span>
+                    </a>
+                    <div class="ml-8 space-y-1">
+                        <a href="/patrol-map/gallery" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">📸</span>
+                            <span>Gallery Report</span>
+                        </a>
+                    </div>
+                </div>
                 
                 <a href="/games" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                     <span class="text-lg">🎮</span>
@@ -337,27 +378,27 @@
         <div class="max-w-4xl mx-auto">
             
             <!-- Game Stats -->
-            <div class="glass-dark rounded-2xl p-6 mb-8 border border-ocean-500/20">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-6">
+            <div class="glass-dark rounded-2xl p-4 sm:p-6 mb-8 border border-ocean-500/20">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 sm:gap-6">
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-ocean-300" id="current-question">1</div>
-                            <div class="text-sm text-gray-400 cinzel-text">Question</div>
+                            <div class="text-xl sm:text-2xl font-bold text-ocean-300" id="current-question">1</div>
+                            <div class="text-xs sm:text-sm text-gray-400 cinzel-text">Question</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-ocean-300" id="score">0</div>
-                            <div class="text-sm text-gray-400 cinzel-text">Score</div>
+                            <div class="text-xl sm:text-2xl font-bold text-ocean-300" id="score">0</div>
+                            <div class="text-xs sm:text-sm text-gray-400 cinzel-text">Score</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-ocean-300" id="correct-count">0</div>
-                            <div class="text-sm text-gray-400 cinzel-text">Correct</div>
+                            <div class="text-xl sm:text-2xl font-bold text-ocean-300" id="correct-count">0</div>
+                            <div class="text-xs sm:text-sm text-gray-400 cinzel-text">Correct</div>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <div class="text-lg font-semibold text-gray-300 cinzel-text">
+                    <div class="text-center sm:text-right w-full sm:w-auto">
+                        <div class="text-base sm:text-lg font-semibold text-gray-300 cinzel-text">
                             <span id="progress">1</span> / 15
                         </div>
-                        <div class="w-48 bg-gray-700 rounded-full h-2 mt-2">
+                        <div class="w-full sm:w-48 bg-gray-700 rounded-full h-2 mt-2">
                             <div class="bg-gradient-to-r from-ocean-500 to-ocean-400 h-2 rounded-full transition-all duration-300" 
                                  id="progress-bar" style="width: 6.67%"></div>
                         </div>
@@ -979,7 +1020,33 @@
         }
         
         // Start the quiz when page loads
-        window.onload = initializeQuiz;
+        window.onload = () => {
+            initializeQuiz();
+        };
+    </script>
+
+    <!-- Mobile Navigation Handling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileAccountToggles = document.querySelectorAll('.mobile-account-toggle');
+            const accountMenus = document.querySelectorAll('.mobile-account-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            if (mobileAccountToggles.length && accountMenus.length) {
+                mobileAccountToggles.forEach((toggle) => {
+                    toggle.addEventListener('click', () => {
+                        accountMenus.forEach(menu => menu.classList.toggle('hidden'));
+                    });
+                });
+            }
+        });
     </script>
 </body>
 </html>

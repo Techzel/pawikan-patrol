@@ -88,13 +88,7 @@ class User extends Authenticatable
         return $this->hasOne(UserVerification::class);
     }
 
-    /**
-     * Get the patroller profile for the user.
-     */
-    public function patrollerProfile()
-    {
-        return $this->hasOne(Patroller::class);
-    }
+
 
     /**
      * Get the admin who created this user.
@@ -460,6 +454,24 @@ class User extends Authenticatable
             ->count();
         
         return $rank + 1; // Add 1 because ranks start at 1
+    }
+
+    /**
+     * Activate the user as a patroller by generating a patroller ID and setting the patroller_since timestamp.
+     *
+     * @return void
+     */
+    public function activatePatroller()
+    {
+        if (!$this->patroller_id) {
+            $this->patroller_id = 'PTR-' . str_pad($this->id, 4, '0', STR_PAD_LEFT);
+        }
+        
+        if (!$this->patroller_since) {
+            $this->patroller_since = now();
+        }
+        
+        $this->save();
     }
 
 }

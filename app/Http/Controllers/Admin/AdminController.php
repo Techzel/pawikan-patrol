@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Patroller;
-use App\Models\EcologicalSubmission;
 use App\Models\PatrolReport;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -23,9 +21,6 @@ class AdminController extends Controller
     {
         // Get basic statistics for the admin dashboard
         $totalPatrollers = User::where('role', 'patroller')->count();
-        $pendingSubmissions = EcologicalSubmission::where('status', 'pending')->count();
-        $approvedSubmissions = EcologicalSubmission::where('status', 'approved')->count();
-        $rejectedSubmissions = EcologicalSubmission::where('status', 'rejected')->count();
 
         $totalAcceptedReports = PatrolReport::where(function ($query) {
             $query->where('status', PatrolReport::STATUS_ACCEPTED)
@@ -38,9 +33,6 @@ class AdminController extends Controller
         
         return view('admin.dashboard', compact(
             'totalPatrollers',
-            'pendingSubmissions', 
-            'approvedSubmissions',
-            'rejectedSubmissions',
             'patrollers',
             'totalAcceptedReports',
             'totalVerifiedReports',
@@ -78,31 +70,26 @@ class AdminController extends Controller
         ]);
 
         try {
-            // Create the user account
-            $user = User::create([
-                'name' => $validated['name'],
-                'username' => $validated['username'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'role' => 'patroller',
-                'is_active' => true,
-                'phone' => $validated['phone'] ?? null,
+        // Add "Patroller" prefix to name if not already present
+        $patrollerName = $validated['name'];
+        if (!str_starts_with(strtolower($patrollerName), 'patroller')) {
+            $patrollerName = 'Patroller ' . $patrollerName;
+        }
+        
+        // Create the user account
+        $user = User::create([
+            'name' => $patrollerName,
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'patroller',
+            'is_active' => true,
+            'phone' => $validated['phone'] ?? null,
                 'created_by' => 'admin',
             ]);
 
             // Generate patroller ID and set patroller since timestamp
             $user->activatePatroller();
-
-            // Create patroller profile
-            Patroller::create([
-                'user_id' => $user->id,
-                'patroller_id' => $user->patroller_id,
-                'department' => $validated['department'] ?? 'Field Operations',
-                'emergency_contact' => $validated['emergency_contact'] ?? null,
-                'emergency_phone' => $validated['emergency_phone'] ?? null,
-                'status' => 'active',
-                'performance_rating' => 3.0, // Default rating
-            ]);
 
             Log::info('New patroller created by admin', [
                 'admin_id' => auth()->id(),
@@ -142,13 +129,6 @@ class AdminController extends Controller
             $patroller->update([
                 'is_active' => $validated['status'] === 'active'
             ]);
-
-            // Update patroller profile status as well
-            if ($patroller->patrollerProfile) {
-                $patroller->patrollerProfile->update([
-                    'status' => $validated['status'] === 'active' ? 'active' : 'inactive'
-                ]);
-            }
 
             Log::info('Patroller status updated by admin', [
                 'admin_id' => auth()->id(),
@@ -207,7 +187,6 @@ class AdminController extends Controller
     public function indexPatrollers()
     {
         $patrollers = User::where('role', 'patroller')
-            ->with('patrollerProfile')
             ->latest()
             ->paginate(15);
             
@@ -223,7 +202,6 @@ class AdminController extends Controller
     public function editPatroller($id)
     {
         $patroller = User::where('role', 'patroller')
-            ->with('patrollerProfile')
             ->findOrFail($id);
             
         return view('admin.patrollers.edit', compact('patroller'));
@@ -265,15 +243,6 @@ class AdminController extends Controller
                 'patrol_areas' => $validated['patrol_areas'] ?? [],
             ]);
 
-            // Update patroller profile if it exists
-            if ($patroller->patrollerProfile) {
-                $patroller->patrollerProfile->update([
-                    'department' => $validated['department'] ?? 'Field Operations',
-                    'emergency_contact' => $validated['emergency_contact'] ?? null,
-                    'emergency_phone' => $validated['emergency_phone'] ?? null,
-                ]);
-            }
-
             Log::info('Patroller updated by admin', [
                 'admin_id' => auth()->id(),
                 'patroller_id' => $patroller->id,
@@ -301,7 +270,6 @@ class AdminController extends Controller
     public function showPatrollerProfile($id)
     {
         $patroller = User::where('role', 'patroller')
-            ->with('patrollerProfile')
             ->findOrFail($id);
             
         return view('admin.patrollers.profile', compact('patroller'));
@@ -337,13 +305,10 @@ class AdminController extends Controller
         ]);
 
         try {
-            if ($patroller->patrollerProfile) {
-                $patroller->patrollerProfile->update($validated);
-            } else {
-                Patroller::create(array_merge(['user_id' => $patroller->id], $validated));
-            }
-
-            Log::info('Patroller profile updated by admin', [
+            // Note: Patroller profile table has been removed
+            // All patroller data is now stored in the users table
+            
+            Log::info('Patroller profile update attempted (table removed)', [
                 'admin_id' => auth()->id(),
                 'patroller_id' => $patroller->id,
                 'updated_fields' => array_keys($validated)
@@ -370,21 +335,20 @@ class AdminController extends Controller
     public function getPatrollerStatistics($id)
     {
         $patroller = User::where('role', 'patroller')
-            ->with('patrollerProfile')
             ->findOrFail($id);
 
         $statistics = [
             'total_patrols' => $patroller->total_patrols,
             'turtles_saved' => $patroller->turtles_saved,
             'nests_protected' => $patroller->nests_protected,
-            'total_conservation_impact' => $patroller->total_conservation_impact,
-            'patroller_rank' => $patroller->patroller_rank,
+            'total_conservation_impact' => $patroller->total_conservation_impact ?? 0,
+            'patroller_rank' => $patroller->patroller_rank ?? 'N/A',
             'patroller_since' => $patroller->patroller_since ? $patroller->patroller_since->format('M d, Y') : 'Unknown',
             'last_login' => $patroller->last_login_at ? $patroller->last_login_at->diffForHumans() : 'Never',
-            'performance_rating' => $patroller->patrollerProfile->performance_rating ?? 0,
-            'performance_level' => $patroller->patrollerProfile->performance_level ?? 'Not Rated',
-            'status' => $patroller->patrollerProfile->status ?? 'inactive',
-            'department' => $patroller->patrollerProfile->department ?? 'Unassigned',
+            'performance_rating' => 0,
+            'performance_level' => 'Not Rated',
+            'status' => $patroller->is_active ? 'active' : 'inactive',
+            'department' => 'Field Operations',
         ];
 
         return response()->json($statistics);
@@ -425,10 +389,6 @@ class AdminController extends Controller
                 ->where('role', 'patroller')
                 ->update(['is_active' => true]);
 
-            // Also update patroller profiles
-            Patroller::whereIn('user_id', $validated['patroller_ids'])
-                ->update(['status' => 'active']);
-
             Log::info('Bulk patroller activation by admin', [
                 'admin_id' => auth()->id(),
                 'patroller_count' => $count,
@@ -463,10 +423,6 @@ class AdminController extends Controller
             $count = User::whereIn('id', $validated['patroller_ids'])
                 ->where('role', 'patroller')
                 ->update(['is_active' => false]);
-
-            // Also update patroller profiles
-            Patroller::whereIn('user_id', $validated['patroller_ids'])
-                ->update(['status' => 'inactive']);
 
             Log::info('Bulk patroller deactivation by admin', [
                 'admin_id' => auth()->id(),
@@ -517,71 +473,6 @@ class AdminController extends Controller
             ]);
 
             return back()->with('error', 'Failed to delete patrollers. Please try again.');
-        }
-    }
-
-    /**
-     * Display ecological submissions for review.
-     *
-     * @param  string  $status
-     * @return \Illuminate\View\View
-     */
-    public function submissions($status = 'pending')
-    {
-        $validStatuses = ['pending', 'approved', 'rejected'];
-        
-        if (!in_array($status, $validStatuses)) {
-            return redirect()->route('admin.submissions.pending');
-        }
-
-        $submissions = EcologicalSubmission::where('status', $status)
-            ->with('user')
-            ->latest()
-            ->get();
-
-        return view('admin.submissions', compact('submissions', 'status'));
-    }
-
-    /**
-     * Update submission status.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function updateSubmissionStatus(Request $request, $id)
-    {
-        $submission = EcologicalSubmission::findOrFail($id);
-        
-        $validated = $request->validate([
-            'status' => 'required|in:approved,rejected',
-            'admin_notes' => 'nullable|string|max:1000'
-        ]);
-
-        try {
-            $submission->update([
-                'status' => $validated['status'],
-                'admin_notes' => $validated['admin_notes'] ?? null,
-                'reviewed_by' => auth()->id(),
-                'reviewed_at' => now()
-            ]);
-
-            Log::info('Submission status updated by admin', [
-                'admin_id' => auth()->id(),
-                'submission_id' => $id,
-                'new_status' => $validated['status']
-            ]);
-
-            return redirect()->route('admin.submissions', ['status' => $validated['status']])
-                ->with('success', 'Submission status updated successfully.');
-        } catch (\Exception $e) {
-            Log::error('Failed to update submission status', [
-                'admin_id' => auth()->id(),
-                'submission_id' => $id,
-                'error' => $e->getMessage()
-            ]);
-
-            return back()->with('error', 'Failed to update submission status. Please try again.');
         }
     }
 

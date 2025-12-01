@@ -7,7 +7,7 @@
     <title><?php echo $__env->yieldContent('title', 'Patroller Dashboard'); ?> - Pawikan Patrol</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('img/web_lg.png')); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('img/lg.png')); ?>">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

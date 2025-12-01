@@ -38,13 +38,13 @@
                     <!-- Dropdown Menu -->
                     <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                         <div class="p-4 space-y-2">
-                            <a href="{{ url('/#species') }}" data-scroll-target="species" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                <span class="text-xl">🐢</span>
-                                <span class="text-sm font-medium">Species Guide</span>
-                            </a>
                             <a href="{{ url('/#vision') }}" data-scroll-target="vision" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-xl">🌟</span>
                                 <span class="text-sm font-medium">Vision & Mission</span>
+                            </a>
+                            <a href="{{ url('/#video-showcase') }}" data-scroll-target="video-showcase" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <span class="text-xl">🎬</span>
+                                <span class="text-sm font-medium">Conservation Video</span>
                             </a>
                             <a href="{{ url('/#lifecycle') }}" data-scroll-target="lifecycle" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-xl">🌊</span>
@@ -54,9 +54,17 @@
                                 <span class="text-xl">⚠️</span>
                                 <span class="text-sm font-medium">Threats</span>
                             </a>
+                            <a href="{{ url('/#species') }}" data-scroll-target="species" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <span class="text-xl">🐢</span>
+                                <span class="text-sm font-medium">Species Guide</span>
+                            </a>
                             <a href="{{ url('/#guidelines') }}" data-scroll-target="guidelines" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-xl">📋</span>
                                 <span class="text-sm font-medium">Guidelines</span>
+                            </a>
+                            <a href="{{ url('/#dos-donts') }}" data-scroll-target="dos-donts" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <span class="text-xl">✓✗</span>
+                                <span class="text-sm font-medium">DOs & DON'Ts</span>
                             </a>
                             <a href="{{ url('/#help') }}" data-scroll-target="help" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-lg">🤝</span>
@@ -191,7 +199,7 @@
     </div>
 
     <!-- Mobile Navigation -->
-    <div id="mobile-menu" class="md:hidden hidden bg-slate-800/95 backdrop-blur-lg border-t border-ocean-500/20">
+    <div id="mobile-menu" class="md:hidden hidden bg-slate-800/95 backdrop-blur-lg border-t border-ocean-500/20 max-h-[calc(100vh-5rem)] overflow-y-auto">
         <div class="px-2 pt-2 pb-3 space-y-1">
             <!-- Home Section -->
             <div class="space-y-1">
@@ -202,13 +210,13 @@
                 
                 <!-- Home Sub-items -->
                 <div class="ml-8 space-y-1">
-                    <a href="{{ url('/#species') }}" data-scroll-target="species" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                        <span class="text-lg">🐢</span>
-                        <span class="text-sm font-medium">Species Guide</span>
-                    </a>
                     <a href="{{ url('/#vision') }}" data-scroll-target="vision" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">🌟</span>
                         <span class="text-sm font-medium">Vision & Mission</span>
+                    </a>
+                    <a href="{{ url('/#video-showcase') }}" data-scroll-target="video-showcase" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <span class="text-lg">🎬</span>
+                        <span class="text-sm font-medium">Conservation Video</span>
                     </a>
                     <a href="{{ url('/#lifecycle') }}" data-scroll-target="lifecycle" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">🌊</span>
@@ -217,6 +225,10 @@
                     <a href="{{ url('/#threats') }}" data-scroll-target="threats" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">⚠️</span>
                         <span class="text-sm font-medium">Threats</span>
+                    </a>
+                    <a href="{{ url('/#species') }}" data-scroll-target="species" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <span class="text-lg">🐢</span>
+                        <span class="text-sm font-medium">Species Guide</span>
                     </a>
                     <a href="{{ url('/#guidelines') }}" data-scroll-target="guidelines" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">📋</span>
@@ -303,7 +315,7 @@
                             </a>
                         @elseif(Auth::user()->role === 'admin')
                             <a href="{{ route('admin.dashboard') }}" class="mobile-nav-link flex items-center gap-3 px-3 py-2 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors {{ request()->is('admin/dashboard') ? '!bg-ocean-600/30 !text-ocean-300' : 'text-gray-300' }}" style="{{ request()->is('admin/dashboard') ? 'background-color: rgba(20, 184, 166, 0.3) !important; color: #5eead4 !important;' : '' }}">
-                                <span class="text-lg">�</span>
+                                <span class="text-lg">📊</span>
                                 <span class="text-sm font-medium">Dashboard</span>
                             </a>
                         @else
@@ -328,37 +340,88 @@
 </nav>
 
 <script>
-    // Mobile menu toggle functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
+(function() {
+    'use strict';
+    
+    let menuOpen = false;
+    let clickJustHappened = false;
+    
+    function init() {
+        const menuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
         
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', function() {
-                mobileMenu.classList.toggle('hidden');
-            });
+        if (!menuButton || !mobileMenu) {
+            return;
         }
         
-        // Close mobile menu when clicking on a link
-        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-        mobileNavLinks.forEach(link => {
-            link.addEventListener('click', function() {
+        // Toggle menu on button click
+        menuButton.onclick = function(e) {
+            e.stopPropagation();
+            clickJustHappened = true;
+            
+            menuOpen = !menuOpen;
+            
+            if (menuOpen) {
+                mobileMenu.classList.remove('hidden');
+                this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+            } else {
                 mobileMenu.classList.add('hidden');
-            });
+                this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+            }
+            
+            setTimeout(() => { clickJustHappened = false; }, 100);
+        };
+        
+        // Close menu when clicking nav links
+        mobileMenu.addEventListener('click', function(e) {
+            if (e.target.closest('.mobile-nav-link')) {
+                menuOpen = false;
+                mobileMenu.classList.add('hidden');
+                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+            }
         });
         
-        // Mobile account dropdown toggle
-        const mobileAccountToggles = document.querySelectorAll('.mobile-account-toggle');
-        mobileAccountToggles.forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const accountMenu = this.nextElementSibling;
-                const arrow = this.querySelector('svg');
+        // Account dropdown toggle
+        mobileMenu.addEventListener('click', function(e) {
+            const toggle = e.target.closest('.mobile-account-toggle');
+            if (toggle) {
+                e.stopPropagation();
+                const submenu = toggle.nextElementSibling;
+                const arrow = toggle.querySelector('svg');
                 
-                if (accountMenu && accountMenu.classList.contains('mobile-account-menu')) {
-                    accountMenu.classList.toggle('hidden');
-                    arrow.classList.toggle('rotate-180');
+                if (submenu && submenu.classList.contains('mobile-account-menu')) {
+                    submenu.classList.toggle('hidden');
+                    if (arrow) {
+                        arrow.classList.toggle('rotate-180');
+                    }
                 }
-            });
+            }
         });
-    });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!clickJustHappened && menuOpen && !mobileMenu.contains(e.target) && !menuButton.contains(e.target)) {
+                menuOpen = false;
+                mobileMenu.classList.add('hidden');
+                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+            }
+        });
+        
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && menuOpen) {
+                menuOpen = false;
+                mobileMenu.classList.add('hidden');
+                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+            }
+        });
+    }
+    
+    // Initialize when ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
 </script>

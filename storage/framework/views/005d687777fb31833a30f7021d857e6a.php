@@ -6,10 +6,10 @@
     <title>Authentication - Pawikan Patrol</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../../img/web_lg.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../../img/web_lg.png">
-    <link rel="apple-touch-icon" href="../../img/web_lg.png">
-    <link rel="shortcut icon" href="../../img/web_lg.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="shortcut icon" href="<?php echo e(asset('img/lg.png')); ?>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,6 +90,18 @@
             font-weight: 400;
             letter-spacing: 0.01em;
             line-height: 1.6;
+        }
+        
+        /* Force Poppins font for input elements */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
+        }
+        
+        /* Force Poppins font for labels */
+        label {
+            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
         }
         
         @keyframes oceanWave {
@@ -317,7 +329,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <img src="img/lg.png" alt="Pawikan Patrol Logo" class="w-16 h-16 rounded-full">
+                        <img src="<?php echo e(asset('img/lg.png')); ?>" alt="Pawikan Patrol Logo" class="w-16 h-16 rounded-full">
                         <div>
                             <span class="text-xl font-bold bg-gradient-to-r from-ocean-400 to-ocean-300 bg-clip-text text-transparent">
                                Dahican Pawikan Patrol
@@ -342,27 +354,31 @@
                         <!-- Dropdown Menu -->
                         <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                             <div class="p-4 space-y-2">
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">🐢</span>
-                                    <span class="text-sm font-medium">Species Guide</span>
-                                </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#vision')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌟</span>
                                     <span class="text-sm font-medium">Vision & Mission</span>
                                 </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#video-showcase')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">🎬</span>
+                                    <span class="text-sm font-medium">Conservation Video</span>
+                                </a>
+                                <a href="<?php echo e(url('/#lifecycle')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌊</span>
                                     <span class="text-sm font-medium">Life Cycle</span>
                                 </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#threats')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">⚠️</span>
                                     <span class="text-sm font-medium">Threats</span>
                                 </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#species')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                    <span class="text-xl">🐢</span>
+                                    <span class="text-sm font-medium">Species Guide</span>
+                                </a>
+                                <a href="<?php echo e(url('/#guidelines')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">📋</span>
                                     <span class="text-sm font-medium">Guidelines</span>
                                 </a>
-                                <a href="/" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#help')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-lg">🤝</span>
                                     <span class="text-sm font-medium">How to Help</span>
                                 </a>
@@ -452,13 +468,13 @@
                     
                     <!-- Home Sub-items -->
                     <div class="ml-8 space-y-1">
-                        <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🐢</span>
-                            <span class="text-sm font-medium">Species Guide</span>
-                        </a>
-                        <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#vision')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌟</span>
                             <span class="text-sm font-medium">Vision & Mission</span>
+                        </a>
+                        <a href="<?php echo e(url('/#video-showcase')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                            <span class="text-lg">🎬</span>
+                            <span class="text-sm font-medium">Conservation Video</span>
                         </a>
                         <a href="/" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌊</span>
@@ -628,7 +644,7 @@ unset($__errorArgs, $__bag); ?>
                                         <i class="fas fa-user mr-2 text-ocean-400"></i>Username
                                     </label>
                                     <input type="text" id="loginUsername" name="username" required
-                                        class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 <?php echo e($errors->has('username') ? 'border-red-500/50' : ''); ?>"
+                                        class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 font-poppins <?php echo e($errors->has('username') ? 'border-red-500/50' : ''); ?>"
                                         placeholder="Enter your username">
                                     <?php $__errorArgs = ['username'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -651,7 +667,7 @@ unset($__errorArgs, $__bag); ?>
                                     </label>
                                     <div class="input-group">
                                         <input type="password" id="loginPassword" name="password" required
-                                            class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 pr-12 <?php echo e($errors->has('password') ? 'border-red-500/50' : ''); ?>"
+                                            class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 pr-12 font-poppins <?php echo e($errors->has('password') ? 'border-red-500/50' : ''); ?>"
                                             placeholder="Enter your password">
                                         <i class="fas fa-eye toggle-password" data-target="loginPassword"></i>
                                     </div>
@@ -703,7 +719,7 @@ unset($__errorArgs, $__bag); ?>
                                         <i class="fas fa-user mr-2 text-ocean-400"></i>Full Name
                                     </label>
                                     <input type="text" id="registerName" name="name" required value="<?php echo e(old('name')); ?>"
-                                        class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 <?php echo e($errors->has('name') ? 'border-red-500/50' : ''); ?>"
+                                        class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 font-poppins <?php echo e($errors->has('name') ? 'border-red-500/50' : ''); ?>"
                                         placeholder="Enter your full name">
                                     <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -725,7 +741,7 @@ unset($__errorArgs, $__bag); ?>
                                         <i class="fas fa-user mr-2 text-ocean-400"></i>Username
                                     </label>
                                     <input type="text" id="registerUsername" name="username" required value="<?php echo e(old('username')); ?>"
-                                        class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 <?php echo e($errors->has('username') ? 'border-red-500/50' : ''); ?>"
+                                        class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 font-poppins <?php echo e($errors->has('username') ? 'border-red-500/50' : ''); ?>"
                                         placeholder="Choose a username">
                                     <?php $__errorArgs = ['username'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -747,7 +763,7 @@ unset($__errorArgs, $__bag); ?>
                                         <i class="fas fa-envelope mr-2 text-ocean-400"></i>Email Address
                                     </label>
                                     <input type="email" id="registerEmail" name="email" required value="<?php echo e(old('email')); ?>"
-                                        class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 <?php echo e($errors->has('email') ? 'border-red-500/50' : ''); ?>"
+                                        class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 font-poppins <?php echo e($errors->has('email') ? 'border-red-500/50' : ''); ?>"
                                         placeholder="Enter your email address">
                                     <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -770,8 +786,8 @@ unset($__errorArgs, $__bag); ?>
                                     </label>
                                     <div class="input-group">
                                         <input type="password" id="registerPassword" name="password" required
-                                            class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 pr-12 <?php echo e($errors->has('password') ? 'border-red-500/50' : ''); ?>"
-                                            placeholder="Create a password">
+                                            class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 pr-12 font-poppins <?php echo e($errors->has('password') ? 'border-red-500/50' : ''); ?>"
+                                            placeholder="Min 8 chars, 1 Upper, 1 Lower, 1 Number, 1 Special (@$!%*?&)">
                                         <i class="fas fa-eye toggle-password" data-target="registerPassword"></i>
                                     </div>
                                     <?php $__errorArgs = ['password'];
@@ -804,8 +820,8 @@ unset($__errorArgs, $__bag); ?>
                                     </label>
                                     <div class="input-group">
                                         <input type="password" id="registerPasswordConfirmation" name="password_confirmation" required
-                                            class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 pr-12"
-                                            placeholder="Confirm your password">
+                                            class="w-full px-4 py-3 bg-deep-800/50 border border-ocean-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-300 pr-12 font-poppins"
+                                            placeholder="Min 8 chars, 1 Upper, 1 Lower, 1 Number, 1 Special (@$!%*?&)">
                                         <i class="fas fa-eye toggle-password" data-target="registerPasswordConfirmation"></i>
                                     </div>
                                     <div id="passwordValidation" class="mt-2 text-sm hidden">
