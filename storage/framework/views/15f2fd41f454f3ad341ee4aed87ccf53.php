@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>Pawikan Quiz Challenge - Test Your Knowledge</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/lg.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/lg.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('img/lg.png') }}">
-    <link rel="shortcut icon" href="{{ asset('img/lg.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('img/lg.png')); ?>">
+    <link rel="shortcut icon" href="<?php echo e(asset('img/lg.png')); ?>">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="{{ asset('js/game-activity.js') }}"></script>
+    <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -86,7 +86,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <img src="{{ asset('img/lg.png') }}" alt="Pawikan Patrol Logo" class="w-16 h-16 rounded-full">
+                        <img src="<?php echo e(asset('img/lg.png')); ?>" alt="Pawikan Patrol Logo" class="w-16 h-16 rounded-full">
                         <div>
                             <span class="text-lg sm:text-xl font-bold text-white">
                                Dahican Pawikan Patrol
@@ -111,35 +111,35 @@
                         <!-- Dropdown Menu -->
                         <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                             <div class="p-4 space-y-2">
-                                <a href="{{ url('/#vision') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#vision')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌟</span>
                                     <span>Vision & Mission</span>
                                 </a>
-                                <a href="{{ url('/#video-showcase') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#video-showcase')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🎬</span>
                                     <span>Conservation Video</span>
                                 </a>
-                                <a href="{{ url('/#lifecycle') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#lifecycle')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🌊</span>
                                     <span>Life Cycle</span>
                                 </a>
-                                <a href="{{ url('/#threats') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#threats')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">⚠️</span>
                                     <span>Threats</span>
                                 </a>
-                                <a href="{{ url('/#species') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#species')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">🐢</span>
                                     <span>Species Guide</span>
                                 </a>
-                                <a href="{{ url('/#guidelines') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#guidelines')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">📋</span>
                                     <span>Guidelines</span>
                                 </a>
-                                <a href="{{ url('/#dos-donts') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#dos-donts')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-xl">✓✗</span>
                                     <span>DOs & DON'Ts</span>
                                 </a>
-                                <a href="{{ url('/#help') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <a href="<?php echo e(url('/#help')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                     <span class="text-lg">🤝</span>
                                     <span>How to Help</span>
                                 </a>
@@ -176,7 +176,7 @@
                         <span class="text-base">🎮</span>
                         <span class="text-sm font-medium">Games</span>
                     </a>
-                    @guest
+                    <?php if(auth()->guard()->guest()): ?>
                         <div class="relative group">
                             <button class="flex items-center gap-2 text-white hover:text-ocean-400 transition-colors py-2 rounded-lg hover:bg-ocean-600/20">
                                 <span class="text-lg">👤</span>
@@ -200,16 +200,17 @@
                                 </div>
                             </div>
                         </div>
-                    @else
+                    <?php else: ?>
                         <div class="relative group">
                             <button class="flex items-center gap-2 text-white hover:text-ocean-400 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
                                 <span class="text-lg">👤</span>
                                 <span class="text-md">
-                                    @if(Auth::user()->role === 'admin')
+                                    <?php if(Auth::user()->role === 'admin'): ?>
                                         Admin
-                                    @else
-                                        {{ Auth::user()->name }}
-                                    @endif
+                                    <?php else: ?>
+                                        <?php echo e(Auth::user()->name); ?>
+
+                                    <?php endif; ?>
                                 </span>
                                 <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -219,27 +220,27 @@
                             <!-- User Dropdown -->
                             <div class="absolute top-full right-0 mt-2 w-48 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                                 <div class="p-2 space-y-1">
-                                    @if(Auth::user()->role === 'patroller')
-                                        <a href="{{ route('patroller.dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
+                                    <?php if(Auth::user()->role === 'patroller'): ?>
+                                        <a href="<?php echo e(route('patroller.dashboard')); ?>" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
                                             <span class="text-lg">📊</span>
                                             <span>Dashboard</span>
                                         </a>
-                                    @elseif(Auth::user()->role === 'admin')
+                                    <?php elseif(Auth::user()->role === 'admin'): ?>
                                         <a href="/admin/dashboard" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
                                             <span class="text-lg">📊</span>
                                             <span>Dashboard</span>
                                         </a>
-                                    @else
+                                    <?php else: ?>
                                         <a href="/profile" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
                                             <span class="text-lg">👤</span>
                                             <span>Profile</span>
                                         </a>
-                                    @endif
-                                    @if(Auth::user()->isAdmin())
+                                    <?php endif; ?>
+                                    <?php if(Auth::user()->isAdmin()): ?>
                                         <!-- Duplicate admin link removed as per user request -->
-                                    @endif
+                                    <?php endif; ?>
                                     <form method="POST" action="/logout" class="w-full">
-                                        @csrf
+                                        <?php echo csrf_field(); ?>
                                         <button type="submit" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                             <span class="text-lg">🚪</span>
                                             <span>Logout</span>
@@ -248,7 +249,7 @@
                                 </div>
                             </div>
                         </div>
-                    @endguest
+                    <?php endif; ?>
                 </div>
 
                 <!-- Mobile menu button -->
@@ -274,31 +275,31 @@
                     
                     <!-- Home Sub-items -->
                     <div class="ml-8 space-y-1">
-                        <a href="{{ url('/#vision') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#vision')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌟</span>
                             <span>Vision & Mission</span>
                         </a>
-                        <a href="{{ url('/#video-showcase') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#video-showcase')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🎬</span>
                             <span>Conservation Video</span>
                         </a>
-                        <a href="{{ url('/#lifecycle') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#lifecycle')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🌊</span>
                             <span>Life Cycle</span>
                         </a>
-                        <a href="{{ url('/#threats') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#threats')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">⚠️</span>
                             <span>Threats</span>
                         </a>
-                        <a href="{{ url('/#species') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#species')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🐢</span>
                             <span>Species Guide</span>
                         </a>
-                        <a href="{{ url('/#guidelines') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#guidelines')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">📋</span>
                             <span>Guidelines</span>
                         </a>
-                        <a href="{{ url('/#help') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="<?php echo e(url('/#help')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🤝</span>
                             <span>How to Help</span>
                         </a>
@@ -330,7 +331,7 @@
                 </a>
                 
                 <!-- Account Section -->
-                @guest
+                <?php if(auth()->guard()->guest()): ?>
                     <div class="space-y-1">
                         <button class="mobile-account-toggle flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">👤</span>
@@ -352,22 +353,22 @@
                             </a>
                         </div>
                     </div>
-                @else
+                <?php else: ?>
                     <a href="/profile" class="flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors">
                         <span class="text-lg">👤</span>
                         <span>Profile</span>
                     </a>
-                    @if(Auth::user()->isAdmin())
+                    <?php if(Auth::user()->isAdmin()): ?>
                         <!-- Duplicate admin link removed as per user request -->
-                    @endif
+                    <?php endif; ?>
                     <form method="POST" action="/logout" class="w-full">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="flex items-center gap-3 text-white hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🚪</span>
                             <span>Logout</span>
                         </button>
                     </form>
-                @endguest
+                <?php endif; ?>
             </div>
         </div>
     </nav>
@@ -469,8 +470,8 @@
                     </div>
 
                     <!-- Save Record Section -->
-                    @auth
-                        @if(Auth::user()->role === 'user')
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if(Auth::user()->role === 'user'): ?>
                     <div class="border-t border-gray-600/30 pt-6">
                         <div id="save-status" class="mb-4 hidden">
                             <div class="bg-green-500/20 border border-green-500/30 rounded-lg p-3 text-green-400">
@@ -496,7 +497,7 @@
                             </div>
                         </div>
                     </div>
-                        @else
+                        <?php else: ?>
                     <div class="border-t border-gray-600/30 pt-6">
                         <div class="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 text-blue-400 text-center">
                             <div class="flex items-center justify-center gap-2">
@@ -505,8 +506,8 @@
                             </div>
                         </div>
                     </div>
-                        @endif
-                    @endauth
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -1049,3 +1050,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/games/quiz.blade.php ENDPATH**/ ?>

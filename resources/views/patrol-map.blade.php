@@ -206,6 +206,86 @@
 
 <!-- Leaflet MarkerCluster JS -->
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<!-- Leaflet Heatmap JS -->
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+<!-- Map Controls & Overlays -->
+<div id="map-overlays" class="absolute top-4 right-4 z-[1000] flex flex-col gap-4 pointer-events-none">
+    
+    <!-- 1. Statistics Card -->
+    <div class="bg-slate-900/90 backdrop-blur-md border border-white/20 p-4 rounded-xl shadow-2xl text-white w-72 pointer-events-auto transform transition-all hover:scale-105">
+        <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-3 flex items-center">
+            <i class="fas fa-chart-pie mr-2"></i> Patrol Insights
+        </h3>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="bg-white/5 rounded-lg p-2 text-center">
+                <div class="text-2xl font-bold text-white" id="stat-total">0</div>
+                <div class="text-[10px] text-gray-400 uppercase">Total Reports</div>
+            </div>
+            <div class="bg-white/5 rounded-lg p-2 text-center">
+                <div class="text-2xl font-bold text-teal-400" id="stat-species">0</div>
+                <div class="text-[10px] text-gray-400 uppercase">Species Found</div>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <div class="flex justify-between text-xs">
+                <span class="text-gray-400">Most Common:</span>
+                <span class="font-medium text-yellow-400" id="stat-common">Loading...</span>
+            </div>
+            <div class="flex justify-between text-xs">
+                <span class="text-gray-400">Latest Report:</span>
+                <span class="font-medium text-blue-300" id="stat-latest">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Smart Filters -->
+    <div class="bg-slate-900/90 backdrop-blur-md border border-white/20 p-4 rounded-xl shadow-2xl text-white w-72 pointer-events-auto">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-bold text-teal-400 uppercase tracking-wider flex items-center">
+                <i class="fas fa-filter mr-2"></i> Smart Filters
+            </h3>
+            <button onclick="resetFilters()" class="text-[10px] bg-white/10 hover:bg-white/20 px-2 py-1 rounded transition-colors">
+                Reset
+            </button>
+        </div>
+        
+        <!-- View Mode Toggle -->
+        <div class="flex bg-white/10 rounded-lg p-1 mb-4">
+            <button onclick="toggleViewMode('markers')" id="btn-markers" class="flex-1 py-1.5 text-xs font-medium rounded-md bg-blue-600 text-white shadow-sm transition-all">
+                <i class="fas fa-map-marker-alt mr-1"></i> Markers
+            </button>
+            <button onclick="toggleViewMode('heatmap')" id="btn-heatmap" class="flex-1 py-1.5 text-xs font-medium rounded-md text-gray-300 hover:text-white transition-all">
+                <i class="fas fa-fire mr-1"></i> Heatmap
+            </button>
+        </div>
+
+        <div id="filter-options" class="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+            <!-- Species Filter -->
+            <div>
+                <label class="text-xs font-semibold text-gray-400 mb-2 block">By Species</label>
+                <div class="space-y-1.5" id="species-filters">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            
+            <!-- Type Filter -->
+            <div class="pt-2 border-t border-white/10">
+                <label class="text-xs font-semibold text-gray-400 mb-2 block mt-2">By Report Type</label>
+                <div class="space-y-1.5" id="type-filters">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { bg: rgba(255,255,255,0.05); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    .filter-checkbox:checked + div { background-color: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
+</style>
 
 <script>
 // Patrol reports data from server

@@ -205,6 +205,7 @@
 <!-- Leaflet MarkerCluster JS -->
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
+
 <script>
 // Patrol reports data from server
 const validatedReports = <?php echo json_encode($validatedReports, 15, 512) ?>;

@@ -423,7 +423,7 @@
     <!-- Video Showcase Section -->
     <section class="py-20 px-4 bg-gradient-to-br from-deep-900/30 to-ocean-900/40" id="video-showcase">
         <div class="max-w-7xl mx-auto">
-            <h  2 class="text-5xl font-bold text-center mb-12 text-ocean-400">Quest for Love: Amihan sa Dahican</h2>
+            <h2 class="text-5xl font-bold text-center mb-20 text-ocean-400">Quest for Love: Amihan sa Dahican</h2>
             
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <!-- Video Container -->

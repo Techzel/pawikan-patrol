@@ -1,9 +1,7 @@
-@extends('layouts.patroller')
+<?php $__env->startSection('title', 'Edit Report'); ?>
+<?php $__env->startSection('container-class', 'max-w-4xl'); ?>
 
-@section('title', 'Edit Report')
-@section('container-class', 'max-w-4xl')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     /* Base form input styling - only for dropdowns */
     select.form-input {
@@ -60,9 +58,9 @@
         border-color: #6b7280 !important;
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     // Get current location for coordinates with HIGH ACCURACY GPS
     function getCurrentLocation() {
@@ -279,13 +277,13 @@
         }
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
             <!-- Header -->
             <div class="mb-8">
                 <div class="flex items-center mb-4">
-                    <a href="{{ route('patroller.reports.show', $report) }}" class="text-ocean-400 hover:text-ocean-300 mr-4">
+                    <a href="<?php echo e(route('patroller.reports.show', $report)); ?>" class="text-ocean-400 hover:text-ocean-300 mr-4">
                         <i class="fas fa-arrow-left"></i>
                     </a>
                     <h1 class="text-3xl font-bold text-white cinzel-heading">
@@ -296,7 +294,7 @@
             </div>
 
             <!-- Error Messages -->
-            @if($errors->any())
+            <?php if($errors->any()): ?>
                 <div class="mb-6 glass-morphism border-l-4 border-red-500 p-4 rounded">
                     <div class="flex">
                         <div class="flex-shrink-0">
@@ -305,17 +303,17 @@
                         <div class="ml-3">
                             <h3 class="text-red-100 font-medium cinzel-text">Please correct the following errors:</h3>
                             <ul class="mt-2 text-red-200 text-sm list-disc list-inside cinzel-text">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
                         </div>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <!-- Report Form -->
-            @php(
+            <?php (
                 $reportTypeOptions = collect(\App\Models\PatrolReport::getReportTypeOptions())
                     ->except(['hatchling', 'hazard'])
                     ->map(function ($label, $value) {
@@ -324,10 +322,10 @@
                             : $label;
                     })
                     ->toArray()
-            )
-            <form action="{{ route('patroller.reports.update', $report) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                @csrf
-                @method('PUT')
+            ); ?>
+            <form action="<?php echo e(route('patroller.reports.update', $report)); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('PUT'); ?>
                 
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
@@ -340,9 +338,9 @@
                             <label for="report_type" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Report Type *</label>
                             <select id="report_type" name="report_type" required class="form-input w-full px-3 py-2 rounded-md cinzel-text">
                                 <option value="">Select report type</option>
-                                @foreach($reportTypeOptions as $value => $label)
-                                    <option value="{{ $value }}" {{ old('report_type', $report->report_type) == $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $reportTypeOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($value); ?>" <?php echo e(old('report_type', $report->report_type) == $value ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
@@ -351,17 +349,17 @@
                             <label for="priority" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Priority Level *</label>
                             <select id="priority" name="priority" required class="form-input w-full px-3 py-2 rounded-md cinzel-text">
                                 <option value="">Select priority</option>
-                                <option value="low" {{ old('priority', $report->priority) == 'low' ? 'selected' : '' }}>Low</option>
-                                <option value="medium" {{ old('priority', $report->priority) == 'medium' ? 'selected' : '' }}>Medium</option>
-                                <option value="high" {{ old('priority', $report->priority) == 'high' ? 'selected' : '' }}>High</option>
-                                <option value="critical" {{ old('priority', $report->priority) == 'critical' ? 'selected' : '' }}>Critical</option>
+                                <option value="low" <?php echo e(old('priority', $report->priority) == 'low' ? 'selected' : ''); ?>>Low</option>
+                                <option value="medium" <?php echo e(old('priority', $report->priority) == 'medium' ? 'selected' : ''); ?>>Medium</option>
+                                <option value="high" <?php echo e(old('priority', $report->priority) == 'high' ? 'selected' : ''); ?>>High</option>
+                                <option value="critical" <?php echo e(old('priority', $report->priority) == 'critical' ? 'selected' : ''); ?>>Critical</option>
                             </select>
                         </div>
 
                         <!-- Title -->
                         <div class="md:col-span-2">
                             <label for="title" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Report Title *</label>
-                            <input type="text" id="title" name="title" value="{{ old('title', $report->title) }}" required 
+                            <input type="text" id="title" name="title" value="<?php echo e(old('title', $report->title)); ?>" required 
                                    class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
                                    placeholder="Brief description of the report">
                         </div>
@@ -369,7 +367,7 @@
                         <!-- Location -->
                         <div class="md:col-span-2">
                             <label for="location" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Location *</label>
-                            <input type="text" id="location" name="location" value="{{ old('location', $report->location) }}" required 
+                            <input type="text" id="location" name="location" value="<?php echo e(old('location', $report->location)); ?>" required 
                                    class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
                                    placeholder="Specific location or area">
                         </div>
@@ -377,14 +375,14 @@
                         <!-- Coordinates -->
                         <div>
                             <label for="latitude" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Latitude</label>
-                            <input type="number" id="latitude" name="latitude" value="{{ old('latitude', $report->latitude) }}" 
+                            <input type="number" id="latitude" name="latitude" value="<?php echo e(old('latitude', $report->latitude)); ?>" 
                                    step="0.000001" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
                                    placeholder="e.g., 6.9363">
                         </div>
 
                         <div>
                             <label for="longitude" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Longitude</label>
-                            <input type="number" id="longitude" name="longitude" value="{{ old('longitude', $report->longitude) }}" 
+                            <input type="number" id="longitude" name="longitude" value="<?php echo e(old('longitude', $report->longitude)); ?>" 
                                    step="0.000001" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
                                    placeholder="e.g., 126.2742">
                         </div>
@@ -393,7 +391,7 @@
                         <div class="md:col-span-2">
                             <label for="incident_datetime" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Incident Date & Time</label>
                             <input type="datetime-local" id="incident_datetime" name="incident_datetime" 
-                                   value="{{ old('incident_datetime', $report->incident_datetime ? $report->incident_datetime->format('Y-m-d\TH:i') : '') }}" 
+                                   value="<?php echo e(old('incident_datetime', $report->incident_datetime ? $report->incident_datetime->format('Y-m-d\TH:i') : '')); ?>" 
                                    class="form-input w-full px-3 py-2 rounded-md cinzel-text">
                         </div>
                     </div>
@@ -409,15 +407,15 @@
                         <!-- Turtle Count -->
                         <div>
                             <label for="turtle_count" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Number of Turtles</label>
-                            <input type="number" id="turtle_count" name="turtle_count" value="{{ old('turtle_count', $report->turtle_count) }}" 
+                            <input type="number" id="turtle_count" name="turtle_count" value="<?php echo e(old('turtle_count', $report->turtle_count)); ?>" 
                                    min="0" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
                                    placeholder="0">
                         </div>
 
                         <!-- Nesting Egg Count (Nesting Only) -->
-                        <div id="egg-count-wrapper" class="col-span-1 {{ old('report_type', $report->report_type) === 'nesting' ? '' : 'hidden' }}">
+                        <div id="egg-count-wrapper" class="col-span-1 <?php echo e(old('report_type', $report->report_type) === 'nesting' ? '' : 'hidden'); ?>">
                             <label for="egg_count" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Egg Count (Nesting Only)</label>
-                            <input type="number" id="egg_count" name="egg_count" value="{{ old('egg_count', $report->egg_count) }}"
+                            <input type="number" id="egg_count" name="egg_count" value="<?php echo e(old('egg_count', $report->egg_count)); ?>"
                                    min="0" class="form-input w-full px-3 py-2 rounded-md cinzel-text"
                                    placeholder="Approx. number of eggs">
                             <p class="text-xs text-gray-400 mt-1 cinzel-text">Visible only for nesting reports.</p>
@@ -428,11 +426,11 @@
                             <label for="turtle_species" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Species</label>
                             <select id="turtle_species" name="turtle_species" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
                                 <option value="">Select species</option>
-                                <option value="olive_ridley" {{ old('turtle_species', $report->turtle_species) == 'olive_ridley' ? 'selected' : '' }}>Olive Ridley</option>
-                                <option value="green_sea_turtle" {{ old('turtle_species', $report->turtle_species) == 'green_sea_turtle' ? 'selected' : '' }}>Green Sea Turtle</option>
-                                <option value="hawksbill" {{ old('turtle_species', $report->turtle_species) == 'hawksbill' ? 'selected' : '' }}>Hawksbill</option>
-                                <option value="leatherback" {{ old('turtle_species', $report->turtle_species) == 'leatherback' ? 'selected' : '' }}>Leatherback</option>
-                                <option value="loggerhead" {{ old('turtle_species', $report->turtle_species) == 'loggerhead' ? 'selected' : '' }}>Loggerhead</option>
+                                <option value="olive_ridley" <?php echo e(old('turtle_species', $report->turtle_species) == 'olive_ridley' ? 'selected' : ''); ?>>Olive Ridley</option>
+                                <option value="green_sea_turtle" <?php echo e(old('turtle_species', $report->turtle_species) == 'green_sea_turtle' ? 'selected' : ''); ?>>Green Sea Turtle</option>
+                                <option value="hawksbill" <?php echo e(old('turtle_species', $report->turtle_species) == 'hawksbill' ? 'selected' : ''); ?>>Hawksbill</option>
+                                <option value="leatherback" <?php echo e(old('turtle_species', $report->turtle_species) == 'leatherback' ? 'selected' : ''); ?>>Leatherback</option>
+                                <option value="loggerhead" <?php echo e(old('turtle_species', $report->turtle_species) == 'loggerhead' ? 'selected' : ''); ?>>Loggerhead</option>
                             </select>
                         </div>
 
@@ -440,10 +438,10 @@
                         <div>
                             <label for="gender" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Turtle Gender</label>
                             <select id="gender" name="gender" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
-                                <option value="" {{ old('gender', $report->gender) == '' ? 'selected' : '' }}>Select gender</option>
-                                <option value="male" {{ old('gender', $report->gender) == 'male' ? 'selected' : '' }}>Male</option>
-                                <option value="female" {{ old('gender', $report->gender) == 'female' ? 'selected' : '' }}>Female</option>
-                                <option value="unknown" {{ old('gender', $report->gender) == 'unknown' ? 'selected' : '' }}>Unknown</option>
+                                <option value="" <?php echo e(old('gender', $report->gender) == '' ? 'selected' : ''); ?>>Select gender</option>
+                                <option value="male" <?php echo e(old('gender', $report->gender) == 'male' ? 'selected' : ''); ?>>Male</option>
+                                <option value="female" <?php echo e(old('gender', $report->gender) == 'female' ? 'selected' : ''); ?>>Female</option>
+                                <option value="unknown" <?php echo e(old('gender', $report->gender) == 'unknown' ? 'selected' : ''); ?>>Unknown</option>
                             </select>
                         </div>
 
@@ -452,10 +450,10 @@
                             <label for="turtle_condition" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Condition</label>
                             <select id="turtle_condition" name="turtle_condition" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
                                 <option value="">Select condition</option>
-                                <option value="healthy" {{ old('turtle_condition', $report->turtle_condition) == 'healthy' ? 'selected' : '' }}>Healthy</option>
-                                <option value="injured" {{ old('turtle_condition', $report->turtle_condition) == 'injured' ? 'selected' : '' }}>Injured</option>
-                                <option value="dead" {{ old('turtle_condition', $report->turtle_condition) == 'dead' ? 'selected' : '' }}>Dead</option>
-                                <option value="unknown" {{ old('turtle_condition', $report->turtle_condition) == 'unknown' ? 'selected' : '' }}>Unknown</option>
+                                <option value="healthy" <?php echo e(old('turtle_condition', $report->turtle_condition) == 'healthy' ? 'selected' : ''); ?>>Healthy</option>
+                                <option value="injured" <?php echo e(old('turtle_condition', $report->turtle_condition) == 'injured' ? 'selected' : ''); ?>>Injured</option>
+                                <option value="dead" <?php echo e(old('turtle_condition', $report->turtle_condition) == 'dead' ? 'selected' : ''); ?>>Dead</option>
+                                <option value="unknown" <?php echo e(old('turtle_condition', $report->turtle_condition) == 'unknown' ? 'selected' : ''); ?>>Unknown</option>
                             </select>
                         </div>
                     </div>
@@ -473,24 +471,24 @@
                             <label for="description" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Detailed Description *</label>
                             <textarea id="description" name="description" rows="4" required 
                                       class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
-                                      placeholder="Provide a detailed description of what you observed or the incident that occurred">{{ old('description', $report->description) }}</textarea>
+                                      placeholder="Provide a detailed description of what you observed or the incident that occurred"><?php echo e(old('description', $report->description)); ?></textarea>
                         </div>
 
                         <!-- Weather Conditions -->
                         <div>
                             <label for="weather_conditions" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Weather Conditions</label>
                             <select id="weather_conditions" name="weather_conditions" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
-                            <option value="" {{ old('weather_conditions', $report->weather_conditions) == '' ? 'selected' : '' }}>Select weather condition</option>
-                            <option value="Sunny" {{ old('weather_conditions', $report->weather_conditions) == 'Sunny' ? 'selected' : '' }}>☀️ Sunny</option>
-                            <option value="Partly Cloudy" {{ old('weather_conditions', $report->weather_conditions) == 'Partly Cloudy' ? 'selected' : '' }}>⛅ Partly Cloudy</option>
-                            <option value="Cloudy" {{ old('weather_conditions', $report->weather_conditions) == 'Cloudy' ? 'selected' : '' }}>☁️ Cloudy</option>
-                            <option value="Rainy" {{ old('weather_conditions', $report->weather_conditions) == 'Rainy' ? 'selected' : '' }}>🌧️ Rainy</option>
-                            <option value="Stormy" {{ old('weather_conditions', $report->weather_conditions) == 'Stormy' ? 'selected' : '' }}>⛈️ Stormy</option>
-                            <option value="Windy" {{ old('weather_conditions', $report->weather_conditions) == 'Windy' ? 'selected' : '' }}>💨 Windy</option>
-                            <option value="Foggy" {{ old('weather_conditions', $report->weather_conditions) == 'Foggy' ? 'selected' : '' }}>🌫️ Foggy</option>
-                            <option value="Hazy" {{ old('weather_conditions', $report->weather_conditions) == 'Hazy' ? 'selected' : '' }}>😶‍🌫️ Hazy</option>
-                            <option value="Clear Night" {{ old('weather_conditions', $report->weather_conditions) == 'Clear Night' ? 'selected' : '' }}>🌙 Clear Night</option>
-                            <option value="Other" {{ old('weather_conditions', $report->weather_conditions) == 'Other' ? 'selected' : '' }}>Other (specify in notes)</option>
+                            <option value="" <?php echo e(old('weather_conditions', $report->weather_conditions) == '' ? 'selected' : ''); ?>>Select weather condition</option>
+                            <option value="Sunny" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Sunny' ? 'selected' : ''); ?>>☀️ Sunny</option>
+                            <option value="Partly Cloudy" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Partly Cloudy' ? 'selected' : ''); ?>>⛅ Partly Cloudy</option>
+                            <option value="Cloudy" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Cloudy' ? 'selected' : ''); ?>>☁️ Cloudy</option>
+                            <option value="Rainy" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Rainy' ? 'selected' : ''); ?>>🌧️ Rainy</option>
+                            <option value="Stormy" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Stormy' ? 'selected' : ''); ?>>⛈️ Stormy</option>
+                            <option value="Windy" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Windy' ? 'selected' : ''); ?>>💨 Windy</option>
+                            <option value="Foggy" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Foggy' ? 'selected' : ''); ?>>🌫️ Foggy</option>
+                            <option value="Hazy" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Hazy' ? 'selected' : ''); ?>>😶‍🌫️ Hazy</option>
+                            <option value="Clear Night" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Clear Night' ? 'selected' : ''); ?>>🌙 Clear Night</option>
+                            <option value="Other" <?php echo e(old('weather_conditions', $report->weather_conditions) == 'Other' ? 'selected' : ''); ?>>Other (specify in notes)</option>
                         </select>
 
                     </div>
@@ -503,23 +501,23 @@
                     </h3>
                     
                     <!-- Current Images -->
-                    @if($report->images && count($report->images) > 0)
+                    <?php if($report->images && count($report->images) > 0): ?>
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Current Images</label>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                @foreach($report->images as $image)
+                                <?php $__currentLoopData = $report->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="relative group">
-                                        <img src="{{ asset('storage/' . $image) }}" alt="Report Image" class="w-full h-24 object-cover rounded-lg">
+                                        <img src="<?php echo e(asset('storage/' . $image)); ?>" alt="Report Image" class="w-full h-24 object-cover rounded-lg">
                                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-lg flex items-center justify-center">
-                                            <a href="{{ asset('storage/' . $image) }}" target="_blank" class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <a href="<?php echo e(asset('storage/' . $image)); ?>" target="_blank" class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                 <i class="fas fa-expand"></i>
                                             </a>
                                         </div>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Add New Images -->
                     <div>
@@ -531,7 +529,7 @@
 
                 <!-- Submit Buttons -->
                 <div class="flex items-center justify-end space-x-4">
-                    <a href="{{ route('patroller.reports.show', $report) }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors cinzel-text">
+                    <a href="<?php echo e(route('patroller.reports.show', $report)); ?>" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors cinzel-text">
                         Cancel
                     </a>
                     <button type="submit" class="bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg cinzel-text">
@@ -777,4 +775,6 @@ titleField.addEventListener('input', function() {
     titleLabel.appendChild(counter);
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.patroller', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/patroller/reports/edit.blade.php ENDPATH**/ ?>

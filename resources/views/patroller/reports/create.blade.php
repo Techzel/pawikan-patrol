@@ -111,26 +111,184 @@
 
 @push('scripts')
 <script>
-    // Get current location for coordinates
+    // Get current location for coordinates with HIGH ACCURACY GPS
     function getCurrentLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
-                document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
-            });
+        const locationButton = document.getElementById('gps-location-btn');
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+        
+        if (!navigator.geolocation) {
+            alert('❌ Geolocation is not supported by your browser.\n\nPlease enter coordinates manually or use a device with GPS capability.');
+            return;
         }
+
+        // Show loading state
+        const originalButtonHTML = locationButton.innerHTML;
+        locationButton.disabled = true;
+        locationButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Acquiring GPS Signal...';
+        locationButton.classList.add('opacity-75');
+        
+        // Remove any existing accuracy message
+        const existingAccuracyMsg = document.getElementById('accuracy-message');
+        if (existingAccuracyMsg) {
+            existingAccuracyMsg.remove();
+        }
+
+        // HIGH ACCURACY GPS OPTIONS - Critical for precise marker placement
+        const options = {
+            enableHighAccuracy: true,  // ✅ FORCE GPS usage (not WiFi/cell tower triangulation)
+            timeout: 15000,            // Wait up to 15 seconds for GPS lock
+            maximumAge: 0              // Don't use cached position - get fresh GPS data
+        };
+
+        console.log('🛰️ Requesting high-accuracy GPS position...');
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                // ✅ SUCCESS - GPS lock acquired
+                const lat = position.coords.latitude.toFixed(6);
+                const lng = position.coords.longitude.toFixed(6);
+                const accuracy = position.coords.accuracy; // Accuracy radius in meters
+                
+                console.log('✅ GPS Position acquired:', {
+                    latitude: lat,
+                    longitude: lng,
+                    accuracy: accuracy + 'm',
+                    altitude: position.coords.altitude,
+                    speed: position.coords.speed
+                });
+                
+                latitudeInput.value = lat;
+                longitudeInput.value = lng;
+                
+                // Reset button with success state
+                locationButton.disabled = false;
+                locationButton.classList.remove('opacity-75');
+                locationButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>GPS Lock Acquired!';
+                locationButton.classList.add('bg-green-600');
+                
+                setTimeout(() => {
+                    locationButton.innerHTML = originalButtonHTML;
+                    locationButton.classList.remove('bg-green-600');
+                }, 3000);
+                
+                // Show detailed accuracy information
+                const accuracyMessage = document.createElement('div');
+                accuracyMessage.id = 'accuracy-message';
+                accuracyMessage.className = 'mt-2 p-2 rounded-lg text-xs cinzel-text border';
+                
+                let accuracyLevel = '';
+                let accuracyClass = '';
+                let accuracyIcon = '';
+                let accuracyAdvice = '';
+                
+                if (accuracy <= 5) {
+                    accuracyLevel = 'Excellent';
+                    accuracyClass = 'bg-green-50 border-green-300 text-green-800';
+                    accuracyIcon = '🎯';
+                    accuracyAdvice = 'Sub-5m accuracy! Perfect for precise mapping.';
+                } else if (accuracy <= 10) {
+                    accuracyLevel = 'Very Good';
+                    accuracyClass = 'bg-blue-50 border-blue-300 text-blue-800';
+                    accuracyIcon = '✅';
+                    accuracyAdvice = 'Great accuracy for patrol reports.';
+                } else if (accuracy <= 20) {
+                    accuracyLevel = 'Good';
+                    accuracyClass = 'bg-yellow-50 border-yellow-300 text-yellow-800';
+                    accuracyIcon = '⚠️';
+                    accuracyAdvice = 'Acceptable. For better accuracy, move to an open area.';
+                } else if (accuracy <= 50) {
+                    accuracyLevel = 'Fair';
+                    accuracyClass = 'bg-orange-50 border-orange-300 text-orange-800';
+                    accuracyIcon = '📍';
+                    accuracyAdvice = 'Moderate accuracy. Consider retrying outdoors for better precision.';
+                } else {
+                    accuracyLevel = 'Low';
+                    accuracyClass = 'bg-red-50 border-red-300 text-red-800';
+                    accuracyIcon = '❌';
+                    accuracyAdvice = 'Low accuracy detected. Please move outdoors with clear sky view and retry.';
+                }
+                
+                accuracyMessage.className += ' ' + accuracyClass;
+                accuracyMessage.innerHTML = `
+                    <div class="flex items-start">
+                        <span class="text-lg mr-2">${accuracyIcon}</span>
+                        <div class="flex-1">
+                            <div class="font-bold mb-1">GPS Accuracy: ${accuracyLevel} (±${accuracy.toFixed(1)}m)</div>
+                            <div class="text-xs opacity-90">${accuracyAdvice}</div>
+                        </div>
+                    </div>
+                `;
+                
+                latitudeInput.parentNode.appendChild(accuracyMessage);
+                
+                // Auto-remove accuracy message after 10 seconds
+                setTimeout(() => {
+                    if (accuracyMessage && accuracyMessage.parentNode) {
+                        accuracyMessage.remove();
+                    }
+                }, 10000);
+            },
+            function(error) {
+                // ❌ ERROR - GPS acquisition failed
+                locationButton.disabled = false;
+                locationButton.classList.remove('opacity-75');
+                locationButton.innerHTML = originalButtonHTML;
+                
+                let errorMessage = '';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = "❌ GPS Permission Denied\n\nPlease enable location services in your browser settings:\n\n1. Click the lock icon in the address bar\n2. Allow location access for this site\n3. Refresh the page and try again";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = "❌ GPS Position Unavailable\n\nCannot determine your location. Please ensure:\n\n• You are outdoors or near a window\n• GPS is enabled on your device\n• Location services are allowed for this website\n• Your device has GPS capability";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = "⏱️ GPS Timeout\n\nGPS signal acquisition took too long.\n\nTips for better GPS signal:\n• Move to an area with clear sky view\n• Ensure GPS/Location is enabled on your device\n• Wait a moment for GPS to initialize, then try again\n• If indoors, move closer to a window";
+                        break;
+                    default:
+                        errorMessage = "❌ GPS Error\n\nAn unknown error occurred while getting your location.\n\nPlease try again or enter coordinates manually.";
+                }
+                
+                alert(errorMessage);
+                console.error('GPS Error:', error);
+            },
+            options
+        );
     }
 
     // Add button to get current location
     document.addEventListener('DOMContentLoaded', function() {
         const latitudeInput = document.getElementById('latitude');
+        
+        // Create GPS button
         const locationButton = document.createElement('button');
         locationButton.type = 'button';
-        locationButton.className = 'mt-2 px-3 py-1 bg-ocean-600 hover:bg-ocean-700 text-white text-sm rounded cinzel-text';
-        locationButton.innerHTML = '<i class="fas fa-map-marker-alt mr-1"></i>Get Current Location';
-        locationButton.onclick = getCurrentLocation;
+        locationButton.id = 'gps-location-btn';
+        locationButton.className = 'mt-2 px-4 py-2 bg-ocean-600 hover:bg-ocean-700 text-white text-sm rounded-lg cinzel-text transition-all duration-200 flex items-center gap-2';
+        locationButton.innerHTML = '<i class="fas fa-satellite-dish"></i><span>Get GPS Coordinates</span>';
+        locationButton.addEventListener('click', getCurrentLocation);
+        
+        // Add GPS info tip
+        const gpsInfo = document.createElement('div');
+        gpsInfo.className = 'mt-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded-lg text-xs text-blue-300 cinzel-text';
+        gpsInfo.innerHTML = `
+            <div class="flex items-start gap-2">
+                <i class="fas fa-info-circle mt-0.5"></i>
+                <div>
+                    <strong>GPS Tips for Best Accuracy:</strong>
+                    <ul class="mt-1 space-y-0.5 ml-4 list-disc">
+                        <li>Enable GPS/Location Services on your device</li>
+                        <li>Move to an outdoor location with clear sky view</li>
+                        <li>Wait 5-10 seconds for GPS to acquire satellites</li>
+                        <li>Avoid tall buildings, dense forests, or indoor areas</li>
+                    </ul>
+                </div>
+            </div>
+        `;
         
         latitudeInput.parentNode.appendChild(locationButton);
+        latitudeInput.parentNode.appendChild(gpsInfo);
 
         const reportTypeSelect = document.getElementById('report_type');
         const eggCountWrapper = document.getElementById('egg-count-wrapper');
