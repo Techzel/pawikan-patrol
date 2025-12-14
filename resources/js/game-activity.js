@@ -7,14 +7,6 @@ class GameActivity {
     constructor() {
         this.baseURL = '/game-activities';
         this.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        this.setupAxios();
-    }
-
-    setupAxios() {
-        if (typeof axios !== 'undefined') {
-            axios.defaults.headers.common['X-CSRF-TOKEN'] = this.csrfToken;
-            axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-        }
     }
 
     /**
@@ -22,224 +14,72 @@ class GameActivity {
      */
     async recordActivity(activityData) {
         try {
-            const response = await axios.post(this.baseURL + '/record', activityData);
-            return response.data;
+            const response = await fetch(this.baseURL + '/record', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': this.csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(activityData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to record activity');
+            }
+
+            return await response.json();
         } catch (error) {
             console.error('Error recording game activity:', error);
-            throw error;
+            return null;
         }
     }
 
     /**
-     * Get user's game activities
+     * Helper method to record Memory Match completion
      */
-    async getActivities(filters = {}) {
-        try {
-            const params = new URLSearchParams(filters);
-            const response = await axios.get(this.baseURL + '?' + params.toString());
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching game activities:', error);
-            throw error;
-        }
-    }
+    async recordMemoryMatch(moves, timeSpent) {
+        // Calculate score: base 1000 points, minus points for moves and time
+        const score = Math.max(100, 1000 - (moves * 10) - Math.floor(timeSpent / 2));
 
-    /**
-     * Get user's game statistics
-     */
-    async getStatistics() {
-        try {
-            const response = await axios.get(this.baseURL + '/statistics');
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching game statistics:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Get user's best scores
-     */
-    async getBestScores() {
-        try {
-            const response = await axios.get(this.baseURL + '/best-scores');
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching best scores:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Get leaderboard
-     */
-    async getLeaderboard(gameType = null) {
-        try {
-            const url = gameType ? `${this.baseURL}/leaderboard/${gameType}` : `${this.baseURL}/leaderboard`;
-            const response = await axios.get(url);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching leaderboard:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Delete a game activity
-     */
-    async deleteActivity(activityId) {
-        try {
-            const response = await axios.delete(this.baseURL + '/' + activityId);
-            return response.data;
-        } catch (error) {
-            console.error('Error deleting game activity:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Helper method to record quiz completion
-     */
-    async recordQuizCompletion(score, totalQuestions, correctAnswers, timeSpent, difficulty = 'medium') {
-        const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
-        
         return await this.recordActivity({
-            game_type: 'quiz',
-            game_name: 'Turtle Knowledge Quiz',
+            game_type: 'memory-match',
             score: score,
-            total_questions: totalQuestions,
-            correct_answers: correctAnswers,
-            accuracy: accuracy,
             time_spent: timeSpent,
-            difficulty_level: difficulty,
-            completed: true
+            moves: moves
         });
     }
 
     /**
-     * Helper method to record word scramble completion
+     * Helper method to record Puzzle completion
      */
-    async recordWordScrambleCompletion(score, totalWords, correctWords, timeSpent, difficulty = 'medium') {
-        const accuracy = totalWords > 0 ? (correctWords / totalWords) * 100 : 0;
-        
+    async recordPuzzle(moves, timeSpent, difficulty) {
+        // Calculate score based on difficulty
+        const baseScores = { easy: 500, medium: 1000, hard: 1500 };
+        const baseScore = baseScores[difficulty] || 500;
+        const score = Math.max(100, baseScore - (moves * 5) - Math.floor(timeSpent / 2));
+
         return await this.recordActivity({
-            game_type: 'word_scramble',
-            game_name: 'Turtle Word Scramble',
+            game_type: 'puzzle',
             score: score,
-            total_questions: totalWords,
-            correct_answers: correctWords,
-            accuracy: accuracy,
             time_spent: timeSpent,
-            difficulty_level: difficulty,
-            completed: true
+            moves: moves,
+            difficulty: difficulty
         });
     }
 
     /**
-     * Helper method to record game progress (for incomplete games)
+     * Helper method to record Find the Pawikan completion
      */
-    async recordGameProgress(gameType, gameName, currentScore, progressData = {}) {
+    async recordFindThePawikan(timeSpent) {
+        // Calculate score: faster = higher score
+        const score = Math.max(100, 1500 - Math.floor(timeSpent * 2));
+
         return await this.recordActivity({
-            game_type: gameType,
-            game_name: gameName,
-            score: currentScore,
-            game_data: progressData,
-            completed: false
+            game_type: 'find-the-pawikan',
+            score: score,
+            time_spent: timeSpent
         });
-    }
-
-    /**
-     * Update game statistics display
-     */
-    updateStatisticsDisplay(stats) {
-        const totalScoreElement = document.querySelector('[data-stat="total-score"]');
-        const totalGamesElement = document.querySelector('[data-stat="total-games"]');
-        const avgAccuracyElement = document.querySelector('[data-stat="average-accuracy"]');
-        
-        if (totalScoreElement) {
-            totalScoreElement.textContent = stats.total_score || 0;
-        }
-        if (totalGamesElement) {
-            totalGamesElement.textContent = stats.total_games_played || 0;
-        }
-        if (avgAccuracyElement) {
-            avgAccuracyElement.textContent = (stats.average_accuracy || 0).toFixed(1) + '%';
-        }
-        
-        // Dispatch custom event for profile page updates
-        const event = new CustomEvent('userStatsUpdated', { 
-            detail: stats 
-        });
-        document.dispatchEvent(event);
-    }
-
-    /**
-     * Update leaderboard display
-     */
-    updateLeaderboardDisplay(leaderboard) {
-        const leaderboardContainer = document.querySelector('[data-leaderboard]');
-        if (!leaderboardContainer) return;
-
-        let html = '<div class="leaderboard-list">';
-        
-        leaderboard.forEach((entry, index) => {
-            html += `
-                <div class="leaderboard-item">
-                    <div class="rank">${index + 1}</div>
-                    <div class="player-info">
-                        <div class="player-name">${entry.user?.name || 'Anonymous'}</div>
-                        <div class="player-score">${entry.score} points</div>
-                    </div>
-                    <div class="game-info">
-                        <div class="game-type">${entry.game_type}</div>
-                        <div class="play-date">${new Date(entry.played_at).toLocaleDateString()}</div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        leaderboardContainer.innerHTML = html;
-    }
-
-    /**
-     * Show success notification
-     */
-    showSuccess(message) {
-        this.showNotification(message, 'success');
-    }
-
-    /**
-     * Show error notification
-     */
-    showError(message) {
-        this.showNotification(message, 'error');
-    }
-
-    /**
-     * Show notification
-     */
-    showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        
-        // Add to page
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 10);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
     }
 }
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\UserVerificationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Games\GameActivityController;
 
+
 // Public Routes
 Route::get('/', function () {
     return view('LandingPage');
@@ -26,36 +27,75 @@ Route::get('/api/validated-reports', [PatrolMapController::class, 'getValidatedR
 
 Route::get('/games', function () {
     return view('games.index');
-});
+})->name('games.index');
 
-Route::get('/games/quiz', function () {
-    return view('games.quiz');
-});
+Route::get('/games/memory-match', function () {
+    return view('games.memory-match');
+})->name('games.memory-match');
 
-Route::get('/games/word-scramble', function () {
-    return view('games.word-scramble');
-});
+Route::get('/games/puzzle', function () {
+    return view('games.puzzle');
+})->name('games.puzzle');
+
+// Leaderboards Route
+Route::get('/leaderboards', function () {
+    $gameActivityController = new \App\Http\Controllers\Games\GameActivityController();
+    
+    // Memory Match leaderboard
+    $memoryMatchLeaderboard = $gameActivityController->leaderboard('memory-match');
+    
+    // Puzzle leaderboard
+    $puzzleLeaderboard = $gameActivityController->leaderboard('puzzle');
+    
+    // Find the Pawikan leaderboard
+    $findPawikanLeaderboard = $gameActivityController->leaderboard('find-the-pawikan');
+    
+    return view('leaderboards', compact(
+        'memoryMatchLeaderboard',
+        'puzzleLeaderboard',
+        'findPawikanLeaderboard'
+    ));
+})->name('leaderboards');
+
+Route::get('/games/find-the-pawikan', function () {
+    return view('games.find-the-pawikan');
+})->name('games.find-the-pawikan');
+
+// Test route for debugging game activity
+Route::get('/test-game-activity', function () {
+    return view('test-game-activity');
+})->name('test.game-activity');
+
+// Diagnostic page
+Route::get('/diagnostic', function () {
+    return view('diagnostic');
+})->name('diagnostic');
+
+
+
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
     // Auth form (login/register)
-    Route::get('/auth', [AuthController::class, 'showAuthForm'])->name('auth.form');
+    Route::get('/auth', function () {
+        return redirect('/#login');
+    })->name('auth.form');
     
     // Login routes
     Route::get('/login', function () {
-        return redirect('/auth');
+        return redirect('/#login');
     })->name('login.redirect');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     
     // Registration routes
     Route::get('/register', function () {
-        return view('auth.register');
+        return redirect('/#register');
     })->name('register.form');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     
     // Test route for register form (can be removed if not needed)
     Route::get('/test-register', function () {
-        return view('auth.test-register');
+        return redirect('/#register');
     })->name('test.register');
 });
 
@@ -69,6 +109,25 @@ Route::middleware('auth')->group(function () {
     // Profile Routes
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
+    
+    // TEST ROUTE - Check if auth works
+    Route::get('/test-auth', function() {
+        return response()->json([
+            'authenticated' => auth()->check(),
+            'user_id' => auth()->id(),
+            'user_role' => auth()->user()?->role,
+            'csrf_token' => csrf_token()
+        ]);
+    });
+    
+    // Game Activity Routes - CRITICAL FOR SAVING GAMES
+    Route::prefix('game-activities')->group(function () {
+        Route::post('/record', [GameActivityController::class, 'record'])->name('game-activities.record');
+        Route::get('/', [GameActivityController::class, 'index'])->name('game-activities.index');
+        Route::get('/statistics', [GameActivityController::class, 'statistics'])->name('game-activities.statistics');
+        Route::get('/best-scores', [GameActivityController::class, 'bestScores'])->name('game-activities.best-scores');
+        Route::get('/leaderboard/{gameType?}', [GameActivityController::class, 'leaderboard'])->name('game-activities.leaderboard');
+    });
     
     // API Routes for AJAX calls
     Route::prefix('api')->group(function () {
@@ -98,38 +157,7 @@ Route::middleware('auth')->group(function () {
     // Patrol Map Routes
     Route::post('/patrol-map/visit-location', [AuthController::class, 'visitLocation'])->name('patrol-map.visit-location');
     
-    // Leaderboards Route
-    Route::get('/leaderboards', function () {
-        $user = Auth::user();
-        $overallRank = $user->getOverallRank();
-        $quizRank = $user->getGameRank('quiz');
-        $wordScrambleRank = $user->getGameRank('word_scramble');
-        
-        // Get leaderboard data
-        $gameActivityController = new \App\Http\Controllers\Games\GameActivityController();
-        
-        // Overall leaderboard (all games)
-        $overallResponse = $gameActivityController->leaderboard();
-        $overallLeaderboard = collect($overallResponse->getData()->leaderboard);
-        
-        // Quiz leaderboard
-        $quizResponse = $gameActivityController->leaderboard('quiz');
-        $quizLeaderboard = collect($quizResponse->getData()->leaderboard);
-        
-        // Word Scramble leaderboard
-        $wordScrambleResponse = $gameActivityController->leaderboard('word_scramble');
-        $wordScrambleLeaderboard = collect($wordScrambleResponse->getData()->leaderboard);
-        
-        return view('leaderboards', compact(
-            'user', 
-            'overallRank', 
-            'quizRank', 
-            'wordScrambleRank',
-            'overallLeaderboard',
-            'quizLeaderboard',
-            'wordScrambleLeaderboard'
-        ));
-    })->name('leaderboards');
+
     
     // Game Activity Routes (JSON responses for AJAX calls)
     Route::prefix('game-activities')->group(function () {
@@ -138,7 +166,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/statistics', [GameActivityController::class, 'statistics'])->name('game-activities.statistics');
         Route::get('/best-scores', [GameActivityController::class, 'bestScores'])->name('game-activities.best-scores');
         Route::get('/leaderboard/{gameType?}', [GameActivityController::class, 'leaderboard'])->name('game-activities.leaderboard');
-        Route::delete('/{id}', [GameActivityController::class, 'destroy'])->name('game-activities.destroy');
     });
     
     // Patroller Routes
@@ -161,7 +188,7 @@ Route::middleware('auth')->group(function () {
 
     // Admin Routes
     Route::middleware('admin')->group(function () {
-        Route::get('/admin/recent-activities', [GameActivityController::class, 'recentGlobal'])->name('admin.recent-activities');
+
     });
     
     // Admin Dashboard Routes

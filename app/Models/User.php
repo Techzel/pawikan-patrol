@@ -73,6 +73,9 @@ class User extends Authenticatable
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
+    /**
+     * Get the user's game activities.
+     */
     public function gameActivities()
     {
         return $this->hasMany(GameActivity::class);
@@ -331,12 +334,12 @@ class User extends Authenticatable
         return $this->is_active;
     }
 
-    /**
-     * Get the user's total score across all games.
-     */
+     /**
+      * Get the user's total score across all games (Total Games Played for now).
+      */
     public function getTotalScoreAttribute()
     {
-        return $this->gameActivities()->sum('score');
+        return $this->gameActivities()->count();
     }
 
     /**
@@ -350,110 +353,67 @@ class User extends Authenticatable
     /**
      * Get the user's average accuracy across all games.
      */
+    /**
+     * Get the user's average accuracy across all games.
+     * @deprecated Accuracy is no longer tracked in the simple schema
+     */
     public function getAverageAccuracyAttribute()
     {
-        return $this->gameActivities()->avg('accuracy') ?? 0;
+        return 0;
     }
 
     /**
-     * Get the user's best score for a specific game type.
-     */
-    public function getBestScoreForGame($gameType)
-    {
-        return $this->gameActivities()
-            ->byGameType($gameType)
-            ->completed()
-            ->max('score') ?? 0;
-    }
-
-    /**
-     * Get the user's recent game activities.
-     */
-    public function getRecentActivities($limit = 10)
-    {
-        return $this->gameActivities()
-            ->with('user')
-            ->orderBy('played_at', 'desc')
-            ->limit($limit)
-            ->get();
-    }
-
-    /**
-     * Get the user's game statistics.
-     */
-    public function getGameStatistics()
-    {
-        $activities = $this->gameActivities();
-        
-        return [
-            'total_games' => $activities->count(),
-            'total_score' => $activities->sum('score'),
-            'average_accuracy' => $activities->avg('accuracy') ?? 0,
-            'total_time_spent' => $activities->sum('time_spent'),
-            'completed_games' => $activities->completed()->count(),
-            'games_by_type' => $activities->selectRaw('game_type, count(*) as count')
-                ->groupBy('game_type')
-                ->pluck('count', 'game_type')
-                ->toArray(),
-            'best_scores' => $activities->selectRaw('game_type, max(score) as best_score')
-                ->groupBy('game_type')
-                ->pluck('best_score', 'game_type')
-                ->toArray(),
-        ];
-    }
-
-    /**
-     * Record a new game activity for the user.
-     */
-    public function recordGameActivity(array $data)
-    {
-        $data['user_id'] = $this->id;
-        return GameActivity::recordActivity($data);
-    }
-
-    /**
-     * Get the user's overall rank across all games.
+     * Get the user's overall rank across all games (based on average time - lower is better).
      */
     public function getOverallRank()
     {
-        $userTotalScore = $this->total_score;
-        
-        if ($userTotalScore == 0) {
-            return null;
-        }
-        
-        // Count users with higher total scores
-        $rank = GameActivity::select('users.id')
-            ->join('users', 'game_activities.user_id', '=', 'users.id')
-            ->completed()
-            ->groupBy('users.id')
-            ->havingRaw('SUM(score) > ?', [$userTotalScore])
+        $myAvgTime = $this->gameActivities()->avg('time_spent');
+        if (!$myAvgTime) return null;
+
+        // Rank by average time (lower is better)
+        $betterRankers = \DB::table('game_activities')
+            ->selectRaw('avg(time_spent) as avg_time')
+            ->groupBy('user_id')
+            ->having('avg_time', '<', $myAvgTime)
+            ->get()
             ->count();
-        
-        return $rank + 1; // Add 1 because ranks start at 1
+            
+        return $betterRankers + 1;
     }
 
     /**
-     * Get the user's rank for a specific game type.
+     * Get the user's rank for a specific game type (based on best time - lower is better).
      */
     public function getGameRank($gameType)
     {
-        $userBestScore = $this->getBestScoreForGame($gameType);
-        
-        if ($userBestScore == 0) {
-            return null;
-        }
-        
-        // Count users with higher best scores for this game type
-        $rank = GameActivity::select('users.id')
-            ->join('users', 'game_activities.user_id', '=', 'users.id')
-            ->byGameType($gameType)
-            ->completed()
-            ->groupBy('users.id')
-            ->havingRaw('MAX(score) > ?', [$userBestScore])
+        // Get user's best time
+        $myBestTime = $this->gameActivities()
+            ->where('game_type', $gameType)
+            ->min('time_spent');
+            
+        if (!$myBestTime) return null;
+
+        // Rank by time (lower is better)
+        // Count users with a strictly better (lower) time
+        $betterRankers = \DB::table('game_activities')
+            ->selectRaw('min(time_spent) as best_time')
+            ->where('game_type', $gameType)
+            ->groupBy('user_id')
+            ->having('best_time', '<', $myBestTime)
+            ->get()
             ->count();
-        
-        return $rank + 1; // Add 1 because ranks start at 1
+            
+        return $betterRankers + 1;
+    }
+
+    /**
+     * Get the user's best time for a specific game type.
+     */
+    public function getBestTimeForGame($gameType)
+    {
+        return $this->gameActivities()
+            ->where('game_type', $gameType)
+            ->min('time_spent') ?? 0;
     }
 
     /**
@@ -472,6 +432,58 @@ class User extends Authenticatable
         }
         
         $this->save();
+    }
+
+    /**
+     * Get recent activities for the user.
+     * 
+     * @param int $limit
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getRecentActivities($limit = 5)
+    {
+        return $this->gameActivities()
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+    
+    /**
+     * Get game statistics for the user (counts by game type).
+     * 
+     * @return array
+     */
+    public function getGameStatistics()
+    {
+        $activities = $this->gameActivities;
+        
+        $stats = [
+            'total_games' => $activities->count(),
+            'by_game_type' => [],
+            'best_times' => []
+        ];
+        
+        // Group by game type
+        $grouped = $activities->groupBy('game_type');
+        
+        foreach ($grouped as $type => $games) {
+            $stats['by_game_type'][$type] = $games->count();
+            $bestTime = $games->min('time_spent');
+            $stats['best_times'][$type] = $bestTime;
+        }
+        
+        return $stats;
+    }
+    
+    /**
+     * Record a new game activity for the user.
+     * 
+     * @param array $data
+     * @return GameActivity
+     */
+    public function recordGameActivity(array $data)
+    {
+        return $this->gameActivities()->create($data);
     }
 
 }

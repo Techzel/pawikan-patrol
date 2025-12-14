@@ -3,36 +3,14 @@
 @section('title', 'Patrol Report Details - DENR Admin')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
-    <!-- Admin Header -->
-    <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.patrol-reports.index') }}" class="text-blue-400 hover:text-blue-300">
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
-                    <div>
-                        <h1 class="text-xl font-bold text-white cinzel-heading">Patrol Report Details</h1>
-                        <p class="text-sm text-gray-300">Review and manage report #{{ $patrolReport->id }}</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-4">
-                    <!-- Status Badge -->
-                    <span class="px-3 py-1 text-sm rounded-full cinzel-text
-                        @if($patrolReport->status == 'pending_review') bg-blue-500/20 text-blue-300
-                        @elseif($patrolReport->status == 'reviewing') bg-yellow-500/20 text-yellow-300
-                        @elseif($patrolReport->status == 'accepted') bg-green-500/20 text-green-300
-                        @elseif($patrolReport->status == 'reject') bg-red-500/20 text-red-300
-                        @elseif($patrolReport->status == 'resolved') bg-purple-500/20 text-purple-300
-                        @else bg-gray-500/20 text-gray-300 @endif">
-                        {{ ucfirst(str_replace('_', ' ', $patrolReport->status)) }}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </header>
+<div id="patrolReportShow" class="min-h-screen bg-gray-900">
+    <!-- Back Button -->
+    <div class="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="{{ route('admin.patrol-reports.index') }}" class="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors group">
+            <i class="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
+            <span class="text-sm font-medium">Back to Manage Reports</span>
+        </a>
+    </div>
 
     <!-- Success/Error Messages -->
     @if(session('success'))
@@ -58,7 +36,7 @@
     @endif
 
     <!-- Report Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Main Content -->
             <div class="lg:col-span-2 space-y-6">

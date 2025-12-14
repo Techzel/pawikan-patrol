@@ -81,7 +81,7 @@
         .glass-dark {
             background: rgba(15, 76, 117, 0.95);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(20, 184, 166, 0.3);
+            border: 1px solid rgba(74, 222, 128, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
@@ -101,8 +101,8 @@
 
         .form-input:focus {
             outline: none;
-            border-color: #2dd4bf;
-            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+            border-color: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
         }
 
         .form-input::placeholder {
@@ -120,12 +120,12 @@
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #14b8a6, #0d9488);
+            background: linear-gradient(to bottom, #4ade80, #22c55e);
             border-radius: 3px;
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(to bottom, #0d9488, #0f766e);
+            background: linear-gradient(to bottom, #22c55e, #16a34a);
         }
 
         /* Navigation styles */
@@ -137,9 +137,9 @@
 
     <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen font-['Cinzel']">
+<body class="bg-gray-900 min-h-screen font-['Cinzel']">
     <!-- Navigation -->
-    <?php echo $__env->make('navigation', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    <?php echo $__env->make('patroller.navigation', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <!-- Main Content -->
     <div class="pt-28 pb-12 px-4 sm:px-6 lg:px-8">

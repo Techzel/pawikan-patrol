@@ -7,8 +7,8 @@
 <style>
         #admin-dashboard,
         #admin-dashboard * {
-            font-family: 'Cinzel', serif !important;
-            letter-spacing: 0.02em;
+            font-family: 'Poppins', sans-serif !important;
+            letter-spacing: 0.01em;
         }
 
         /* Preserve Font Awesome glyphs */
@@ -27,18 +27,18 @@
         /* Typography hierarchy */
         .section-heading {
             font-weight: 700;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.02em;
             text-transform: uppercase;
         }
 
         .section-subheading {
             font-weight: 600;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.01em;
         }
 
         .stat-label {
             font-weight: 600;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.01em;
             text-transform: uppercase;
             font-size: 0.875rem;
         }
@@ -53,21 +53,12 @@
             letter-spacing: 0.01em;
             opacity: 0.85;
         }
-        
-        /* Force Poppins font for form elements in admin dashboard */
-        #createPatrollerModal input[type="text"],
-        #createPatrollerModal input[type="email"],
-        #createPatrollerModal input[type="tel"],
-        #createPatrollerModal input[type="password"],
-        #createPatrollerModal label {
-            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
-        }
     </style>
 @endpush
 
 @section('content')
     <!-- Background Wrapper -->
-    <div id="admin-dashboard" class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 pt-20">
+    <div id="admin-dashboard" class="min-h-screen bg-gray-900 pt-20">
         <!-- Main Dashboard Content -->
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12 relative z-10">
             <!-- Professional Admin Header -->
@@ -274,7 +265,7 @@
 
     <!-- Create Patroller Modal -->
     <div id="createPatrollerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 w-full max-w-md sm:max-w-lg mx-auto mt-14 sm:mt-20">
+        <div onclick="event.stopPropagation()" class="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 w-full max-w-md sm:max-w-lg mx-auto mt-14 sm:mt-20">
             <div class="p-6 border-b border-white/10">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xl font-bold text-white cinzel-subheading section-heading">Create New Patroller</h3>
@@ -374,6 +365,40 @@
             </form>
         </div>
     </div>
+
+    <!-- Delete Patroller Confirmation Modal -->
+    <div id="deletePatrollerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white/10 backdrop-blur-md rounded-xl border border-red-500/30 w-full max-w-md mx-auto">
+            <div class="p-6 border-b border-white/10">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-white" style="font-family: 'Poppins', sans-serif;">Delete Patroller</h3>
+                        <p class="text-gray-300 mt-2 body-text">Are you sure you want to delete this patroller? This action cannot be undone.</p>
+                        <div class="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                            <p class="text-sm text-red-300 body-text">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                All associated data will be permanently removed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 flex justify-end space-x-3">
+                <button type="button" onclick="closeDeletePatrollerModal()" 
+                        class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors body-text">
+                    Cancel
+                </button>
+                <button type="button" id="confirmDeleteButton"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors body-text">
+                    <i class="fas fa-trash mr-2"></i>Delete Patroller
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -423,49 +448,82 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleConfirmPasswordBtn.setAttribute('aria-label', 'Show confirm password');
     };
 
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeModal();
-        }
-    });
+    // Removed backdrop click and Escape key close functionality
+    // Modal now only closes via X button or Cancel button
 
     window.openCreatePatrollerModal = openModal;
     window.closeCreatePatrollerModal = closeModal;
 });
 
+// Delete Patroller Modal Functions
+let patrollerIdToDelete = null;
+
 function deletePatroller(patrollerId) {
-    if (confirm('Are you sure you want to delete this patroller? This action cannot be undone.')) {
-        // Create form element
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `{{ route('admin.patrollers.destroy', ':id') }}`.replace(':id', patrollerId);
-        
-        // Add CSRF token
-        const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (csrfToken) {
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = csrfToken.getAttribute('content');
-            form.appendChild(csrfInput);
-        }
-        
-        // Add DELETE method
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
-        
-        // Submit form
-        document.body.appendChild(form);
-        form.submit();
-    }
+    patrollerIdToDelete = patrollerId;
+    const modal = document.getElementById('deletePatrollerModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
 }
+
+function closeDeletePatrollerModal() {
+    const modal = document.getElementById('deletePatrollerModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+    patrollerIdToDelete = null;
+}
+
+// Confirm delete button handler
+document.addEventListener('DOMContentLoaded', () => {
+    const confirmDeleteBtn = document.getElementById('confirmDeleteButton');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (patrollerIdToDelete) {
+                // Create form element
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route('admin.patrollers.destroy', ':id') }}`.replace(':id', patrollerIdToDelete);
+                
+                // Add CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken.getAttribute('content');
+                    form.appendChild(csrfInput);
+                }
+                
+                // Add DELETE method
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                
+                // Submit form
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeletePatrollerModal();
+        }
+    });
+
+    // Close modal when clicking outside
+    const deleteModal = document.getElementById('deletePatrollerModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) {
+                closeDeletePatrollerModal();
+            }
+        });
+    }
+});
 </script>

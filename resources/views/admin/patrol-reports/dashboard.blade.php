@@ -25,27 +25,27 @@
         --glass-border: rgba(255, 255, 255, 0.08);
     }
 
-    /* Restore Cinzel typography */
+    /* Use Poppins typography */
     #patrolReportsDashboard,
     #patrolReportsDashboard * {
-        font-family: 'Cinzel', serif !important;
-        letter-spacing: 0.02em;
+        font-family: 'Poppins', sans-serif !important;
+        letter-spacing: 0.01em;
     }
 
     .section-heading {
         font-weight: 700;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.02em;
         text-transform: uppercase;
     }
 
     .section-subheading {
         font-weight: 600;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.01em;
     }
 
     .stat-label {
         font-weight: 600;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.01em;
         text-transform: uppercase;
         font-size: 0.75rem;
     }
@@ -315,9 +315,17 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 pt-20 pb-16" id="patrolReportsDashboard">
+<div class="min-h-screen bg-gray-900 pt-20 pb-16" id="patrolReportsDashboard">
     <!-- Main Dashboard Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 relative z-10 main-container">
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors group">
+                <i class="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
+                <span class="text-sm font-medium">Back to Dashboard</span>
+            </a>
+        </div>
+
         <!-- Patrol Reports Dashboard Header -->
         <header class="mb-8 sm:mb-10 relative overflow-hidden rounded-2xl glass-card transform transition-all duration-500 hover:shadow-2xl">
             <!-- Background with animated gradient -->

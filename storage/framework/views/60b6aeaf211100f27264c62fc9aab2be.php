@@ -1,41 +1,19 @@
 <?php $__env->startSection('title', 'Patrol Reports Management - DENR Admin'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
-    <!-- Admin Header -->
-    <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-4">
-                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="text-blue-400 hover:text-blue-300">
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
-                    <div>
-                        <h1 class="text-xl font-bold text-white cinzel-heading">Patrol Reports Management</h1>
-                        <p class="text-sm text-gray-300">Review and manage all patrol reports</p>
-                    </div>
-                </div>
+<div id="patrolReportsIndex" class="min-h-screen bg-gray-900">
+    <!-- Back Button - Above Header -->
+    <div class="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="<?php echo e(route('admin.dashboard')); ?>" class="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors group">
+            <i class="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
+            <span class="text-sm font-medium">Back to Dashboard</span>
+        </a>
+    </div>
 
-                <div class="flex items-center space-x-4">
-                    <!-- Quick Actions -->
-                    <div class="flex items-center space-x-2">
-                        <button onclick="bulkStatusUpdate('accepted')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cinzel-text" title="Accept Selected Reports">
-                            <i class="fas fa-check-circle mr-1"></i>Accept Selected
-                        </button>
-                        <button onclick="bulkStatusUpdate('reject')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cinzel-text" title="Reject Selected Reports">
-                            <i class="fas fa-times-circle mr-1"></i>Reject Selected
-                        </button>
-                        <button onclick="exportReports('excel')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cinzel-text" title="Export to Excel">
-                            <i class="fas fa-download mr-1"></i>Export
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+
 
     <!-- Filters -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-6">
         <!-- Quick Status Overview -->
         <div class="grid grid-cols-3 gap-4 mb-6">
             <div class="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-center">
@@ -263,6 +241,141 @@
     </div>
 </div>
 
+<!-- Custom Confirmation Modal -->
+<div id="confirmModal" class="fixed inset-0 z-[9999] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeConfirmModal()"></div>
+
+        <!-- Center modal -->
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <div class="inline-block align-bottom bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-ocean-500/30">
+            <div class="px-6 pt-6 pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div id="modalIconContainer" class="mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-green-500/20 sm:mx-0 sm:h-12 sm:w-12">
+                        <svg id="modalIcon" class="h-7 w-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
+                        <h3 class="text-xl font-bold text-white mb-2" id="modal-title" style="font-family: 'Poppins', sans-serif;">
+                            Confirm Action
+                        </h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-300" id="modalMessage" style="font-family: 'Poppins', sans-serif;">
+                                Are you sure you want to proceed with this action?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800/50 px-6 py-4 sm:flex sm:flex-row-reverse gap-3">
+                <button type="button" id="confirmButton" onclick="confirmModalAction()" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-base font-medium text-white hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200 transform hover:scale-105" style="font-family: 'Poppins', sans-serif;">
+                    OK
+                </button>
+                <button type="button" onclick="closeConfirmModal()" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-600 shadow-sm px-6 py-3 bg-gray-700 text-base font-medium text-gray-200 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:w-auto sm:text-sm transition-all duration-200" style="font-family: 'Poppins', sans-serif;">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #confirmModal {
+        animation: fadeIn 0.2s ease-out;
+    }
+    
+    #confirmModal > div > div:last-child {
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+</style>
+
+<script>
+let confirmModalCallback = null;
+
+function showConfirmModal(message, title = 'Confirm Action', type = 'success') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirmModal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalIconContainer = document.getElementById('modalIconContainer');
+        const confirmButton = document.getElementById('confirmButton');
+        
+        // Set content
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        
+        // Set icon and colors based on type
+        if (type === 'danger' || type === 'reject') {
+            modalIconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12';
+            modalIcon.className = 'h-7 w-7 text-red-400';
+            modalIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+            confirmButton.className = 'w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-base font-medium text-white hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200 transform hover:scale-105';
+        } else if (type === 'warning') {
+            modalIconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-yellow-500/20 sm:mx-0 sm:h-12 sm:w-12';
+            modalIcon.className = 'h-7 w-7 text-yellow-400';
+            modalIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>';
+            confirmButton.className = 'w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 text-base font-medium text-white hover:from-yellow-700 hover:to-yellow-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200 transform hover:scale-105';
+        } else {
+            modalIconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-green-500/20 sm:mx-0 sm:h-12 sm:w-12';
+            modalIcon.className = 'h-7 w-7 text-green-400';
+            modalIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+            confirmButton.className = 'w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-base font-medium text-white hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200 transform hover:scale-105';
+        }
+        
+        // Store callback
+        confirmModalCallback = resolve;
+        
+        // Show modal
+        modal.classList.remove('hidden');
+    });
+}
+
+function closeConfirmModal() {
+    const modal = document.getElementById('confirmModal');
+    modal.classList.add('hidden');
+    if (confirmModalCallback) {
+        confirmModalCallback(false);
+        confirmModalCallback = null;
+    }
+}
+
+function confirmModalAction() {
+    const modal = document.getElementById('confirmModal');
+    modal.classList.add('hidden');
+    if (confirmModalCallback) {
+        confirmModalCallback(true);
+        confirmModalCallback = null;
+    }
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeConfirmModal();
+    }
+});
+</script>
+
 <script>
 // Toast notification function
 function showToast(message, type = 'success') {
@@ -295,7 +408,7 @@ function showToast(message, type = 'success') {
 }
 
 // Quick action function for table actions
-function quickAction(reportId, status) {
+async function quickAction(reportId, status) {
     const statusText = {
         'reviewing': 'start reviewing',
         'accepted': 'accept',
@@ -304,7 +417,13 @@ function quickAction(reportId, status) {
         'closed': 'close'
     }[status] || status.replace('_', ' ');
 
-    if (!confirm(`Are you sure you want to ${statusText} this report?`)) {
+    const confirmed = await showConfirmModal(
+        `Are you sure you want to ${statusText} this report?`,
+        'Confirm Action',
+        status === 'reject' ? 'danger' : 'success'
+    );
+    
+    if (!confirmed) {
         return;
     }
 
@@ -353,7 +472,7 @@ function updateSelectedCount() {
 }
 
 // Bulk status update
-function bulkStatusUpdate(status) {
+async function bulkStatusUpdate(status) {
     const selectedReports = document.querySelectorAll('input[name="report_ids[]"]:checked');
     if (selectedReports.length === 0) {
         showToast('Please select at least one report.', 'error');
@@ -371,7 +490,13 @@ function bulkStatusUpdate(status) {
         confirmMessage += '\n\nNote: Reports will be validated. You can add GPS coordinates individually later for map display.';
     }
 
-    if (!confirm(confirmMessage)) {
+    const confirmed = await showConfirmModal(
+        confirmMessage,
+        'Confirm Bulk Action',
+        status === 'reject' ? 'danger' : 'success'
+    );
+    
+    if (!confirmed) {
         return;
     }
 
@@ -470,9 +595,13 @@ function scheduleFollowup() {
 }
 
 // Quick approve functionality - Validates the report
-function quickApprove(reportId) {
+async function quickApprove(reportId) {
     // Show confirmation dialog
-    const confirmed = confirm('Are you sure you want to validate and approve this report?');
+    const confirmed = await showConfirmModal(
+        'Are you sure you want to validate and approve this report?',
+        'Validate Report',
+        'success'
+    );
     
     if (!confirmed) {
         console.log('Quick approve cancelled by user');
@@ -522,11 +651,15 @@ function quickApprove(reportId) {
 // Delete modal and functionality
 let deleteReportId = null;
 
-function showDeleteModal(reportId) {
+async function showDeleteModal(reportId) {
     deleteReportId = reportId;
     
-    // Show simple confirmation dialog
-    const confirmed = confirm('Are you sure you want to reject this patrol report? The report will be marked as rejected and will not be deleted.');
+    // Show custom confirmation modal
+    const confirmed = await showConfirmModal(
+        'Are you sure you want to reject this patrol report? The report will be marked as rejected and will not be deleted.',
+        'Reject Report',
+        'danger'
+    );
     
     if (!confirmed) {
         console.log('Reject cancelled by user');

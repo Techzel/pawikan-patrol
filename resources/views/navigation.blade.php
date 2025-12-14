@@ -1,9 +1,62 @@
 <style>
+    nav, nav *,
+    #mobile-menu, #mobile-menu * {
+        font-family: 'Poppins', sans-serif !important;
+        font-size: 0.875rem !important;
+        font-weight: 400 !important;
+    }
+    
     nav .text-sm.font-medium,
     #mobile-menu .text-sm.font-medium {
-        font-size: 0.82rem !important;
         line-height: 1.2 !important;
         letter-spacing: 0.02em;
+    }
+    
+    /* Logo title styling */
+    nav .logo-title {
+        font-family: 'Cinzel', serif !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+    }
+    
+    @media (min-width: 640px) {
+        nav .logo-title {
+            font-size: 1.25rem !important;
+        }
+    }
+    
+    /* Subtitle styling */
+    nav .logo-subtitle {
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 300 !important;
+        font-size: 0.65rem !important;
+    }
+    
+    @media (min-width: 640px) {
+        nav .logo-subtitle {
+            font-size: 0.75rem !important;
+        }
+    }
+    
+    /* Desktop dropdown content styling - all dropdowns including account */
+    nav .dropdown-link,
+    nav .dropdown-link *,
+    nav .absolute.top-full a,
+    nav .absolute.top-full a *,
+    nav .absolute.top-full button,
+    nav .absolute.top-full button * {
+        font-family: 'Poppins', sans-serif !important;
+    }
+    
+    /* Mobile sub-items (dropdown content) styling - only items inside ml-8 divs */
+    @media (max-width: 767px) {
+        #mobile-menu .ml-8 .mobile-nav-link,
+        #mobile-menu .ml-8 .mobile-nav-link *,
+        #mobile-menu .mobile-account-menu,
+        #mobile-menu .mobile-account-menu * {
+            font-family: 'Poppins', sans-serif !important;
+            font-size: 0.95rem !important;
+        }
     }
 </style>
 
@@ -12,19 +65,20 @@
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
             <div class="flex items-center">
-                <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <a href="{{ auth()->check() && auth()->user()->role === 'admin' ? route('admin.dashboard') : '/' }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <img src="{{ asset('img/lg.png') }}" alt="Pawikan Patrol Logo" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full">
                     <div class="ml-2 sm:ml-0">
-                        <span class="text-lg sm:text-xl font-bold text-white">
+                        <span class="logo-title text-lg sm:text-xl font-normal text-white">
                             Dahican Pawikan Patrol
                         </span>
-                        <div class="text-[10px] sm:text-xs text-gray-300 mt-0.5">City of Mati – Dahican, est. 2004</div>
+                        <div class="logo-subtitle text-[10px] sm:text-xs text-gray-300 mt-0.5">City of Mati – Dahican, est. 2004</div>
                     </div>
                 </a>
             </div>
 
             <!-- Desktop Navigation -->
             <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
+                @if(!auth()->check() || auth()->user()->role !== 'admin')
                 <!-- Home with Dropdown -->
                 <div class="relative group">
                     <a href="{{ url('/') }}" class="flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 {{ request()->is('/') ? 'bg-ocean-600/30' : '' }}">
@@ -79,6 +133,7 @@
                     <span class="text-base">🧊</span>
                     <span class="text-sm font-medium">3D Explorer</span>
                 </a>
+                @endif
 
                 <!-- Patrol Map with Dropdown -->
                 <div class="relative group">
@@ -101,11 +156,29 @@
                     </div>
                 </div>
 
-                <!-- Games -->
-                <a href="/games" class="flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 {{ request()->is('games*') ? 'bg-ocean-600/30' : '' }}">
-                    <span class="text-base">🎮</span>
-                    <span class="text-sm font-medium">Games</span>
-                </a>
+                @if(!auth()->check() || auth()->user()->role !== 'admin')
+                <!-- Games with Dropdown -->
+                <div class="relative group">
+                    <a href="/games" class="flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 {{ request()->is('games*') || request()->is('leaderboards*') ? 'bg-ocean-600/30' : '' }}">
+                        <span class="text-base">🎮</span>
+                        <span class="text-sm font-medium">Games</span>
+                        <svg class="w-3.5 h-3.5 mt-0.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </a>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="absolute top-full left-0 mt-2 w-56 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                        <div class="p-2 space-y-1">
+
+                            <a href="{{ route('leaderboards') }}" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <span class="text-lg">🏆</span>
+                                <span class="text-sm font-medium">Leaderboards</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Account Dropdown -->
                 @guest
@@ -121,11 +194,11 @@
                         <!-- Account Dropdown Menu -->
                         <div class="absolute top-full right-0 mt-2 w-48 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                             <div class="p-2 space-y-1">
-                                <a href="/auth" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
+                                <a href="#" onclick="event.preventDefault(); openAuthModal('login')" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
                                     <span class="text-sm">🔑</span>
                                     <span class="text-sm">Login</span>
                                 </a>
-                                <a href="/auth#register" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
+                                <a href="#" onclick="event.preventDefault(); openAuthModal('register')" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
                                     <span class="text-sm">📝</span>
                                     <span class="text-sm">Register</span>
                                 </a>
@@ -201,6 +274,7 @@
     <!-- Mobile Navigation -->
     <div id="mobile-menu" class="md:hidden hidden bg-slate-800/95 backdrop-blur-lg border-t border-ocean-500/20 max-h-[calc(100vh-5rem)] overflow-y-auto">
         <div class="px-2 pt-2 pb-3 space-y-1">
+            @if(!auth()->check() || auth()->user()->role !== 'admin')
             <!-- Home Section -->
             <div class="space-y-1">
                 <a href="{{ url('/') }}" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
@@ -246,6 +320,7 @@
                 <span class="text-lg">🌐</span>
                 <span class="text-sm font-medium">3D Explorer</span>
             </a>
+            @endif
             
             <!-- Patrol Map Section -->
             <div class="space-y-1">
@@ -263,10 +338,22 @@
                 </div>
             </div>
             
-            <a href="/games" class="mobile-nav-link flex items-center gap-3 hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left {{ request()->is('games*') ? '!bg-ocean-600/30 !text-ocean-300' : 'text-white' }}" style="{{ request()->is('games*') ? 'background-color: rgba(20, 184, 166, 0.3) !important; color: #5eead4 !important;' : '' }}">
-                <span class="text-lg">🎮</span>
-                <span class="text-sm font-medium">Games</span>
-            </a>
+            @if(!auth()->check() || auth()->user()->role !== 'admin')
+            <!-- Games Section -->
+            <div class="space-y-1">
+                <a href="/games" class="mobile-nav-link flex items-center gap-3 hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left {{ request()->is('games*') && !request()->is('leaderboards*') ? '!bg-ocean-600/30 !text-ocean-300' : 'text-white' }}" style="{{ request()->is('games*') && !request()->is('leaderboards*') ? 'background-color: rgba(20, 184, 166, 0.3) !important; color: #5eead4 !important;' : '' }}">
+                    <span class="text-lg">🎮</span>
+                    <span class="text-sm font-medium">Games</span>
+                </a>
+                
+                <div class="ml-8 space-y-1">
+                    <a href="{{ route('leaderboards') }}" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left {{ request()->is('leaderboards*') ? '!bg-ocean-600/30 !text-ocean-300' : '' }}" style="{{ request()->is('leaderboards*') ? 'background-color: rgba(20, 184, 166, 0.3) !important; color: #5eead4 !important;' : '' }}">
+                        <span class="text-lg">🏆</span>
+                        <span class="text-sm font-medium">Leaderboards</span>
+                    </a>
+                </div>
+            </div>
+            @endif
             
             <!-- Account Section -->
             @guest
@@ -281,11 +368,11 @@
                     
                     <!-- Account Sub-items -->
                     <div class="ml-8 space-y-1 mobile-account-menu hidden">
-                        <a href="/auth" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="#" onclick="event.preventDefault(); openAuthModal('login')" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🔑</span>
                             <span class="text-sm font-medium">Login</span>
                         </a>
-                        <a href="/auth#register" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="#" onclick="event.preventDefault(); openAuthModal('register')" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">📝</span>
                             <span class="text-sm font-medium">Register</span>
                         </a>
@@ -294,7 +381,7 @@
             @else
                 <div class="space-y-1">
                     <button class="mobile-account-toggle flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left {{ request()->is('profile*') || request()->is('admin/dashboard*') || request()->is('patroller/dashboard*') ? 'bg-ocean-600/30' : '' }}">
-                        <span class="text-lg">👤</span>
+                        <!-- <span class="text-lg">👤</span> -->
                         <span class="text-sm font-medium">
                             @if(Auth::user()->role === 'admin')
                                 Admin
@@ -425,3 +512,5 @@
     }
 })();
 </script>
+
+@include('auth.modal')

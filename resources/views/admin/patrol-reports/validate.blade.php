@@ -249,16 +249,94 @@
     const statusSelect = document.getElementById('status');
     const validationNotes = document.getElementById('validation_notes');
 
+    // Create inline error notification element
+    function showInlineError(message) {
+        // Remove any existing error notification
+        const existingError = document.getElementById('inline-error-notification');
+        if (existingError) {
+            existingError.remove();
+        }
+
+        // Create new error notification
+        const errorDiv = document.createElement('div');
+        errorDiv.id = 'inline-error-notification';
+        errorDiv.className = 'mt-3 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-md shadow-lg animate-slide-in';
+        errorDiv.innerHTML = `
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3 flex-1">
+                    <p class="text-sm font-medium text-red-800 dark:text-red-200">
+                        ${message}
+                    </p>
+                </div>
+                <div class="ml-auto pl-3">
+                    <button type="button" onclick="this.parentElement.parentElement.parentElement.remove()" class="inline-flex text-red-400 hover:text-red-600 dark:hover:text-red-300 focus:outline-none">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Insert after validation notes textarea
+        validationNotes.parentElement.appendChild(errorDiv);
+
+        // Scroll to the error
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (errorDiv && errorDiv.parentElement) {
+                errorDiv.style.opacity = '0';
+                errorDiv.style.transform = 'translateX(100%)';
+                errorDiv.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => errorDiv.remove(), 300);
+            }
+        }, 5000);
+    }
+
     form.addEventListener('submit', function(e) {
         const status = statusSelect.value;
         const notes = validationNotes.value.trim();
         
         if ((status === 'needs_correction' || status === 'rejected') && notes === '') {
             e.preventDefault();
-            alert('Validation notes are required when status is "Needs Correction" or "Reject".');
+            showInlineError('Validation notes are required when status is "Needs Correction" or "Reject".');
             validationNotes.focus();
+            
+            // Add red border to the textarea
+            validationNotes.classList.add('border-red-500', 'dark:border-red-500');
+            validationNotes.classList.remove('border-gray-300', 'dark:border-gray-600');
+            
+            // Remove red border when user starts typing
+            validationNotes.addEventListener('input', function() {
+                validationNotes.classList.remove('border-red-500', 'dark:border-red-500');
+                validationNotes.classList.add('border-gray-300', 'dark:border-gray-600');
+            }, { once: true });
         }
     });
 </script>
+
+<style>
+    @keyframes slide-in {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .animate-slide-in {
+        animation: slide-in 0.3s ease-out;
+    }
+</style>
 @endpush
 @endsection

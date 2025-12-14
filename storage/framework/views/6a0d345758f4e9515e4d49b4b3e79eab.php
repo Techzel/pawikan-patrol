@@ -74,22 +74,24 @@ function getRankBadge($rank) {
 <?php $__env->startSection('title', 'My Profile - Pawikan Patrol'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="min-h-screen py-24 px-4">
+<div class="min-h-screen py-24 px-4 bg-gray-900 font-poppins">
     <div class="max-w-6xl mx-auto">
         <!-- Header Section -->
-        <div class="glass-dark rounded-2xl p-8 mb-8 border border-ocean-500/30 shadow-xl">
+        <div class="glass-dark rounded-2xl p-8 mb-8 border border-green-500/30 shadow-xl">
             <div class="text-center">
-                <h1 class="text-4xl font-bold bg-gradient-to-r from-ocean-400 via-ocean-300 to-teal-400 bg-clip-text text-transparent mb-2 cinzel-heading">
+                <h1 class="text-4xl font-bold text-green-400 mb-2 font-poppins">
                     My Profile
                 </h1>
-                <p class="text-gray-300 text-lg cinzel-body">Manage your account and track your conservation journey</p>
+                <p class="text-gray-300 text-lg">Manage your account and track your conservation journey</p>
             </div>
         </div>
 
         <!-- Success/Error Messages -->
         <?php if(session('success')): ?>
             <div class="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-100 text-sm backdrop-blur-sm">
-                <i class="fas fa-check-circle mr-2"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 <?php echo e(session('success')); ?>
 
             </div>
@@ -97,7 +99,9 @@ function getRankBadge($rank) {
 
         <?php if(session('error')): ?>
             <div class="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-100 text-sm backdrop-blur-sm">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
                 <?php echo e(session('error')); ?>
 
             </div>
@@ -108,7 +112,7 @@ function getRankBadge($rank) {
             <!-- Left Sidebar - Profile Card & Quick Stats -->
             <div class="lg:col-span-1 space-y-6">
                 <!-- Profile Card -->
-                <div class="glass-dark rounded-2xl p-6 border border-ocean-500/30">
+                <div class="glass-dark rounded-2xl p-6 border border-green-500/30">
                     <div class="text-center">
                         <div class="relative inline-block mb-4">
                             <div class="relative">
@@ -118,49 +122,21 @@ function getRankBadge($rank) {
                                          class="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-ocean-500/30 mx-auto"
                                          onerror="this.onerror=null; this.src='<?php echo e(asset('images/default-avatar.png')); ?>';">
                                 <?php else: ?>
-                                    <div class="w-24 h-24 bg-gradient-to-br from-ocean-400 to-ocean-600 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg mx-auto">
+                                    <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg mx-auto">
                                         <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
 
                                     </div>
                                 <?php endif; ?>
                             </div>
                             
-<?php
-    $overallRank = auth()->user()->getOverallRank();
-    $userBadge = getRankBadge($overallRank);
-?>
-                            <!-- Enhanced Rank Badge -->
-                            <?php if($userBadge): ?>
-                                <div class="absolute -bottom-1 -right-1 group">
-                                    <!-- Badge with pulse animation -->
-                                    <div class="relative">
-                                        <!-- Outer glow effect -->
-                                        <div class="absolute inset-0 <?php echo e(str_replace(['border-2', 'bg-gradient-to-r'], ['border-4', 'bg-gradient-to-r'], $userBadge['class'])); ?> rounded-full animate-pulse opacity-60"></div>
-                                        <!-- Main badge -->
-                                        <div class="relative w-10 h-10 rounded-full <?php echo e($userBadge['class']); ?> border-4 border-deep-900 flex items-center justify-center shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
-                                            <span class="text-sm font-bold drop-shadow-lg"><?php echo e($userBadge['icon']); ?></span>
-                                        </div>
-                                        <!-- Rank tooltip -->
-                                        <div class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-deep-800 text-white text-xs rounded-lg border border-white/20 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                            <div class="font-semibold"><?php echo e($userBadge['title']); ?></div>
-                                            <div class="text-gray-400">Rank #<?php echo e($overallRank); ?></div>
-                                            <!-- Tooltip arrow -->
-                                            <div class="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-deep-800"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php else: ?>
-                                <!-- Verification Badge -->
-                                <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-deep-900 flex items-center justify-center">
-                                    <i class="fas fa-check text-white text-xs"></i>
-                                </div>
-                            <?php endif; ?>
-                            
                             <!-- Upload Button Overlay -->
-                            <div class="absolute inset-0 bg-black/30 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer backdrop-blur-sm" onclick="document.getElementById('profilePictureInput').click()">
+                            <div class="absolute inset-0 bg-black/30 rounded-full opacity-0 hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer backdrop-blur-sm" onclick="document.getElementById('profilePictureInput').click()">
                                 <div class="text-center">
                                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mb-1">
-                                        <i class="fas fa-camera text-white"></i>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
                                     </div>
                                     <div class="text-white text-xs font-medium">Upload</div>
                                 </div>
@@ -184,62 +160,112 @@ function getRankBadge($rank) {
                             <!-- Loading Indicator -->
                             <div id="profilePictureLoading" class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center" style="display: none;">
                                 <div class="text-white text-center">
-                                    <i class="fas fa-spinner fa-spin text-xl mb-1"></i>
+                                    <svg class="animate-spin h-5 w-5 text-white mx-auto mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
                                     <div class="text-xs">Uploading...</div>
                                 </div>
                             </div>
                         </div>
                         
-                        <h2 class="text-xl font-bold text-white mb-1 cinzel-subheading"><?php echo e(auth()->user()->name); ?></h2>
-                        <p class="text-gray-400 text-sm mb-3 cinzel-text"><?php echo e(auth()->user()->email); ?></p>
+                        <h2 class="text-xl font-bold text-white mb-1"><?php echo e(auth()->user()->name); ?></h2>
+                        <p class="text-gray-400 text-sm mb-4"><?php echo e(auth()->user()->email); ?></p>
                         
+                        <?php
+                            // Get rank for each game
+                            $memoryRank = auth()->user()->getGameRank('memory-match');
+                            $puzzleRank = auth()->user()->getGameRank('puzzle');
+                            $findPawikanRank = auth()->user()->getGameRank('find-the-pawikan');
+                            
+                            $badges = [];
+                            if ($memoryRank && $memoryRank <= 10) {
+                                $badges[] = [
+                                    'game' => 'Memory Match',
+                                    'icon' => '🧠',
+                                    'rank' => $memoryRank,
+                                    'gradient' => 'from-purple-500 to-purple-600',
+                                    'border' => 'border-purple-500/50',
+                                    'bg' => 'bg-purple-500/10'
+                                ];
+                            }
+                            if ($puzzleRank && $puzzleRank <= 10) {
+                                $badges[] = [
+                                    'game' => 'Pawikan Puzzle',
+                                    'icon' => '🧩',
+                                    'rank' => $puzzleRank,
+                                    'gradient' => 'from-orange-500 to-orange-600',
+                                    'border' => 'border-orange-500/50',
+                                    'bg' => 'bg-orange-500/10'
+                                ];
+                            }
+                            if ($findPawikanRank && $findPawikanRank <= 10) {
+                                $badges[] = [
+                                    'game' => 'Find the Pawikan',
+                                    'icon' => '🐢',
+                                    'rank' => $findPawikanRank,
+                                    'gradient' => 'from-teal-500 to-teal-600',
+                                    'border' => 'border-teal-500/50',
+                                    'bg' => 'bg-teal-500/10'
+                                ];
+                            }
+                        ?>
+                        
+                        <!-- Champion Badges Section -->
+                        <?php if(count($badges) > 0): ?>
+                            <div class="mb-4">
+                                <div class="space-y-2">
+                                    <?php $__currentLoopData = $badges; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $badge): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <div class="group <?php echo e($badge['bg']); ?> border <?php echo e($badge['border']); ?> rounded-lg p-2 hover:scale-105 transition-all duration-300">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-8 h-8 bg-gradient-to-br <?php echo e($badge['gradient']); ?> rounded-lg flex items-center justify-center shadow-lg">
+                                                        <span class="text-lg"><?php echo e($badge['icon']); ?></span>
+                                                    </div>
+                                                    <div class="text-left">
+                                                        <div class="text-white font-semibold text-xs"><?php echo e($badge['game']); ?></div>
+                                                        <div class="text-gray-400 text-[10px]">Rank #<?php echo e($badge['rank']); ?></div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-yellow-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>                        
                         <div class="flex justify-center gap-2 mb-3">
                             <?php echo auth()->user()->getVerificationStatusBadge(); ?>
 
                             <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs border border-green-500/30">
-                                <i class="fas fa-leaf mr-1"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                </svg>
                                 Conservationist
                             </span>
                         </div>
                         
-                        <div class="text-xs text-gray-400 cinzel-text">
-                            <i class="fas fa-calendar-alt mr-1"></i>
+                        <div class="text-xs text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                             Member since <?php echo e(auth()->user()->created_at->format('M j, Y')); ?>
 
                         </div>
                     </div>
                 </div>
 
-                <!-- Quick Stats -->
-                <div class="glass-dark rounded-2xl p-6 border border-ocean-500/30">
-                    <h3 class="text-lg font-bold text-white mb-4 cinzel-subheading">
-                        <i class="fas fa-chart-line mr-2 text-ocean-400"></i>
-                        Quick Stats
-                    </h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-sm cinzel-text">Games Played</span>
-                            <span class="text-xl font-bold text-ocean-400" data-stat="total-games"><?php echo e(auth()->user()->total_games_played ?? 0); ?></span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-sm cinzel-text">Total Score</span>
-                            <span class="text-xl font-bold text-green-400" data-stat="total-score"><?php echo e(auth()->user()->total_score ?? 0); ?></span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-sm cinzel-text">Achievements</span>
-                            <span class="text-xl font-bold text-yellow-400"><?php echo e(auth()->user()->achievements_count ?? 0); ?></span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-sm cinzel-text">Learning Streak</span>
-                            <span class="text-xl font-bold text-orange-400"><?php echo e(auth()->user()->learning_streak ?? 0); ?> days</span>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Recent Activity -->
-                <div class="glass-dark rounded-2xl p-6 border border-ocean-500/30">
-                    <h3 class="text-lg font-bold text-white mb-4 cinzel-subheading">
-                        <i class="fas fa-history mr-2 text-ocean-400"></i>
+                <div class="glass-dark rounded-2xl p-6 border border-green-500/30">
+                    <h3 class="text-lg font-bold text-green-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 inline text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                         Recent Activity
                     </h3>
                     <div class="space-y-2" id="recent-activities">
@@ -250,14 +276,24 @@ function getRankBadge($rank) {
                         <?php if($recentActivities->count() > 0): ?>
                             <?php $__currentLoopData = $recentActivities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $activity): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="flex items-center gap-2 text-xs">
-                                    <div class="w-1.5 h-1.5 <?php echo e($activity->game_type === 'quiz' ? 'bg-blue-400' : ($activity->game_type === 'word_scramble' ? 'bg-green-400' : 'bg-purple-400')); ?> rounded-full"></div>
-                                    <span class="text-gray-400 truncate">
+                                    <div class="w-1.5 h-1.5 <?php echo e($activity->game_type === 'quiz' ? 'bg-blue-400' : 
+                                        ($activity->game_type === 'word_scramble' ? 'bg-green-400' : 
+                                        ($activity->game_type === 'memory-match' ? 'bg-purple-400' : 
+                                        ($activity->game_type === 'puzzle' ? 'bg-orange-400' : 
+                                        ($activity->game_type === 'find-the-pawikan' ? 'bg-teal-400' : 'bg-gray-400'))))); ?> rounded-full"></div>
+                                    <span class="text-gray-300 truncate">
                                         <?php if($activity->game_type === 'quiz'): ?>
                                             Turtle Quiz
                                         <?php elseif($activity->game_type === 'word_scramble'): ?>
                                             Word Scramble
+                                        <?php elseif($activity->game_type === 'memory-match'): ?>
+                                            Memory Match
+                                        <?php elseif($activity->game_type === 'puzzle'): ?>
+                                            Pawikan Puzzle
+                                        <?php elseif($activity->game_type === 'find-the-pawikan'): ?>
+                                            Find the Pawikan
                                         <?php else: ?>
-                                            <?php echo e($activity->game_name); ?>
+                                            <?php echo e(ucwords(str_replace(['-', '_'], ' ', $activity->game_type))); ?>
 
                                         <?php endif; ?>
                                         (<?php echo e($activity->score); ?> pts)
@@ -267,7 +303,7 @@ function getRankBadge($rank) {
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         <?php else: ?>
                             <div class="text-center py-3">
-                                <div class="text-gray-400 text-xs">No activities yet. Start playing!</div>
+                                <div class="text-gray-300 text-xs">No activities yet. Start playing!</div>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -277,14 +313,18 @@ function getRankBadge($rank) {
             <!-- Right Content - Main Dashboard -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Account Information -->
-                <div class="glass-dark rounded-2xl p-6 border border-ocean-500/30">
+                <div class="glass-dark rounded-2xl p-6 border border-green-500/30">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-white">
-                            <i class="fas fa-user-edit mr-2 text-ocean-400"></i>
+                        <h3 class="text-xl font-bold text-green-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 inline text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
                             Account Information
                         </h3>
-                        <button id="editProfileBtn" class="bg-ocean-500 hover:bg-ocean-600 text-white px-3 py-1.5 rounded-lg text-sm transition-colors">
-                            <i class="fas fa-edit mr-1"></i>
+                        <button id="editProfileBtn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-sm transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
                             Edit
                         </button>
                     </div>
@@ -330,7 +370,7 @@ function getRankBadge($rank) {
                             <div>
                                 <label for="name" class="block text-xs font-medium text-gray-300 mb-1">Full Name</label>
                                 <input type="text" id="name" name="name" value="<?php echo e(auth()->user()->name); ?>" 
-                                       class="w-full bg-deep-800/50 border border-deep-700 rounded-lg px-3 py-2 text-white text-sm focus:border-ocean-500 focus:outline-none transition-colors">
+                                       class="w-full bg-deep-800/50 border border-deep-700 rounded-lg px-3 py-2 text-white text-sm focus:border-green-500 focus:outline-none transition-colors">
                             </div>
                             <div>
                                 <label for="email" class="block text-xs font-medium text-gray-300 mb-1">Email Address</label>
@@ -348,7 +388,10 @@ function getRankBadge($rank) {
                                     <input type="password" id="password" name="password" placeholder="Leave blank to keep current"
                                            class="w-full bg-deep-800/50 border border-deep-700 rounded-lg px-3 py-2 text-white text-sm focus:border-ocean-500 focus:outline-none transition-colors pr-10">
                                     <button type="button" onclick="togglePassword('password')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
-                                        <i class="fas fa-eye text-xs" id="password-eye"></i>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="password-eye">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -356,11 +399,15 @@ function getRankBadge($rank) {
 
                         <div class="flex gap-3 mt-4">
                             <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-                                <i class="fas fa-save mr-1"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
                                 Save Changes
                             </button>
                             <button type="button" id="cancelEditBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-                                <i class="fas fa-times mr-1"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                                 Cancel
                             </button>
                         </div>
@@ -368,114 +415,158 @@ function getRankBadge($rank) {
                 </div>
 
                 <!-- Gaming Dashboard -->
-                <div class="glass-dark rounded-2xl p-6 border border-ocean-500/30">
-                    <h3 class="text-xl font-bold text-white mb-4">
-                        <i class="fas fa-gamepad mr-2 text-ocean-400"></i>
+                <div class="glass-dark rounded-2xl p-6 border border-green-500/30">
+                    <h3 class="text-xl font-bold text-green-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 inline text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                         Gaming Dashboard
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <!-- Turtle Quiz Progress -->
-                        <div class="bg-gradient-to-br from-blue-500/10 to-blue-600/10 rounded-xl p-4 border border-blue-500/20">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        
+                        <!-- Memory Match Progress -->
+                        <div class="bg-gradient-to-br from-purple-500/10 to-purple-600/10 rounded-xl p-4 border border-purple-500/20">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-brain text-blue-400"></i>
+                                    <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-white font-semibold text-sm">Turtle Quiz</h4>
-                                        <p class="text-gray-300 text-xs">Test your knowledge</p>
+                                        <h4 class="text-white font-semibold text-sm">Memory Match</h4>
+                                        <p class="text-gray-300 text-xs">Match the pairs</p>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-xl font-bold text-blue-400"><?php echo e(auth()->user()->getBestScoreForGame('quiz')); ?></div>
-                                    <div class="text-xs text-gray-300">best score</div>
-                                </div>
+
                             </div>
                             
                             <?php
-                                $quizActivities = auth()->user()->gameActivities()->byGameType('quiz')->completed();
-                                $quizGamesPlayed = $quizActivities->count();
-                                $quizAccuracy = $quizActivities->avg('accuracy') ?? 0;
+                                $memoryActivities = auth()->user()->gameActivities()->byGameType('memory-match')->completed();
+                                $memoryGamesPlayed = $memoryActivities->count();
+                                $avgMoves = $memoryActivities->avg('moves') ?? 0;
                             ?>
                             
-                            <div class="grid grid-cols-3 gap-2 mb-3">
+                            <div class="grid grid-cols-2 gap-2 mb-3">
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-white"><?php echo e($quizGamesPlayed); ?></div>
-                                    <div class="text-xs text-gray-300">Games</div>
+                                    <div class="text-lg font-bold text-white" data-stat="memory-games"><?php echo e($memoryGamesPlayed); ?></div>
+                                    <div class="text-xs text-gray-300">Games Played</div>
                                 </div>
+                                    <?php
+                                        $memoryBestTime = $memoryActivities->min('time_spent') ?? 0;
+                                    ?>
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-green-400"><?php echo e($quizActivities->sum('correct_answers')); ?></div>
-                                    <div class="text-xs text-gray-300">Correct</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-lg font-bold text-yellow-400"><?php echo e(number_format($quizAccuracy, 0)); ?>%</div>
-                                    <div class="text-xs text-gray-300">Accuracy</div>
+                                    <div class="text-lg font-bold text-purple-400" data-stat="memory-best-time"><?php echo e($memoryBestTime > 0 ? sprintf('%02d:%02d.%02d', floor($memoryBestTime / 60), $memoryBestTime % 60, ($memoryBestTime - floor($memoryBestTime)) * 100) : '--'); ?></div>
+                                    <div class="text-xs text-gray-300">Best Time</div>
                                 </div>
                             </div>
                             
-                            <div class="w-full bg-deep-800/50 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full transition-all duration-300" style="width: <?php echo e(min($quizAccuracy, 100)); ?>%"></div>
-                            </div>
+                            <a href="<?php echo e(route('games.memory-match')); ?>" class="block w-full bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-center py-2 rounded-lg text-xs font-medium transition-colors">
+                                Play Now
+                            </a>
                         </div>
                         
-                        <!-- Word Scramble Progress -->
-                        <div class="bg-gradient-to-br from-green-500/10 to-green-600/10 rounded-xl p-4 border border-green-500/20">
+                        <!-- Puzzle Progress -->
+                        <div class="bg-gradient-to-br from-orange-500/10 to-orange-600/10 rounded-xl p-4 border border-orange-500/20">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-spell-check text-green-400"></i>
+                                    <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+                                        </svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-white font-semibold text-sm">Word Scramble</h4>
-                                        <p class="text-gray-300 text-xs">Unscramble words</p>
+                                        <h4 class="text-white font-semibold text-sm">Pawikan Puzzle</h4>
+                                        <p class="text-gray-300 text-xs">Solve the puzzle</p>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-xl font-bold text-green-400"><?php echo e(auth()->user()->getBestScoreForGame('word_scramble')); ?></div>
-                                    <div class="text-xs text-gray-300">best score</div>
-                                </div>
+
                             </div>
                             
                             <?php
-                                $wordScrambleActivities = auth()->user()->gameActivities()->byGameType('word_scramble')->completed();
-                                $wordScrambleGamesPlayed = $wordScrambleActivities->count();
-                                $wordScrambleAccuracy = $wordScrambleActivities->avg('accuracy') ?? 0;
+                                $puzzleActivities = auth()->user()->gameActivities()->byGameType('puzzle')->completed();
+                                $puzzleGamesPlayed = $puzzleActivities->count();
+                                $avgTime = $puzzleActivities->avg('time_spent') ?? 0;
                             ?>
                             
-                            <div class="grid grid-cols-3 gap-2 mb-3">
+                            <div class="grid grid-cols-2 gap-2 mb-3">
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-white"><?php echo e($wordScrambleGamesPlayed); ?></div>
-                                    <div class="text-xs text-gray-300">Games</div>
+                                    <div class="text-lg font-bold text-white" data-stat="puzzle-games"><?php echo e($puzzleGamesPlayed); ?></div>
+                                    <div class="text-xs text-gray-300">Games Played</div>
                                 </div>
+                                    <?php
+                                        $puzzleBestTime = $puzzleActivities->min('time_spent') ?? 0;
+                                    ?>
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-green-400"><?php echo e($wordScrambleActivities->sum('correct_answers')); ?></div>
-                                    <div class="text-xs text-gray-300">Correct</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-lg font-bold text-yellow-400"><?php echo e(number_format($wordScrambleAccuracy, 0)); ?>%</div>
-                                    <div class="text-xs text-gray-300">Accuracy</div>
+                                    <div class="text-lg font-bold text-orange-400" data-stat="puzzle-best-time"><?php echo e($puzzleBestTime > 0 ? sprintf('%02d:%02d.%02d', floor($puzzleBestTime / 60), $puzzleBestTime % 60, ($puzzleBestTime - floor($puzzleBestTime)) * 100) : '--'); ?></div>
+                                    <div class="text-xs text-gray-300">Best Time</div>
                                 </div>
                             </div>
                             
-                            <div class="w-full bg-deep-800/50 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-300" style="width: <?php echo e(min($wordScrambleAccuracy, 100)); ?>%"></div>
+                            <a href="<?php echo e(route('games.puzzle')); ?>" class="block w-full bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 text-center py-2 rounded-lg text-xs font-medium transition-colors">
+                                Play Now
+                            </a>
+                        </div>
+
+                        <!-- Find the Pawikan Progress -->
+                        <div class="bg-gradient-to-br from-teal-500/10 to-teal-600/10 rounded-xl p-4 border border-teal-500/20">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-teal-500/20 rounded-lg flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-semibold text-sm">Find the Pawikan</h4>
+                                        <p class="text-gray-300 text-xs">Spot the turtles</p>
+                                    </div>
+                                </div>
+
                             </div>
+                            
+                            <?php
+                                $findActivities = auth()->user()->gameActivities()->byGameType('find-the-pawikan')->completed();
+                                $findGamesPlayed = $findActivities->count();
+                                $bestTime = $findActivities->min('time_spent') ?? 0;
+                            ?>
+                            
+                            <div class="grid grid-cols-2 gap-2 mb-3">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-white" data-stat="find-games"><?php echo e($findGamesPlayed); ?></div>
+                                    <div class="text-xs text-gray-300">Games Played</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-teal-400" data-stat="find-best-time"><?php echo e($bestTime > 0 ? sprintf('%02d:%02d.%02d', floor($bestTime / 60), $bestTime % 60, ($bestTime - floor($bestTime)) * 100) : '--'); ?></div>
+                                    <div class="text-xs text-gray-300">Best Time</div>
+                                </div>
+                            </div>
+                            
+                            <a href="<?php echo e(route('games.find-the-pawikan')); ?>" class="block w-full bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 text-center py-2 rounded-lg text-xs font-medium transition-colors">
+                                Play Now
+                            </a>
                         </div>
                     </div>
 
                     <div class="flex gap-3">
-                        <a href="/games" class="flex-1 bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 text-center text-sm">
-                            <i class="fas fa-play mr-2"></i>
-                            Play Games
+                        <a href="/games" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 text-center text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            View All Games
                         </a>
                     </div>
                 </div>
 
                 <!-- Recent Game Sessions -->
-                <div class="glass-dark rounded-2xl p-6 border border-ocean-500/30">
-                    <h3 class="text-xl font-bold text-white mb-4">
-                        <i class="fas fa-history mr-2 text-ocean-400"></i>
+                <div class="glass-dark rounded-2xl p-6 border border-green-500/30">
+                    <h3 class="text-xl font-bold text-green-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 inline text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                         Recent Game Sessions
                     </h3>
                     
@@ -488,23 +579,44 @@ function getRankBadge($rank) {
                             <?php $__currentLoopData = $recentSessions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $session): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="flex items-center justify-between p-3 bg-deep-800/30 rounded-lg">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-ocean-500/20 flex items-center justify-center">
+                                        <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
                                             <?php if($session->game_type === 'quiz'): ?>
                                                 <i class="fas fa-brain text-blue-400 text-sm"></i>
                                             <?php elseif($session->game_type === 'word_scramble'): ?>
                                                 <i class="fas fa-spell-check text-green-400 text-sm"></i>
+                                            <?php elseif($session->game_type === 'memory-match'): ?>
+                                                <i class="fas fa-clone text-purple-400 text-sm"></i>
+                                            <?php elseif($session->game_type === 'puzzle'): ?>
+                                                <i class="fas fa-puzzle-piece text-orange-400 text-sm"></i>
+                                            <?php elseif($session->game_type === 'find-the-pawikan'): ?>
+                                                <i class="fas fa-search text-teal-400 text-sm"></i>
                                             <?php else: ?>
-                                                <i class="fas fa-gamepad text-purple-400 text-sm"></i>
+                                                <i class="fas fa-gamepad text-gray-400 text-sm"></i>
                                             <?php endif; ?>
                                         </div>
                                         <div>
-                                            <div class="text-white font-medium text-sm"><?php echo e($session->game_name); ?></div>
+                                            <div class="text-white font-medium text-sm">
+                                                <?php if($session->game_type === 'quiz'): ?>
+                                                    Turtle Quiz
+                                                <?php elseif($session->game_type === 'word_scramble'): ?>
+                                                    Word Scramble
+                                                <?php elseif($session->game_type === 'memory-match'): ?>
+                                                    Memory Match
+                                                <?php elseif($session->game_type === 'puzzle'): ?>
+                                                    Pawikan Puzzle
+                                                <?php elseif($session->game_type === 'find-the-pawikan'): ?>
+                                                    Find the Pawikan
+                                                <?php else: ?>
+                                                    <?php echo e(ucwords(str_replace(['-', '_'], ' ', $session->game_type))); ?>
+
+                                                <?php endif; ?>
+                                            </div>
                                             <div class="text-gray-300 text-xs"><?php echo e($session->played_at->format('M j, g:i A')); ?></div>
                                         </div>
                                     </div>
                                     <div class="text-right">
                                         <div class="text-green-400 font-bold text-sm"><?php echo e($session->score); ?> pts</div>
-                                        <div class="text-gray-300 text-xs"><?php echo e(number_format($session->accuracy, 0)); ?>%</div>
+                                        <div class="text-gray-300 text-xs"><?php echo e(sprintf('%02d:%02d.%02d', floor($session->time_spent / 60), $session->time_spent % 60, ($session->time_spent - floor($session->time_spent)) * 100)); ?></div>
                                     </div>
                                 </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -516,97 +628,24 @@ function getRankBadge($rank) {
                     </div>
                 </div>
 
-                <!-- Leaderboards Preview -->
-                <div class="glass-dark rounded-2xl p-6 border border-ocean-500/30">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-white">
-                            <i class="fas fa-crown mr-2 text-yellow-400"></i>
-                            Your Rankings
-                        </h3>
-                        <a href="<?php echo e(route('leaderboards')); ?>" class="bg-ocean-500/20 hover:bg-ocean-500/30 text-ocean-400 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2">
-                            <i class="fas fa-external-link-alt"></i>
-                            View Full Leaderboards
-                        </a>
-                    </div>
 
-                    <!-- Quick Stats Summary -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <!-- Overall Rank -->
-                        <div class="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-xl p-4 border border-yellow-500/20">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-sm font-semibold text-gray-300 mb-1">Overall Rank</h4>
-                                    <p class="text-2xl font-bold text-yellow-400">
-                                        <?php
-                                            $overallRank = auth()->user()->getOverallRank();
-                                        ?>
-                                        #<?php echo e($overallRank ?: 'N/A'); ?>
-
-                                    </p>
-                                </div>
-                                <div class="text-3xl">🏆</div>
-                            </div>
-                        </div>
-
-                        <!-- Quiz Rank -->
-                        <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-xl p-4 border border-blue-500/20">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-sm font-semibold text-gray-300 mb-1">Quiz Rank</h4>
-                                    <p class="text-2xl font-bold text-blue-400">
-                                        <?php
-                                            $quizRank = auth()->user()->getGameRank('quiz');
-                                        ?>
-                                        #<?php echo e($quizRank ?: 'N/A'); ?>
-
-                                    </p>
-                                </div>
-                                <div class="text-3xl">🧠</div>
-                            </div>
-                        </div>
-
-                        <!-- Word Scramble Rank -->
-                        <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-4 border border-green-500/20">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-sm font-semibold text-gray-300 mb-1">Word Scramble Rank</h4>
-                                    <p class="text-2xl font-bold text-green-400">
-                                        <?php
-                                            $wordScrambleRank = auth()->user()->getGameRank('word_scramble');
-                                        ?>
-                                        #<?php echo e($wordScrambleRank ?: 'N/A'); ?>
-
-                                    </p>
-                                </div>
-                                <div class="text-3xl">🔤</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Top 3 Preview -->
-                    <div class="text-center mb-4">
-                        <p class="text-gray-300 text-sm">See where you stand among the top players!</p>
-                    </div>
-
-                    <div class="flex justify-center">
-                        <a href="<?php echo e(route('leaderboards')); ?>" class="bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 text-center inline-flex items-center gap-2">
-                            <i class="fas fa-trophy"></i>
-                            View Complete Leaderboards
-                        </a>
-                    </div>
-                </div>
 
                 <!-- Account Benefits -->
-                <div class="glass-dark rounded-2xl p-6 border border-ocean-500/30">
-                    <h3 class="text-xl font-bold text-white mb-4">
-                        <i class="fas fa-star mr-2 text-ocean-400"></i>
+                <div class="glass-dark rounded-2xl p-6 border border-green-500/30">
+                    <h3 class="text-xl font-bold text-green-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 inline text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
                         Account Benefits
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 bg-ocean-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-gamepad text-ocean-400"></i>
+                            <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                             </div>
                             <div>
                                 <h4 class="text-white font-semibold mb-1 text-sm">Mini-Games Access</h4>
@@ -616,7 +655,9 @@ function getRankBadge($rank) {
                         
                         <div class="flex items-start gap-3">
                             <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-save text-green-400"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
                             </div>
                             <div>
                                 <h4 class="text-white font-semibold mb-1 text-sm">Progress Saving</h4>
@@ -626,7 +667,9 @@ function getRankBadge($rank) {
                         
                         <div class="flex items-start gap-3">
                             <div class="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-chart-line text-yellow-400"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                </svg>
                             </div>
                             <div>
                                 <h4 class="text-white font-semibold mb-1 text-sm">Personalized Dashboard</h4>
@@ -636,7 +679,9 @@ function getRankBadge($rank) {
                         
                         <div class="flex items-start gap-3">
                             <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-trophy text-purple-400"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
                             </div>
                             <div>
                                 <h4 class="text-white font-semibold mb-1 text-sm">Scoreboards & Rankings</h4>
@@ -693,21 +738,116 @@ function updateUserStats(stats) {
     if (!stats || typeof stats !== 'object') return;
     
     // Update total score
-    const totalScoreElements = document.querySelectorAll('[data-stat="total-score"]');
-    totalScoreElements.forEach(element => {
-        element.textContent = stats.total_score || 0;
-    });
+
     
     // Update total games played
     const totalGamesElements = document.querySelectorAll('[data-stat="total-games"]');
     totalGamesElements.forEach(element => {
-        element.textContent = stats.total_games_played || 0;
+        element.textContent = stats.total_games || 0;
     });
+
+    // Update Memory Match stats
+    if (stats.memory_match) {
+        document.querySelectorAll('[data-stat="memory-games"]').forEach(el => {
+            el.textContent = stats.memory_match.games;
+        });
+        document.querySelectorAll('[data-stat="memory-best-time"]').forEach(el => {
+            const time = stats.memory_match.best_time;
+            if (time > 0) {
+                const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+                const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
+                el.textContent = `${minutes}:${seconds}`;
+            } else {
+                el.textContent = '--';
+            }
+        });
+    }
+
+    // Update Puzzle stats
+    if (stats.puzzle) {
+        document.querySelectorAll('[data-stat="puzzle-games"]').forEach(el => {
+            el.textContent = stats.puzzle.games;
+        });
+        document.querySelectorAll('[data-stat="puzzle-best-time"]').forEach(el => {
+            const time = stats.puzzle.best_time;
+            if (time > 0) {
+                const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+                const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
+                el.textContent = `${minutes}:${seconds}`;
+            } else {
+                el.textContent = '--';
+            }
+        });
+    }
+
+    // Update Find the Pawikan stats
+    if (stats.find_the_pawikan) {
+        document.querySelectorAll('[data-stat="find-games"]').forEach(el => {
+            el.textContent = stats.find_the_pawikan.games;
+        });
+        document.querySelectorAll('[data-stat="find-best-time"]').forEach(el => {
+            const time = stats.find_the_pawikan.best_time;
+            if (time > 0) {
+                const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+                const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
+                el.textContent = `${minutes}:${seconds}`;
+            } else {
+                el.textContent = '--';
+            }
+        });
+    }
 }
 
 // Listen for custom events from game activity updates
 document.addEventListener('userStatsUpdated', function(event) {
     updateUserStats(event.detail);
+});
+
+// Listen for game completion events to update stats immediately
+window.addEventListener('gameCompleted', async function(event) {
+    console.log('Game completed, refreshing stats...', event.detail);
+    
+    // Fetch fresh statistics from the server
+    try {
+        const response = await fetch('/game-activities/statistics', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            }
+        });
+        
+        if (response.ok) {
+            const stats = await response.json();
+            updateUserStats(stats);
+            
+            // Show a subtle notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-green-500/20 text-green-400 px-4 py-3 rounded-lg border border-green-500/30 z-50 flex items-center gap-2 shadow-lg animate-fade-in';
+            notification.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-sm font-medium">Profile updated!</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(20px)';
+                notification.style.transition = 'all 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    } catch (error) {
+        console.error('Error fetching updated stats:', error);
+    }
 });
 
 // Auto-refresh statistics every 30 seconds

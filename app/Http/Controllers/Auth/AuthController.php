@@ -11,15 +11,6 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    /**
-     * Show the combined authentication form.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function showAuthForm()
-    {
-        return view('auth.combined');
-    }
 
     /**
      * Show the login form.
@@ -218,8 +209,8 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            return redirect('/auth')
-                ->with('success', 'Account created successfully! Please login with your credentials.');
+            return redirect('/#login')
+                ->with('registration_success', 'Account created successfully! Please login with your credentials.');
 
         } catch (\Illuminate\Database\QueryException $e) {
             // Handle database errors gracefully

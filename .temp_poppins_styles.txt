@@ -1,0 +1,19 @@
+    /* Use Poppins typography */
+    #verificationDashboard,
+    #verificationDashboard * {
+        font-family: 'Poppins', sans-serif !important;
+        letter-spacing: 0.01em;
+    }
+
+    /* Preserve Font Awesome glyphs */
+    #verificationDashboard .fa,
+    #verificationDashboard .fas,
+    #verificationDashboard .far,
+    #verificationDashboard .fal,
+    #verificationDashboard .fab,
+    #verificationDashboard i[class^="fa-"],
+    #verificationDashboard i[class*=" fa-"] {
+        font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 5 Free", "Font Awesome 5 Pro", sans-serif !important;
+        letter-spacing: normal;
+        font-weight: 900;
+    }

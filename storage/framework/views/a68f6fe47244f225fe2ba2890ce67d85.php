@@ -59,9 +59,9 @@
     
     <!-- Custom Styles -->
     <style>
-        /* Universal font styling - Apply Cinzel to all text */
+        /* Universal font styling - Apply Poppins to all text by default */
         * {
-            font-family: 'Cinzel', serif;
+            font-family: 'Poppins', sans-serif;
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -112,6 +112,30 @@
             font-weight: 400;
             letter-spacing: 0.01em;
             line-height: 1.6;
+        }
+
+        /* Override Cinzel classes for admin pages - use Poppins instead */
+        #admin-dashboard .cinzel-heading,
+        #admin-dashboard .cinzel-subheading,
+        #admin-dashboard .cinzel-text,
+        #admin-dashboard .cinzel-body,
+        #patrolReportsDashboard .cinzel-heading,
+        #patrolReportsDashboard .cinzel-subheading,
+        #patrolReportsDashboard .cinzel-text,
+        #patrolReportsDashboard .cinzel-body,
+        #patrolReportsIndex .cinzel-heading,
+        #patrolReportsIndex .cinzel-subheading,
+        #patrolReportsIndex .cinzel-text,
+        #patrolReportsIndex .cinzel-body,
+        #patrolReportShow .cinzel-heading,
+        #patrolReportShow .cinzel-subheading,
+        #patrolReportShow .cinzel-text,
+        #patrolReportShow .cinzel-body,
+        #verificationDashboard .cinzel-heading,
+        #verificationDashboard .cinzel-subheading,
+        #verificationDashboard .cinzel-text,
+        #verificationDashboard .cinzel-body {
+            font-family: 'Poppins', sans-serif !important;
         }
 
         /* Active navigation link styling */

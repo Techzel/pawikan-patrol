@@ -11,12 +11,17 @@
     <link rel="apple-touch-icon" href="<?php echo e(asset('img/lg.png')); ?>">
     <link rel="shortcut icon" href="<?php echo e(asset('img/lg.png')); ?>">
     
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
                     colors: {
                         'ocean': {
                             300: '#67e8f9',
@@ -127,32 +132,7 @@
             40%, 100% { transform: rotateZ(0); }
         }
         
-        /* Floating particles */
-        .particle {
-            position: absolute;
-            background: linear-gradient(45deg, #22d3ee, #06b6d4);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: particleFloat linear infinite;
-            opacity: 0.6;
-        }
-        
-        @keyframes particleFloat {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.6;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
-        }
+
         
         .game-card {
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(6, 182, 212, 0.1));
@@ -161,20 +141,6 @@
             overflow: hidden;
         }
         
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.1), transparent);
-            transition: left 0.6s;
-        }
-        
-        .game-card:hover::before {
-            left: 100%;
-        }
         
         .feature-icon {
             transition: all 0.3s ease;
@@ -218,324 +184,11 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-deep-900 via-deep-800 to-ocean-900 min-h-screen text-white overflow-x-hidden">
-    <!-- Floating Particles Background -->
-    <div id="particles" class="fixed inset-0 pointer-events-none z-0"></div>
+<body class="bg-gray-800 min-h-screen text-white overflow-x-hidden">
+
     
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-ocean-500/20">
-        <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <img src="<?php echo e(asset('img/lg.png')); ?>" alt="Pawikan Patrol Logo" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full">
-                        <div class="ml-2 sm:ml-0">
-                            <span class="text-lg sm:text-xl font-bold text-white">
-                                Dahican Pawikan Patrol
-                            </span>
-                            <div class="text-[10px] sm:text-xs text-gray-300 mt-0.5">City of Mati – Dahican, est. 2004</div>
-                        </div>
-                    </a>
-                </div>
+    <?php echo $__env->make('navigation', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
-                    <!-- Home with Dropdown -->
-                    <div class="relative group">
-                        <a href="/" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
-                            <span class="text-base">🏠</span>
-                            <span class="text-sm font-medium">Home</span>
-                            <svg class="w-3.5 h-3.5 mt-0.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </a>
-                        
-                        <!-- Dropdown Menu -->
-                        <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                            <div class="p-4 space-y-2">
-                                <a href="<?php echo e(url('/#vision')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">🌟</span>
-                                    <span>Vision & Mission</span>
-                                </a>
-                                <a href="<?php echo e(url('/#video-showcase')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">🎬</span>
-                                    <span>Conservation Video</span>
-                                </a>
-                                <a href="<?php echo e(url('/#lifecycle')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">🌊</span>
-                                    <span>Life Cycle</span>
-                                </a>
-                                <a href="<?php echo e(url('/#threats')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">⚠️</span>
-                                    <span>Threats</span>
-                                </a>
-                                <a href="<?php echo e(url('/#species')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">🐢</span>
-                                    <span>Species Guide</span>
-                                </a>
-                                <a href="<?php echo e(url('/#guidelines')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">📋</span>
-                                    <span>Guidelines</span>
-                                </a>
-                                <a href="<?php echo e(url('/#dos-donts')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-xl">✓✗</span>
-                                    <span>DOs & DON'Ts</span>
-                                </a>
-                                <a href="<?php echo e(url('/#help')); ?>" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-lg">🤝</span>
-                                    <span>How to Help</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 3D Explorer -->
-                    <a href="/3d-explorer" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
-                        <span class="text-base">🧊</span>
-                        <span class="text-sm font-medium">3D Explorer</span>
-                    </a>
-
-                    <!-- Patrol Map with Dropdown -->
-                    <div class="relative group">
-                        <a href="/patrol-map" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
-                            <span class="text-base">🗺️</span>
-                            <span class="text-sm font-medium">Patrol Map</span>
-                            <svg class="w-3.5 h-3.5 mt-0.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </a>
-                        
-                        <!-- Dropdown Menu -->
-                        <div class="absolute top-full left-0 mt-2 w-48 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                            <div class="p-2 space-y-1">
-                                <a href="/patrol-map/gallery" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                    <span class="text-lg">📸</span>
-                                    <span class="text-sm font-medium">Gallery Report</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Games -->
-                    <a href="/games" class="nav-link flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 active">
-                        <span class="text-base">🎮</span>
-                        <span class="text-sm font-medium">Games</span>
-                    </a>
-
-                    <!-- Account Dropdown -->
-                    <?php if(auth()->guard()->guest()): ?>
-                        <div class="relative group">
-                            <button class="flex items-center gap-2 text-white hover:text-ocean-400 transition-colors py-2 rounded-lg hover:bg-ocean-600/20">
-                                <span class="text-lg">👤</span>
-                                <span class="text-sm font-medium">Account</span>
-                                <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            
-                            <!-- Account Dropdown Menu -->
-                            <div class="absolute top-full right-0 mt-2 w-48 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                                <div class="p-2 space-y-1">
-                                    <a href="/auth" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors" data-tab="login">
-                                        <span class="text-sm">🔑</span>
-                                        <span class="text-sm">Login</span>
-                                    </a>
-                                    <a href="/auth" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors" data-tab="register">
-                                        <span class="text-sm">📝</span>
-                                        <span class="text-sm">Register</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <div class="relative group">
-                            <button class="flex items-center gap-2 text-white hover:text-ocean-400 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20">
-                                <?php if(auth()->user()->profile_picture): ?>
-                                    <img src="<?php echo e(asset('storage/' . auth()->user()->profile_picture)); ?>" 
-                                         alt="Profile Picture" 
-                                         class="w-8 h-8 rounded-full object-cover border-2 border-ocean-500/30"
-                                         onerror="this.onerror=null; this.outerHTML='<span class=\'text-lg\'>👤</span>';">
-                                <?php else: ?>
-                                    <span class="text-lg">👤</span>
-                                <?php endif; ?>
-                                <span class="text-md">
-                                    <?php if(Auth::user()->role === 'admin'): ?>
-                                        Admin
-                                    <?php else: ?>
-                                        <?php echo e(Auth::user()->name); ?>
-
-                                    <?php endif; ?>
-                                </span>
-                                <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            
-                            <!-- User Dropdown -->
-                            <div class="absolute top-full right-0 mt-2 w-48 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                                <div class="p-2 space-y-1">
-                                    <?php if(Auth::user()->role === 'patroller'): ?>
-                                        <a href="<?php echo e(route('patroller.dashboard')); ?>" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
-                                            <span class="text-lg">📊</span>
-                                            <span>Dashboard</span>
-                                        </a>
-                                    <?php elseif(Auth::user()->role === 'admin'): ?>
-                                        <a href="/admin/dashboard" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
-                                            <span class="text-lg">📊</span>
-                                            <span>Dashboard</span>
-                                        </a>
-                                    <?php else: ?>
-                                        <a href="/profile" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors">
-                                            <span class="text-lg">👤</span>
-                                            <span>Profile</span>
-                                        </a>
-                                    <?php endif; ?>
-                                    <form method="POST" action="/logout" class="w-full">
-                                        <?php echo csrf_field(); ?>
-                                        <button type="submit" class="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                            <span class="text-lg">🚪</span>
-                                            <span>Logout</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-white hover:text-ocean-400 focus:outline-none focus:text-ocean-400 p-2">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Navigation -->
-        <div id="mobile-menu" class="md:hidden hidden glass-dark border-t border-ocean-500/20">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <!-- Home Section -->
-                <div class="space-y-1">
-                    <a href="/" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                        <span class="text-lg">🏠</span>
-                        <span>Home</span>
-                    </a>
-                    
-                    <!-- Home Sub-items -->
-                    <div class="ml-8 space-y-1">
-                        <a href="<?php echo e(url('/#vision')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🌟</span>
-                            <span>Vision & Mission</span>
-                        </a>
-                        <a href="<?php echo e(url('/#video-showcase')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🎬</span>
-                            <span>Conservation Video</span>
-                        </a>
-                        <a href="<?php echo e(url('/#lifecycle')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🌊</span>
-                            <span>Life Cycle</span>
-                        </a>
-                        <a href="<?php echo e(url('/#threats')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">⚠️</span>
-                            <span>Threats</span>
-                        </a>
-                        <a href="<?php echo e(url('/#species')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🐢</span>
-                            <span>Species Guide</span>
-                        </a>
-                        <a href="<?php echo e(url('/#guidelines')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">📋</span>
-                            <span>Guidelines</span>
-                        </a>
-                        <a href="<?php echo e(url('/#help')); ?>" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🤝</span>
-                            <span>How to Help</span>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Other Pages -->
-                <a href="/3d-explorer" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                    <span class="text-lg">🌐</span>
-                    <span>3D Explorer</span>
-                </a>
-                
-                <!-- Patrol Map Section -->
-                <div class="space-y-1">
-                    <a href="/patrol-map" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                        <span class="text-lg">🗺️</span>
-                        <span>Patrol Map</span>
-                    </a>
-                    
-                    <!-- Patrol Map Sub-items -->
-                    <div class="ml-8 space-y-1">
-                        <a href="/patrol-map/gallery" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">📸</span>
-                            <span>Gallery Report</span>
-                        </a>
-                    </div>
-                </div>
-                
-                <a href="/games" class="mobile-nav-link flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                    <span class="text-lg">🎮</span>
-                    <span>Games</span>
-                </a>
-                
-                <!-- Account Section -->
-                <?php if(auth()->guard()->guest()): ?>
-                    <div class="space-y-1">
-                        <button class="mobile-account-toggle flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">👤</span>
-                            <span>Account</span>
-                            <svg class="w-4 h-4 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        
-                        <!-- Account Sub-items -->
-                        <div class="ml-8 space-y-1 mobile-account-menu hidden">
-                            <a href="/auth" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                                <span class="text-lg">🔑</span>
-                                <span>Login</span>
-                            </a>
-                            <a href="/register" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                                <span class="text-lg">📝</span>
-                                <span>Register</span>
-                            </a>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <?php if(Auth::user()->role === 'patroller'): ?>
-                        <a href="<?php echo e(route('patroller.dashboard')); ?>" class="flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors">
-                            <span class="text-lg">📊</span>
-                            <span>Dashboard</span>
-                        </a>
-                    <?php elseif(Auth::user()->role === 'admin'): ?>
-                        <a href="/admin/dashboard" class="flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors">
-                            <span class="text-lg">🛡️</span>
-                            <span>Admin Panel</span>
-                        </a>
-                    <?php else: ?>
-                        <a href="/profile" class="flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors">
-                            <span class="text-lg">👤</span>
-                            <span>Profile</span>
-                        </a>
-                    <?php endif; ?>
-                    <form method="POST" action="/logout" class="w-full">
-                        <?php echo csrf_field(); ?>
-                        <button type="submit" class="flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                            <span class="text-lg">🚪</span>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                <?php endif; ?>
-            </div>
-        </div>
-    </nav>
 
     <!-- Main Content -->
     <main class="pt-20 relative z-10">
@@ -545,21 +198,21 @@
                 <div class="flex flex-col md:flex-row items-center justify-center mb-8">
                     <div class="text-8xl mr-0 md:mr-6 mb-4 md:mb-0 animate-float">🐢</div>
                     <div>
-                        <h1 class="text-5xl md:text-6xl font-bold text-ocean-300 mb-4 tracking-wide cinzel-heading">
+                        <h1 class="text-[3rem] font-bold text-green-400 mb-4 tracking-wide font-poppins">
                             Pawikan Educational Games
                         </h1>
-                        <p class="text-gray-300 text-xl md:text-2xl font-medium cinzel-body">
+                        <p class="text-gray-300 text-xl md:text-2xl font-medium font-poppins">
                             Learn marine turtle conservation through interactive gameplay
                         </p>
                         <div class="flex items-center justify-center gap-4 mt-6">
-                            <div class="flex items-center gap-2 text-ocean-400">
+                            <div class="flex items-center gap-2 text-green-400">
                                 <span class="animate-pulse">🎮</span>
-                                <span class="text-sm font-medium">2 Interactive Games</span>
+                                <span class="text-sm font-medium font-poppins">3 Interactive Games</span>
                             </div>
-                            <div class="w-1 h-1 bg-ocean-400 rounded-full"></div>
-                            <div class="flex items-center gap-2 text-ocean-400">
+                            <div class="w-1 h-1 bg-green-400 rounded-full"></div>
+                            <div class="flex items-center gap-2 text-green-400">
                                 <span class="animate-bounce-slow">🏆</span>
-                                <span class="text-sm font-medium">Educational & Fun</span>
+                                <span class="text-sm font-medium font-poppins">Educational & Fun</span>
                             </div>
                         </div>
                     </div>
@@ -572,93 +225,134 @@
             <div class="max-w-6xl mx-auto">
                 <!-- Section Title -->
                 <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-ocean-300 mb-4">Choose Your Adventure</h2>
-                    <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                    <h2 class="text-4xl font-bold text-green-400 mb-4 font-poppins">Choose Your Adventure</h2>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto font-poppins">
                         Dive into the world of marine conservation with our interactive educational games
                     </p>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-12">
-                    
-                    <!-- Quiz Game Card -->
+                <div class="grid md:grid-cols-3 gap-8">
+
+                    <!-- Memory Match Game Card -->
                     <div class="game-card rounded-3xl p-8 hover-lift group">
                         <div class="text-center mb-8 relative z-10">
                             <div class="text-7xl mb-6 animate-wiggle">🧠</div>
-                            <h3 class="text-3xl font-bold text-ocean-300 mb-4 cinzel-subheading">Pawikan Quiz Challenge</h3>
-                            <p class="text-gray-300 leading-relaxed text-lg cinzel-body">
-                                Test your knowledge about sea turtle conservation with 15 challenging multiple-choice questions. 
-                                Learn fascinating facts about these amazing marine creatures!
+                            <h3 class="text-3xl font-bold text-green-400 mb-4 font-poppins">Memory Match</h3>
+                            <p class="text-gray-300 leading-relaxed text-lg font-poppins">
+                                Test your memory by matching pairs of sea turtles and conservation items. 
+                                A fun way to improve your focus!
                             </p>
                         </div>
                         
                         <!-- Game Features -->
                         <div class="space-y-4 mb-10 relative z-10">
                             <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">📝</span>
-                                <span class="font-medium">15 Multiple Choice Questions</span>
-                            </div>
-                            <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">🔀</span>
-                                <span class="font-medium">Randomized Question Order</span>
-                            </div>
-                            <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">💡</span>
-                                <span class="font-medium">Instant Feedback & Explanations</span>
-                            </div>
-                            <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">🏆</span>
-                                <span class="font-medium">Score Tracking & Results</span>
-                            </div>
-                            <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">🎯</span>
-                                <span class="font-medium">Each question worth 10 points</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Play Button -->
-                        <a href="/games/quiz" class="play-button quiz-start-btn block w-full bg-gradient-to-r from-ocean-600 to-ocean-500 hover:from-ocean-500 hover:to-ocean-400 text-white font-bold py-5 px-8 rounded-2xl text-center text-lg relative z-10 transform group-hover:scale-105 transition-all duration-300" onclick="playClickSound()">
-                            <span class="relative z-10">🎯 Start Quiz Challenge</span>
-                        </a>
-                    </div>
-
-                    <!-- Word Scramble Game Card -->
-                    <div class="game-card rounded-3xl p-8 hover-lift group">
-                        <div class="text-center mb-8 relative z-10">
-                            <div class="text-7xl mb-6 animate-wiggle">🔤</div>
-                            <h3 class="text-3xl font-bold text-ocean-300 mb-4 cinzel-subheading">Pawikan Word Challenge</h3>
-                            <p class="text-gray-300 leading-relaxed text-lg cinzel-body">
-                                Unscramble mixed-up letters to form words related to marine turtle conservation. 
-                                Race against time while learning important conservation terms!
-                            </p>
-                        </div>
-                        
-                        <!-- Game Features -->
-                        <div class="space-y-4 mb-10 relative z-10">
-                            <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">🔤</span>
-                                <span class="font-medium">20+ Conservation Vocabulary</span>
+                                <span class="text-2xl text-green-400 feature-icon">🃏</span>
+                                <span class="font-medium font-poppins">3 Difficulty Levels</span>
                             </div>
                             <div class="flex items-center gap-4 text-gray-300 group/feature">
                                 <span class="text-2xl text-ocean-400 feature-icon">⏱️</span>
-                                <span class="font-medium">60-Second Timed Challenges</span>
+                                <span class="font-medium font-poppins">Time & Move Tracking</span>
                             </div>
                             <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">📚</span>
-                                <span class="font-medium">Educational Explanations</span>
+                                <span class="text-2xl text-ocean-400 feature-icon">🧠</span>
+                                <span class="font-medium font-poppins">Boosts Memory Skills</span>
                             </div>
                             <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">🎯</span>
-                                <span class="font-medium">Streak Scoring System</span>
+                                <span class="text-2xl text-ocean-400 feature-icon">🐢</span>
+                                <span class="font-medium font-poppins">Learn Turtle Species</span>
                             </div>
                             <div class="flex items-center gap-4 text-gray-300 group/feature">
-                                <span class="text-2xl text-ocean-400 feature-icon">➕</span>
-                                <span class="font-medium">Each word solved earns 10 points</span>
+                                <span class="text-2xl text-ocean-400 feature-icon">🔄</span>
+                                <span class="font-medium font-poppins">Randomized Each Game</span>
                             </div>
                         </div>
                         
                         <!-- Play Button -->
-                        <a href="/games/word-scramble" class="play-button word-start-btn block w-full bg-gradient-to-r from-ocean-600 to-ocean-500 hover:from-ocean-500 hover:to-ocean-400 text-white font-bold py-5 px-8 rounded-2xl text-center text-lg relative z-10 transform group-hover:scale-105 transition-all duration-300" onclick="playClickSound()">
-                            <span class="relative z-10">🎮 Start Word Challenge</span>
+                        <a href="/games/memory-match" class="play-button memory-start-btn block w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-5 px-8 rounded-2xl text-center text-lg relative z-10 transform group-hover:scale-105 transition-all duration-300" onclick="playClickSound()">
+                            <span class="relative z-10">🃏 Start Memory Game</span>
+                        </a>
+                    </div>
+
+                    <!-- Puzzle Game Card -->
+                    <div class="game-card rounded-3xl p-8 hover-lift group">
+                        <div class="text-center mb-8 relative z-10">
+                            <div class="text-7xl mb-6 animate-wiggle">🧩</div>
+                            <h3 class="text-3xl font-bold text-green-400 mb-4 font-poppins">Pawikan Puzzle</h3>
+                            <p class="text-gray-300 leading-relaxed text-lg font-poppins">
+                                Reassemble the scattered pieces to reveal the majestic sea turtle. 
+                                Choose from Easy, Medium, or Hard difficulty levels!
+                            </p>
+                        </div>
+                        
+                        <!-- Game Features -->
+                        <div class="space-y-4 mb-10 relative z-10">
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🎚️</span>
+                                <span class="font-medium font-poppins">3 Difficulty Levels</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">⏱️</span>
+                                <span class="font-medium font-poppins">Time & Move Tracking</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🖼️</span>
+                                <span class="font-medium font-poppins">Beautiful Turtle Imagery</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🧠</span>
+                                <span class="font-medium font-poppins">Logic & Spatial Skills</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🔄</span>
+                                <span class="font-medium font-poppins">Infinite Replayability</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Play Button -->
+                        <a href="/games/puzzle" class="play-button puzzle-start-btn block w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-5 px-8 rounded-2xl text-center text-lg relative z-10 transform group-hover:scale-105 transition-all duration-300" onclick="playClickSound()">
+                            <span class="relative z-10">🧩 Start Puzzle</span>
+                        </a>
+                    </div>
+
+                    <!-- Ocean Guardian Game Card (Replaces Pawikan Rush) -->
+                    <div class="game-card rounded-3xl p-8 hover-lift group">
+                        <div class="text-center mb-8 relative z-10">
+                            <div class="text-7xl mb-6 animate-wiggle">🛡️</div>
+                            <h3 class="text-3xl font-bold text-green-400 mb-4 font-poppins">Ocean Guardian</h3>
+                            <p class="text-gray-300 leading-relaxed text-lg font-poppins">
+                                Defend the reef from pollution! Tap to collect trash and protect the sea turtles 
+                                in this fast-paced clicker game.
+                            </p>
+                        </div>
+                        
+                        <!-- Game Features -->
+                        <div class="space-y-4 mb-10 relative z-10">
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">👆</span>
+                                <span class="font-medium font-poppins">Tap to Clean</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🐢</span>
+                                <span class="font-medium font-poppins">Protect Marine Life</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🚮</span>
+                                <span class="font-medium font-poppins">Remove Debris</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🌊</span>
+                                <span class="font-medium font-poppins">Beautiful Underwater View</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🏆</span>
+                                <span class="font-medium font-poppins">Beat Your High Score</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Play Button -->
+                        <a href="/games/find-the-pawikan" class="play-button block w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-5 px-8 rounded-2xl text-center text-lg relative z-10 transform group-hover:scale-105 transition-all duration-300" onclick="playClickSound()">
+                            <span class="relative z-10">🛡️ Start Defending</span>
                         </a>
                     </div>
                 </div>
@@ -715,26 +409,7 @@
             });
         });
         
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = window.innerWidth < 768 ? 20 : 40;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                const size = Math.random() * 6 + 3;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
-                particle.style.animationDelay = Math.random() * 5 + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
 
-        // Initialize particles when page loads
-        window.addEventListener('load', createParticles);
         
         // Add interactive hover effects
         document.querySelectorAll('.game-card').forEach(card => {

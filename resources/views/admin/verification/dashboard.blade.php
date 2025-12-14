@@ -26,6 +26,26 @@
         --glass-border: rgba(255, 255, 255, 0.08);
     }
 
+    /* Use Poppins typography */
+    #verificationDashboard,
+    #verificationDashboard * {
+        font-family: 'Poppins', sans-serif !important;
+        letter-spacing: 0.01em;
+    }
+
+    /* Preserve Font Awesome glyphs */
+    #verificationDashboard .fa,
+    #verificationDashboard .fas,
+    #verificationDashboard .far,
+    #verificationDashboard .fal,
+    #verificationDashboard .fab,
+    #verificationDashboard i[class^="fa-"],
+    #verificationDashboard i[class*=" fa-"] {
+        font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 5 Free", "Font Awesome 5 Pro", sans-serif !important;
+        letter-spacing: normal;
+        font-weight: 900;
+    }
+
     /* Glass Card */
     .glass-card {
         background: var(--glass-bg);
@@ -39,21 +59,11 @@
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
 
-    .glass-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
-
     /* Stats Cards */
     .stat-card {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
     }
 
     .stat-icon {
@@ -65,10 +75,6 @@
         border-radius: 0.75rem;
         font-size: 1.25rem;
         transition: all 0.3s ease;
-    }
-
-    .stat-card:hover .stat-icon {
-        transform: scale(1.1) rotate(5deg);
     }
     
     /* Progress Bars */
@@ -352,15 +358,23 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 pt-20 pb-16" id="verificationDashboard">
+<div class="min-h-screen bg-gray-900 pt-20 pb-16" id="verificationDashboard">
     <!-- Main Dashboard Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 relative z-10 main-container">
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors group">
+                <i class="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
+                <span class="text-sm font-medium">Back to Dashboard</span>
+            </a>
+        </div>
+
         <!-- Verification Dashboard Header -->
         <header class="mb-8 sm:mb-10 relative overflow-hidden rounded-2xl glass-card transform transition-all duration-500 hover:shadow-2xl">
             <!-- Background with animated gradient -->
             <div class="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-teal-900/70 to-cyan-900/80 backdrop-blur-sm">
                 <div class="absolute inset-0 opacity-20" style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l-5.334 5.333-2.94-2.94-1.393 1.393 2.94 2.94-5.334 5.334-2.94-2.94-1.394 1.394 2.94 2.94-5.333 5.333-2.94-2.94-1.394 1.393 2.94 2.94-5.334 5.334-2.94-2.94-1.393 1.394 2.94 2.94-5.333 5.333-2.94-2.94-1.394 1.393 2.94 2.94L0 54.627l2.94 2.94 1.393-1.394-2.94-2.94 5.333-5.333 2.94 2.94 1.394-1.393-2.94-2.94 5.334-5.334 2.94 2.94 1.393-1.393-2.94-2.94 5.333-5.333 2.94 2.94 1.394-1.393-2.94-2.94 5.334-5.334 2.94 2.94 1.393-1.393-2.94-2.94 5.333-5.334 2.94 2.94 1.394-1.393-2.94-2.94L60 5.373 57.06 2.433l-1.393 1.394 2.94 2.94L54.627 0z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E&quot;);"></div>
-                <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-cyan-500/10 animate-gradient-x"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-cyan-500/10"></div>
             </div>
             
             <!-- Main header content -->
@@ -732,6 +746,88 @@
             </div>
         </div>
     </div>
+
+    <!-- Approve User Confirmation Modal -->
+    <div id="approveUserModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white/10 backdrop-blur-md rounded-xl border border-green-500/30 w-full max-w-md mx-auto">
+            <form id="approveUserForm" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <div class="p-6 border-b border-white/10">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-white" style="font-family: 'Poppins', sans-serif;">Approve User</h3>
+                            <p class="text-gray-300 mt-2" style="font-family: 'Poppins', sans-serif;">Are you sure you want to approve this user's verification request?</p>
+                            <div class="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                <p class="text-sm text-green-300" style="font-family: 'Poppins', sans-serif;">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    The user will be granted verified status.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeApproveModal()" 
+                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors" style="font-family: 'Poppins', sans-serif;">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors" style="font-family: 'Poppins', sans-serif;">
+                        <i class="fas fa-check mr-2"></i>Approve User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reject User Modal -->
+    <div id="rejectUserModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white/10 backdrop-blur-md rounded-xl border border-red-500/30 w-full max-w-md mx-auto">
+            <form id="rejectUserForm" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <div class="p-6 border-b border-white/10">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-times-circle text-red-400 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-white" style="font-family: 'Poppins', sans-serif;">Reject User</h3>
+                            <p class="text-gray-300 mt-2" style="font-family: 'Poppins', sans-serif;">Please provide a reason for rejecting this user's verification request.</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label for="rejectReasonInput" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Reason for Rejection</label>
+                        <textarea 
+                            id="rejectReasonInput"
+                            name="notes"
+                            rows="4" 
+                            required
+                            minlength="10"
+                            class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" style="font-family: 'Poppins', sans-serif;"
+                            placeholder="Enter reason (minimum 10 characters)..."
+                        ></textarea>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeRejectModal()" 
+                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors" style="font-family: 'Poppins', sans-serif;">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors" style="font-family: 'Poppins', sans-serif;">
+                        <i class="fas fa-times mr-2"></i>Reject User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -936,126 +1032,76 @@ function showNotification(type, message) {
 }
 
 // Approve user function
+function openApproveModal(userId) {
+    const modal = document.getElementById('approveUserModal');
+    const form = document.getElementById('approveUserForm');
+    form.action = `{{ url('/admin/patrollers/verification') }}/${userId}/approve`;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeApproveModal() {
+    const modal = document.getElementById('approveUserModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+}
+
 async function approveUser(userId) {
-    console.log('Approving user ID:', userId);
-    console.log('Approve function called for user: ' + userId);
-    
-    if (!confirm('Are you sure you want to approve this user?')) {
-        return;
-    }
-
-    console.log('User confirmed approval');
-    setLoadingState(userId, 'approve', true);
-
-    try {
-        const response = await fetch(`{{ url('/admin/patrollers/verification') }}/${userId}/approve`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        });
-
-        console.log('Approve response status:', response.status);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Approve API Error Response:', errorText);
-            
-            let errorMessage = 'Failed to approve user';
-            try {
-                const errorData = JSON.parse(errorText);
-                errorMessage = errorData.message || errorMessage;
-            } catch (e) {
-                // If response is not JSON, use the text as error message
-                errorMessage = errorText || errorMessage;
-            }
-            
-            throw new Error(errorMessage);
-        }
-
-        const data = await response.json();
-        console.log('Approve response data:', data);
-
-        showNotification('success', 'User has been approved successfully!');
-        setTimeout(() => window.location.reload(), 1500);
-    } catch (error) {
-        showNotification('error', error.message || 'Failed to approve user. Please try again.');
-        console.error('Error approving user:', error);
-    } finally {
-        setLoadingState(userId, 'approve', false);
-    }
+    console.log('Opening approve modal for user ID:', userId);
+    openApproveModal(userId);
 }
 
 // Reject user function
-async function openRejectModal(userId) {
-    console.log('Opening reject modal for user ID:', userId);
-    console.log('Reject function called for user: ' + userId);
+function openRejectModal(userId) {
+    const modal = document.getElementById('rejectUserModal');
+    const form = document.getElementById('rejectUserForm');
+    const reasonInput = document.getElementById('rejectReasonInput');
     
-    let reason = prompt('Please provide a reason for rejecting this user (minimum 10 characters):');
+    form.action = `{{ url('/admin/patrollers/verification') }}/${userId}/reject`;
+    reasonInput.value = '';
     
-    if (!reason || reason.trim() === '') {
-        showNotification('error', 'Rejection reason is required.');
-        return;
-    }
-
-    if (reason.trim().length < 10) {
-        showNotification('error', 'Rejection reason must be at least 10 characters long.');
-        return;
-    }
-
-    if (!confirm(`Are you sure you want to reject this user?\n\nReason: ${reason.trim()}`)) {
-        return;
-    }
-
-    setLoadingState(userId, 'reject', true);
-
-    try {
-        const response = await fetch(`{{ url('/admin/patrollers/verification') }}/${userId}/reject`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                notes: reason.trim()
-            })
-        });
-
-        console.log('Reject response status:', response.status);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Reject API Error Response:', errorText);
-            
-            let errorMessage = 'Failed to reject user';
-            try {
-                const errorData = JSON.parse(errorText);
-                errorMessage = errorData.message || errorMessage;
-            } catch (e) {
-                // If response is not JSON, use the text as error message
-                errorMessage = errorText || errorMessage;
-            }
-            
-            throw new Error(errorMessage);
-        }
-
-        const data = await response.json();
-        console.log('Reject response data:', data);
-
-        showNotification('success', 'User has been rejected successfully!');
-        setTimeout(() => window.location.reload(), 1500);
-    } catch (error) {
-        showNotification('error', error.message || 'Failed to reject user. Please try again.');
-        console.error('Error rejecting user:', error);
-    } finally {
-        setLoadingState(userId, 'reject', false);
-    }
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
 }
+
+function closeRejectModal() {
+    const modal = document.getElementById('rejectUserModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modals on escape key and click outside
+document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeApproveModal();
+            closeRejectModal();
+        }
+    });
+    
+    const approveModal = document.getElementById('approveUserModal');
+    const rejectModal = document.getElementById('rejectUserModal');
+    
+    if (approveModal) {
+        approveModal.addEventListener('click', function(e) {
+            if (e.target === approveModal) {
+                closeApproveModal();
+            }
+        });
+    }
+    
+    if (rejectModal) {
+        rejectModal.addEventListener('click', function(e) {
+            if (e.target === rejectModal) {
+                closeRejectModal();
+            }
+        });
+    }
+});
 
 </script>
 @endpush

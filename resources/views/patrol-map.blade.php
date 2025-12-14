@@ -1,12 +1,20 @@
-@extends('layouts.app')
+@extends(auth()->check() && in_array(auth()->user()->role, ['patroller', 'admin']) ? 'layouts.patroller' : 'layouts.app')
+
+@if(auth()->check() && in_array(auth()->user()->role, ['patroller', 'admin']))
+    @section('container-class', 'w-full max-w-none')
+@endif
 
 @section('content')
 <div id="patrol-map-page">
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 pt-20">
+@php
+    $isPatrollerOrAdmin = auth()->check() && in_array(auth()->user()->role, ['patroller', 'admin']);
+    $mapHeight = $isPatrollerOrAdmin ? 'calc(100vh - 160px)' : 'calc(100vh - 140px)';
+@endphp
+<div class="min-h-screen bg-gray-900 {{ $isPatrollerOrAdmin ? '' : 'pt-20' }}">
     <!-- Header -->
-    <div class="py-4 mb-4 mt-4">
+    <div class="py-4 mb-4 {{ $isPatrollerOrAdmin ? '' : 'mt-4' }}">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl font-bold text-white mb-3">Pawikan Patrol Map</h1>
+            <h1 class="text-4xl font-bold text-green-400 mb-3" style="font-family: 'Poppins', sans-serif;">Pawikan Patrol Map</h1>
         </div>
     </div>
 
@@ -14,7 +22,7 @@
     <div class="flex flex-col lg:flex-row mx-4 mb-4 gap-4">
         <!-- Map Container -->
         <div class="relative flex-1 rounded-lg overflow-hidden shadow-2xl">
-            <div id="map" style="height: calc(100vh - 140px); width: 100%;"></div>
+            <div id="map" style="height: {{ $mapHeight }}; width: 100%;"></div>
             
             <!-- Loading Overlay -->
             <div id="loading" class="absolute inset-0 bg-black/50 flex items-center justify-center" style="z-index: 1000;">
@@ -26,17 +34,17 @@
         </div>
 
         <!-- Right Sidebar -->
-        <div id="report-sidebar" class="w-full lg:w-96 bg-white/10 backdrop-blur-sm rounded-lg shadow-2xl border border-white/20 hidden sidebar-container" style="height: calc(100vh - 140px);">
+        <div id="report-sidebar" class="w-full lg:w-96 bg-white/10 backdrop-blur-sm rounded-lg shadow-2xl border border-white/20 hidden sidebar-container" style="height: {{ $mapHeight }};">
             <div class="p-4 h-full overflow-y-auto">
                 <!-- Close Button -->
                 <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-lg font-bold text-white">Report Details</h3>
+                    <h3 class="text-lg font-bold text-green-400">Report Details</h3>
                     <button id="close-sidebar" class="text-white hover:text-red-400 text-xl font-bold px-2 py-1 rounded hover:bg-red-500/20 transition-colors">&times;</button>
                 </div>
                 
                 <!-- Report Content -->
                 <div id="sidebar-content" class="text-white">
-                    <p class="text-blue-200">Click on a report marker to view details</p>
+                    <p class="text-gray-300">Click on a report marker to view details</p>
                 </div>
             </div>
         </div>
@@ -206,86 +214,6 @@
 
 <!-- Leaflet MarkerCluster JS -->
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<!-- Leaflet Heatmap JS -->
-<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
-
-<!-- Map Controls & Overlays -->
-<div id="map-overlays" class="absolute top-4 right-4 z-[1000] flex flex-col gap-4 pointer-events-none">
-    
-    <!-- 1. Statistics Card -->
-    <div class="bg-slate-900/90 backdrop-blur-md border border-white/20 p-4 rounded-xl shadow-2xl text-white w-72 pointer-events-auto transform transition-all hover:scale-105">
-        <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-3 flex items-center">
-            <i class="fas fa-chart-pie mr-2"></i> Patrol Insights
-        </h3>
-        <div class="grid grid-cols-2 gap-3 mb-3">
-            <div class="bg-white/5 rounded-lg p-2 text-center">
-                <div class="text-2xl font-bold text-white" id="stat-total">0</div>
-                <div class="text-[10px] text-gray-400 uppercase">Total Reports</div>
-            </div>
-            <div class="bg-white/5 rounded-lg p-2 text-center">
-                <div class="text-2xl font-bold text-teal-400" id="stat-species">0</div>
-                <div class="text-[10px] text-gray-400 uppercase">Species Found</div>
-            </div>
-        </div>
-        <div class="space-y-2">
-            <div class="flex justify-between text-xs">
-                <span class="text-gray-400">Most Common:</span>
-                <span class="font-medium text-yellow-400" id="stat-common">Loading...</span>
-            </div>
-            <div class="flex justify-between text-xs">
-                <span class="text-gray-400">Latest Report:</span>
-                <span class="font-medium text-blue-300" id="stat-latest">Loading...</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. Smart Filters -->
-    <div class="bg-slate-900/90 backdrop-blur-md border border-white/20 p-4 rounded-xl shadow-2xl text-white w-72 pointer-events-auto">
-        <div class="flex justify-between items-center mb-3">
-            <h3 class="text-sm font-bold text-teal-400 uppercase tracking-wider flex items-center">
-                <i class="fas fa-filter mr-2"></i> Smart Filters
-            </h3>
-            <button onclick="resetFilters()" class="text-[10px] bg-white/10 hover:bg-white/20 px-2 py-1 rounded transition-colors">
-                Reset
-            </button>
-        </div>
-        
-        <!-- View Mode Toggle -->
-        <div class="flex bg-white/10 rounded-lg p-1 mb-4">
-            <button onclick="toggleViewMode('markers')" id="btn-markers" class="flex-1 py-1.5 text-xs font-medium rounded-md bg-blue-600 text-white shadow-sm transition-all">
-                <i class="fas fa-map-marker-alt mr-1"></i> Markers
-            </button>
-            <button onclick="toggleViewMode('heatmap')" id="btn-heatmap" class="flex-1 py-1.5 text-xs font-medium rounded-md text-gray-300 hover:text-white transition-all">
-                <i class="fas fa-fire mr-1"></i> Heatmap
-            </button>
-        </div>
-
-        <div id="filter-options" class="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
-            <!-- Species Filter -->
-            <div>
-                <label class="text-xs font-semibold text-gray-400 mb-2 block">By Species</label>
-                <div class="space-y-1.5" id="species-filters">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-            
-            <!-- Type Filter -->
-            <div class="pt-2 border-t border-white/10">
-                <label class="text-xs font-semibold text-gray-400 mb-2 block mt-2">By Report Type</label>
-                <div class="space-y-1.5" id="type-filters">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-track { bg: rgba(255,255,255,0.05); }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-    .filter-checkbox:checked + div { background-color: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
-</style>
 
 <script>
 // Patrol reports data from server
@@ -362,28 +290,28 @@ function createSidebarContent(report) {
             <div class="space-y-2">
                 <div class="grid grid-cols-1 gap-2">
                     <div class="bg-white/5 rounded p-2">
-                        <div class="text-blue-200 text-xs font-medium">📍 Location</div>
+                        <div class="text-green-300 text-xs font-medium">📍 Location</div>
                         <div class="text-white text-sm">${report.location || 'Not specified'}</div>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2">
                         <div class="bg-white/5 rounded p-2">
-                            <div class="text-blue-200 text-xs font-medium">📋 Type</div>
+                            <div class="text-green-300 text-xs font-medium">📋 Type</div>
                             <div class="text-white text-sm capitalize">${report.report_type || 'Not specified'}</div>
                         </div>
                         <div class="bg-white/5 rounded p-2">
-                            <div class="text-blue-200 text-xs font-medium">📅 Date</div>
+                            <div class="text-green-300 text-xs font-medium">📅 Date</div>
                             <div class="text-white text-xs">${report.incident_datetime || 'Not specified'}</div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div class="bg-white/5 rounded p-2">
-                            <div class="text-blue-200 text-xs font-medium">🐢 Species</div>
+                            <div class="text-green-300 text-xs font-medium">🐢 Species</div>
                             <div class="text-white text-sm capitalize">${(report.turtle_species || 'Not specified').replace('_', ' ')}</div>
                         </div>
                         <div class="bg-white/5 rounded p-2">
-                            <div class="text-blue-200 text-xs font-medium">🔢 Count</div>
+                            <div class="text-green-300 text-xs font-medium">🔢 Count</div>
                             <div class="text-white text-sm">${report.turtle_count || 'Unknown'}</div>
                         </div>
                     </div>
@@ -392,13 +320,13 @@ function createSidebarContent(report) {
                         <div class="grid grid-cols-2 gap-2">
                             ${report.turtle_gender ? `
                                 <div class="bg-white/5 rounded p-2">
-                                    <div class="text-blue-200 text-xs font-medium">🚻 Gender</div>
+                                    <div class="text-green-300 text-xs font-medium">🚻 Gender</div>
                                     <div class="text-white text-sm capitalize">${report.turtle_gender}</div>
                                 </div>
                             ` : ''}
                             ${(report.egg_count !== null && report.egg_count !== undefined) ? `
                                 <div class="bg-white/5 rounded p-2">
-                                    <div class="text-blue-200 text-xs font-medium">🥚 Egg Count</div>
+                                    <div class="text-green-300 text-xs font-medium">🥚 Egg Count</div>
                                     <div class="text-white text-sm">${report.egg_count.toLocaleString()}</div>
                                 </div>
                             ` : ''}
@@ -406,21 +334,21 @@ function createSidebarContent(report) {
                     ` : ''}
 
                     <div class="bg-white/5 rounded p-2">
-                        <div class="text-blue-200 text-xs font-medium">💊 Condition</div>
+                        <div class="text-green-300 text-xs font-medium">💊 Condition</div>
                         <div class="text-white text-sm capitalize">${report.turtle_condition || 'Not specified'}</div>
                     </div>
 
                     ${report.description ? `
                         <div class="bg-white/5 rounded p-2">
-                            <div class="text-blue-200 text-xs font-medium">📝 Description</div>
+                            <div class="text-green-300 text-xs font-medium">📝 Description</div>
                             <div class="text-white text-xs leading-relaxed mt-1">${report.description}</div>
                         </div>
                     ` : ''}
 
                     <div class="bg-white/5 rounded p-2">
-                        <div class="text-blue-200 text-xs font-medium">👤 Reported By</div>
+                        <div class="text-green-300 text-xs font-medium">👤 Reported By</div>
                         <div class="text-white text-sm">${report.reported_by || 'Unknown'}</div>
-                        ${report.reported_at ? `<div class="text-blue-300 text-xs mt-1">Submitted: ${report.reported_at}</div>` : ''}
+                        ${report.reported_at ? `<div class="text-gray-300 text-xs mt-1">Submitted: ${report.reported_at}</div>` : ''}
                     </div>
                 </div>
             </div>

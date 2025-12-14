@@ -228,7 +228,7 @@
         const locationButton = document.createElement('button');
         locationButton.type = 'button';
         locationButton.id = 'gps-location-btn';
-        locationButton.className = 'mt-2 px-4 py-2 bg-ocean-600 hover:bg-ocean-700 text-white text-sm rounded-lg cinzel-text transition-all duration-200 flex items-center gap-2';
+        locationButton.className = 'mt-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm rounded-lg cinzel-text transition-all duration-200 flex items-center gap-2';
         locationButton.innerHTML = '<i class="fas fa-satellite-dish"></i><span>Get GPS Coordinates</span>';
         locationButton.addEventListener('click', getCurrentLocation);
         
@@ -285,14 +285,14 @@
             <!-- Header -->
             <div class="mb-8">
                 <div class="flex items-center mb-4">
-                    <a href="{{ route('patroller.reports.show', $report) }}" class="text-ocean-400 hover:text-ocean-300 mr-4">
+                    <a href="{{ route('patroller.reports.show', $report) }}" class="text-green-400 hover:text-green-300 mr-4">
                         <i class="fas fa-arrow-left"></i>
                     </a>
-                    <h1 class="text-3xl font-bold text-white cinzel-heading">
-                        <i class="fas fa-edit mr-3 text-ocean-400"></i>Edit Report
+                    <h1 class="text-3xl font-bold text-white " style="font-family: 'Poppins', sans-serif;">
+                        <i class="fas fa-edit mr-3 text-green-400"></i>Edit Report
                     </h1>
                 </div>
-                <p class="text-gray-300 cinzel-text">Update your patrol report details.</p>
+                <p class="text-gray-300 " style="font-family: 'Poppins', sans-serif;">Update your patrol report details.</p>
             </div>
 
             <!-- Error Messages -->
@@ -303,8 +303,8 @@
                             <i class="fas fa-exclamation-circle text-red-400"></i>
                         </div>
                         <div class="ml-3">
-                            <h3 class="text-red-100 font-medium cinzel-text">Please correct the following errors:</h3>
-                            <ul class="mt-2 text-red-200 text-sm list-disc list-inside cinzel-text">
+                            <h3 class="text-red-100 font-medium " style="font-family: 'Poppins', sans-serif;">Please correct the following errors:</h3>
+                            <ul class="mt-2 text-red-200 text-sm list-disc list-inside " style="font-family: 'Poppins', sans-serif;">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -330,15 +330,15 @@
                 @method('PUT')
                 
                 <div class="glass-morphism rounded-xl p-6">
-                    <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
-                        <i class="fas fa-info-circle mr-2 text-teal-400"></i>Basic Information
+                    <h3 class="text-lg font-semibold text-white mb-6 " style="font-family: 'Poppins', sans-serif;">
+                        <i class="fas fa-info-circle mr-2 text-green-400"></i>Basic Information
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Report Type -->
                         <div>
-                            <label for="report_type" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Report Type *</label>
-                            <select id="report_type" name="report_type" required class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                            <label for="report_type" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Report Type *</label>
+                            <select id="report_type" name="report_type" required class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;">
                                 <option value="">Select report type</option>
                                 @foreach($reportTypeOptions as $value => $label)
                                     <option value="{{ $value }}" {{ old('report_type', $report->report_type) == $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -348,8 +348,8 @@
 
                         <!-- Priority -->
                         <div>
-                            <label for="priority" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Priority Level *</label>
-                            <select id="priority" name="priority" required class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                            <label for="priority" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Priority Level *</label>
+                            <select id="priority" name="priority" required class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;">
                                 <option value="">Select priority</option>
                                 <option value="low" {{ old('priority', $report->priority) == 'low' ? 'selected' : '' }}>Low</option>
                                 <option value="medium" {{ old('priority', $report->priority) == 'medium' ? 'selected' : '' }}>Medium</option>
@@ -360,73 +360,73 @@
 
                         <!-- Title -->
                         <div class="md:col-span-2">
-                            <label for="title" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Report Title *</label>
+                            <label for="title" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Report Title *</label>
                             <input type="text" id="title" name="title" value="{{ old('title', $report->title) }}" required 
-                                   class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="Brief description of the report">
                         </div>
 
                         <!-- Location -->
                         <div class="md:col-span-2">
-                            <label for="location" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Location *</label>
+                            <label for="location" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Location *</label>
                             <input type="text" id="location" name="location" value="{{ old('location', $report->location) }}" required 
-                                   class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="Specific location or area">
                         </div>
 
                         <!-- Coordinates -->
                         <div>
-                            <label for="latitude" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Latitude</label>
+                            <label for="latitude" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Latitude</label>
                             <input type="number" id="latitude" name="latitude" value="{{ old('latitude', $report->latitude) }}" 
-                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="e.g., 6.9363">
                         </div>
 
                         <div>
-                            <label for="longitude" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Longitude</label>
+                            <label for="longitude" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Longitude</label>
                             <input type="number" id="longitude" name="longitude" value="{{ old('longitude', $report->longitude) }}" 
-                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="e.g., 126.2742">
                         </div>
 
                         <!-- Incident Date/Time -->
                         <div class="md:col-span-2">
-                            <label for="incident_datetime" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Incident Date & Time</label>
+                            <label for="incident_datetime" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Incident Date & Time</label>
                             <input type="datetime-local" id="incident_datetime" name="incident_datetime" 
                                    value="{{ old('incident_datetime', $report->incident_datetime ? $report->incident_datetime->format('Y-m-d\TH:i') : '') }}" 
-                                   class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                                   class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;">
                         </div>
                     </div>
                 </div>
 
                 <!-- Turtle Information (if applicable) -->
                 <div class="glass-morphism rounded-xl p-6">
-                    <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
-                        <i class="fas fa-turtle mr-2 text-teal-400"></i>Turtle Information
+                    <h3 class="text-lg font-semibold text-white mb-6 " style="font-family: 'Poppins', sans-serif;">
+                        <i class="fas fa-turtle mr-2 text-green-400"></i>Turtle Information
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Turtle Count -->
                         <div>
-                            <label for="turtle_count" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Number of Turtles</label>
+                            <label for="turtle_count" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Number of Turtles</label>
                             <input type="number" id="turtle_count" name="turtle_count" value="{{ old('turtle_count', $report->turtle_count) }}" 
-                                   min="0" class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                   min="0" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="0">
                         </div>
 
                         <!-- Nesting Egg Count (Nesting Only) -->
                         <div id="egg-count-wrapper" class="col-span-1 {{ old('report_type', $report->report_type) === 'nesting' ? '' : 'hidden' }}">
-                            <label for="egg_count" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Egg Count (Nesting Only)</label>
+                            <label for="egg_count" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Egg Count (Nesting Only)</label>
                             <input type="number" id="egg_count" name="egg_count" value="{{ old('egg_count', $report->egg_count) }}"
-                                   min="0" class="form-input w-full px-3 py-2 rounded-md cinzel-text"
+                                   min="0" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;"
                                    placeholder="Approx. number of eggs">
-                            <p class="text-xs text-gray-400 mt-1 cinzel-text">Visible only for nesting reports.</p>
+                            <p class="text-xs text-gray-400 mt-1 " style="font-family: 'Poppins', sans-serif;">Visible only for nesting reports.</p>
                         </div>
 
                         <!-- Turtle Species -->
                         <div>
-                            <label for="turtle_species" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Species</label>
-                            <select id="turtle_species" name="turtle_species" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                            <label for="turtle_species" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Species</label>
+                            <select id="turtle_species" name="turtle_species" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;">
                                 <option value="">Select species</option>
                                 <option value="olive_ridley" {{ old('turtle_species', $report->turtle_species) == 'olive_ridley' ? 'selected' : '' }}>Olive Ridley</option>
                                 <option value="green_sea_turtle" {{ old('turtle_species', $report->turtle_species) == 'green_sea_turtle' ? 'selected' : '' }}>Green Sea Turtle</option>
@@ -438,8 +438,8 @@
 
                         <!-- Turtle Gender -->
                         <div>
-                            <label for="gender" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Turtle Gender</label>
-                            <select id="gender" name="gender" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                            <label for="gender" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Turtle Gender</label>
+                            <select id="gender" name="gender" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;">
                                 <option value="" {{ old('gender', $report->gender) == '' ? 'selected' : '' }}>Select gender</option>
                                 <option value="male" {{ old('gender', $report->gender) == 'male' ? 'selected' : '' }}>Male</option>
                                 <option value="female" {{ old('gender', $report->gender) == 'female' ? 'selected' : '' }}>Female</option>
@@ -449,8 +449,8 @@
 
                         <!-- Turtle Condition -->
                         <div>
-                            <label for="turtle_condition" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Condition</label>
-                            <select id="turtle_condition" name="turtle_condition" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                            <label for="turtle_condition" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Condition</label>
+                            <select id="turtle_condition" name="turtle_condition" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;">
                                 <option value="">Select condition</option>
                                 <option value="healthy" {{ old('turtle_condition', $report->turtle_condition) == 'healthy' ? 'selected' : '' }}>Healthy</option>
                                 <option value="injured" {{ old('turtle_condition', $report->turtle_condition) == 'injured' ? 'selected' : '' }}>Injured</option>
@@ -463,23 +463,23 @@
 
                 <!-- Detailed Description -->
                 <div class="glass-morphism rounded-xl p-6">
-                    <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
-                        <i class="fas fa-file-text mr-2 text-teal-400"></i>Detailed Information
+                    <h3 class="text-lg font-semibold text-white mb-6 " style="font-family: 'Poppins', sans-serif;">
+                        <i class="fas fa-file-text mr-2 text-green-400"></i>Detailed Information
                     </h3>
                     
                     <div class="space-y-6">
                         <!-- Description -->
                         <div>
-                            <label for="description" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Detailed Description *</label>
+                            <label for="description" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Detailed Description *</label>
                             <textarea id="description" name="description" rows="4" required 
-                                      class="form-input w-full px-3 py-2 rounded-md cinzel-text" 
+                                      class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;" 
                                       placeholder="Provide a detailed description of what you observed or the incident that occurred">{{ old('description', $report->description) }}</textarea>
                         </div>
 
                         <!-- Weather Conditions -->
                         <div>
-                            <label for="weather_conditions" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Weather Conditions</label>
-                            <select id="weather_conditions" name="weather_conditions" class="form-input w-full px-3 py-2 rounded-md cinzel-text">
+                            <label for="weather_conditions" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Weather Conditions</label>
+                            <select id="weather_conditions" name="weather_conditions" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;">
                             <option value="" {{ old('weather_conditions', $report->weather_conditions) == '' ? 'selected' : '' }}>Select weather condition</option>
                             <option value="Sunny" {{ old('weather_conditions', $report->weather_conditions) == 'Sunny' ? 'selected' : '' }}>☀️ Sunny</option>
                             <option value="Partly Cloudy" {{ old('weather_conditions', $report->weather_conditions) == 'Partly Cloudy' ? 'selected' : '' }}>⛅ Partly Cloudy</option>
@@ -497,15 +497,15 @@
                 </div>
 
                 <!-- Images -->
-                <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
-                    <h3 class="text-lg font-semibold text-white mb-6 cinzel-subheading">
-                        <i class="fas fa-images mr-2 text-ocean-400"></i>Images
+                <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                    <h3 class="text-lg font-semibold text-white mb-6 " style="font-family: 'Poppins', sans-serif;">
+                        <i class="fas fa-images mr-2 text-green-400"></i>Images
                     </h3>
                     
                     <!-- Current Images -->
                     @if($report->images && count($report->images) > 0)
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Current Images</label>
+                            <label class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Current Images</label>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 @foreach($report->images as $image)
                                     <div class="relative group">
@@ -523,18 +523,18 @@
 
                     <!-- Add New Images -->
                     <div>
-                        <label for="images" class="block text-sm font-medium text-gray-300 mb-2 cinzel-text">Add New Images</label>
-                        <input type="file" name="images[]" id="images" multiple accept="image/*" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-500 focus:border-transparent cinzel-text">
-                        <p class="mt-1 text-sm text-gray-400 cinzel-text">You can select multiple images. Max 2MB per image.</p>
+                        <label for="images" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Add New Images</label>
+                        <input type="file" name="images[]" id="images" multiple accept="image/*" class="w-full bg-white/10 border border-green-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-green-400 focus:border-transparent " style="font-family: 'Poppins', sans-serif;">
+                        <p class="mt-1 text-sm text-gray-400 " style="font-family: 'Poppins', sans-serif;">You can select multiple images. Max 2MB per image.</p>
                     </div>
                 </div>
 
                 <!-- Submit Buttons -->
-                <div class="flex items-center justify-end space-x-4">
-                    <a href="{{ route('patroller.reports.show', $report) }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors cinzel-text">
+                <div class="flex items-center justify-end space-x-6 mt-8">
+                    <a href="{{ route('patroller.reports.show', $report) }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors " style="font-family: 'Poppins', sans-serif;">
                         Cancel
                     </a>
-                    <button type="submit" class="bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg cinzel-text">
+                    <button type="submit" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg " style="font-family: 'Poppins', sans-serif;">
                         <i class="fas fa-save mr-2"></i>Update Report
                     </button>
                 </div>
