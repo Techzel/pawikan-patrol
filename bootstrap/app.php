@@ -27,12 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })
-    ->booted(function (Application $app) {
-        // Configure bootstrap cache for serverless environment
-        if (isset($_ENV['VERCEL']) || isset($_ENV['AWS_LAMBDA_FUNCTION_NAME'])) {
-            $app->useBootstrapPath('/tmp/bootstrap');
-        }
-    })
     ->create();
 
 

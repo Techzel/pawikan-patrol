@@ -58,5 +58,6 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 
 // Override storage paths for serverless environment
 $app->useStoragePath($_ENV['APP_STORAGE']);
+$app->useBootstrapPath('/tmp/bootstrap');
 
 $app->handleRequest(Request::capture());
