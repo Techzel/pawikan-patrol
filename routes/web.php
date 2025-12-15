@@ -18,8 +18,12 @@ Route::get('/', function () {
 // Helper for initial database setup on Vercel
 Route::get('/migrate-db', function () {
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return 'Database migration completed successfully! <br>' . nl2br(\Illuminate\Support\Facades\Artisan::output());
+        // Run fresh migration to fix any schema inconsistencies
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+            '--force' => true,
+            '--seed' => true // Optional: seed initial data if you have seeders
+        ]);
+        return 'Database successfully RESET and MIGRATED! <br>' . nl2br(\Illuminate\Support\Facades\Artisan::output());
     } catch (\Exception $e) {
         return 'Migration failed: ' . $e->getMessage();
     }
