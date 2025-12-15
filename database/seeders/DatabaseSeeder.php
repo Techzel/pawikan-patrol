@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             FixPatrollerCreatedBySeeder::class,
             StandardizePatrollerDataSeeder::class,
-            SetPendingVerificationSeeder::class,
+            // SetPendingVerificationSeeder::class,
             UserVerificationSeeder::class,
         ]);
     }
