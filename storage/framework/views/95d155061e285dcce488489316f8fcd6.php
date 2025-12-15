@@ -150,7 +150,7 @@
                 <div class="ml-8 space-y-1">
                     <a href="/patrol-map/gallery" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">📸</span>
-                        <span class="text-sm font-medium">Gallery Report</span>
+                        <span class="text-sm font-medium">GALLERY REPORT</span>
                     </a>
                 </div>
             </div>
