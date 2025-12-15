@@ -129,7 +129,7 @@ to @extends('layouts.app')
                     </button>
                     <button class="tab-btn" data-tab="find-the-pawikan">
                         <span class="text-xl">🐢</span>
-                        <span>Find Pawikan</span>
+                        <span>Ocean Guardians</span>
                     </button>
                 </div>
             </div>

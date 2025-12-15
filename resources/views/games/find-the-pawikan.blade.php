@@ -39,7 +39,7 @@
     @include('navigation')
 
     <!-- Back Button -->
-    <div class="fixed top-28 left-4 z-50 mb-4">
+    <div class="fixed top-24 left-4 z-50 mb-4">
         <a href="{{ route('games.index') }}" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -94,7 +94,7 @@
             <!-- Top Bar -->
             <div class="flex flex-row justify-between items-start w-full">
                 <!-- Header -->
-                <div class="pointer-events-auto">
+                <div class="pointer-events-auto pl-14">
                     <h1 class="text-2xl md:text-4xl font-bold text-white font-poppins drop-shadow-[0_0_10px_rgba(74,222,128,0.5)] leading-tight">
                         Ocean<br class="hidden md:block"> Guardian
                     </h1>
@@ -102,7 +102,7 @@
                 </div>
 
                 <!-- Stats HUD (Vertical Stack) -->
-                <div id="gameHUD" class="flex flex-col gap-2 items-end pointer-events-auto hidden">
+                <div id="gameHUD" class="flex flex-col gap-2 items-end pointer-events-auto">
                     
                     <!-- Status Group -->
                     <div class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-32">
@@ -796,7 +796,10 @@
             if(gameOverScreen) gameOverScreen.classList.add('hidden');
             
             const hud = document.getElementById('gameHUD');
-            if(hud) hud.classList.remove('hidden');
+            if(hud) {
+                hud.classList.remove('hidden');
+                hud.style.display = ''; // Clear inline style
+            }
             
             
             if(!gameActive) {
