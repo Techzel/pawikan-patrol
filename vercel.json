@@ -1,14 +1,9 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/lambda.php",
-      "use": "vercel-php@0.7.4",
-      "config": {
-        "includeFiles": "public/build/**"
-      }
+  "functions": {
+    "api/lambda.php": {
+      "runtime": "vercel-php@0.7.4"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/build/(.*)",
