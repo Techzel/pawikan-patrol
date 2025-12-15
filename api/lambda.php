@@ -10,6 +10,13 @@ $_ENV['VERCEL'] = true;
 $_ENV['APP_STORAGE'] = '/tmp/storage';
 $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 
+// Fallback to cookie session and file cache if no database is configured
+if (empty($_ENV['DB_HOST'])) {
+    $_ENV['SESSION_DRIVER'] = 'cookie';
+    $_ENV['CACHE_STORE'] = 'file';
+    $_ENV['LOG_CHANNEL'] = 'stderr';
+}
+
 // Create necessary directories in /tmp (writable in serverless)
 $directories = [
     '/tmp/storage',
@@ -59,5 +66,44 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 // Override storage paths for serverless environment
 $app->useStoragePath($_ENV['APP_STORAGE']);
 $app->useBootstrapPath('/tmp/bootstrap');
+
+// -----------------------------------------------------------------------------
+// AUTOMATIC DATABASE FALLBACK (Ephemeral SQLite)
+// -----------------------------------------------------------------------------
+// If no external DB is configured, use a temporary SQLite database in /tmp
+if (empty($_ENV['DB_HOST'])) {
+    $dbPath = '/tmp/database.sqlite';
+    
+    // Configure environment to use SQLite
+    $_ENV['DB_CONNECTION'] = 'sqlite';
+    $_ENV['DB_DATABASE'] = $dbPath;
+    $_ENV['DB_FOREIGN_KEYS'] = 'true';
+    
+    // Fallback drivers
+    $_ENV['SESSION_DRIVER'] = 'cookie';
+    $_ENV['CACHE_STORE'] = 'file';
+    $_ENV['LOG_CHANNEL'] = 'stderr';
+
+    // serverless-specific: ensure database exists and is migrated
+    if (!file_exists($dbPath)) {
+        touch($dbPath);
+        
+        // Run migrations only if we just created the DB
+        // We use the kernel to run the command since $app is already created
+        $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+        
+        // We need to temporarily force the environment variables for the artisan command
+        putenv("DB_CONNECTION=sqlite");
+        putenv("DB_DATABASE={$dbPath}");
+        
+        try {
+            $kernel->call('migrate', ['--force' => true]);
+        } catch (\Exception $e) {
+            // Log migration error but continue (might be partial migration)
+            error_log("Auto-migration failed: " . $e->getMessage());
+        }
+    }
+}
+// -----------------------------------------------------------------------------
 
 $app->handleRequest(Request::capture());
