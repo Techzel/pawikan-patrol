@@ -15,6 +15,16 @@ Route::get('/', function () {
     return view('LandingPage');
 });
 
+// Helper for initial database setup on Vercel
+Route::get('/migrate-db', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return 'Database migration completed successfully! <br>' . nl2br(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Exception $e) {
+        return 'Migration failed: ' . $e->getMessage();
+    }
+});
+
 Route::get('/3d-explorer', function () {
     return view('3d-explorer');
 });
