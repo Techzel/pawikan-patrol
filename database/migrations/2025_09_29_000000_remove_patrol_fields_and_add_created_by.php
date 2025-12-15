@@ -42,12 +42,13 @@ return new class extends Migration
                 $table->string('created_by')->nullable()->after('id');
             }
             
-            // Set created_by to 'admin' for all existing patrollers with null created_by
-            DB::table('users')
-                ->where('role', 'patroller')
-                ->whereNull('created_by')
-                ->update(['created_by' => 'admin']);
         });
+
+        // Set created_by to 'admin' for all existing patrollers with null created_by
+        DB::table('users')
+            ->where('role', 'patroller')
+            ->whereNull('created_by')
+            ->update(['created_by' => 'admin']);
     }
 
     /**
