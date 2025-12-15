@@ -1,8 +1,6 @@
 public/index.php
 /vendor
 /node_modules
-package.json
-package-lock.json
 .env
 .env.backup
 .env.production
