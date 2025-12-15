@@ -3,7 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
+        "build": "echo 'Using pre-built assets'",
+        "build:local": "vite build",
         "dev": "vite"
     },
     "devDependencies": {
