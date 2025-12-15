@@ -1,9 +1,7 @@
 {
-  "framework": null,
-  "buildCommand": null,
-  "installCommand": null,
+  "version": 2,
   "functions": {
-    "api/lambda.php": {
+    "api/*.php": {
       "runtime": "vercel-php@0.7.4"
     }
   },
