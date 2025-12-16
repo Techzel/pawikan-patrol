@@ -209,7 +209,7 @@
                     <div class="relative group">
                         <button class="flex items-center gap-2 text-white hover:text-ocean-400 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 {{ request()->is('profile*') || request()->is('admin/dashboard*') || request()->is('patroller/dashboard*') ? 'bg-ocean-600/30' : '' }}">
                             @if(auth()->user()->profile_picture)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" 
+                                <img src="{{ Str::startsWith(auth()->user()->profile_picture, 'data:') ? auth()->user()->profile_picture : asset('storage/' . auth()->user()->profile_picture) }}" 
                                      alt="Profile Picture" 
                                      class="w-8 h-8 rounded-full object-cover border-2 border-ocean-500/30"
                                      onerror="this.onerror=null; this.outerHTML='<span class=\'text-lg\'>👤</span>';">

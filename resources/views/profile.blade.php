@@ -117,7 +117,7 @@ function getRankBadge($rank) {
                         <div class="relative inline-block mb-4">
                             <div class="relative">
                                 @if(auth()->user()->profile_picture)
-                                    <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" 
+                                    <img src="{{ Str::startsWith(auth()->user()->profile_picture, 'data:') ? auth()->user()->profile_picture : asset('storage/' . auth()->user()->profile_picture) }}" 
                                          alt="Profile Picture" 
                                          class="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-ocean-500/30 mx-auto"
                                          onerror="this.onerror=null; this.src='{{ asset('images/default-avatar.png') }}';">

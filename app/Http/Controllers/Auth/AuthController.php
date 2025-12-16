@@ -332,24 +332,15 @@ class AuthController extends Controller
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
             
-            // Ensure the profile_pictures directory exists
-            $directory = storage_path('app/public/profile_pictures');
-            if (!file_exists($directory)) {
-                mkdir($directory, 0755, true);
+            // Convert image to Base64 (Vercel/Serverless compatible storage)
+            // This avoids issues with ephemeral filesystems or missing storage links
+            try {
+                $image_content = file_get_contents($file->getRealPath());
+                $base64_image = 'data:' . $file->getMimeType() . ';base64,' . base64_encode($image_content);
+                $user->profile_picture = $base64_image;
+            } catch (\Exception $e) {
+                return back()->with('error', 'Failed to process image: ' . $e->getMessage());
             }
-            
-            // Delete old profile picture if exists
-            if ($user->profile_picture) {
-                $oldPath = storage_path('app/public/' . $user->profile_picture);
-                if (file_exists($oldPath)) {
-                    unlink($oldPath);
-                }
-            }
-            
-            // Store new profile picture with a unique name
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('profile_pictures', $filename, 'public');
-            $user->profile_picture = $path;
         }
 
         // Update user data

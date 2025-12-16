@@ -50,7 +50,7 @@
                             <div class="text-center">
                                 <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
                                     @if($patroller->profile_picture)
-                                        <img src="{{ asset('storage/'.$patroller->profile_picture) }}" alt="Profile" class="w-full h-full object-cover">
+                                        <img src="{{ Str::startsWith($patroller->profile_picture, 'data:') ? $patroller->profile_picture : asset('storage/'.$patroller->profile_picture) }}" alt="Profile" class="w-full h-full object-cover">
                                     @else
                                         <i class="fas fa-user-shield text-3xl text-white"></i>
                                     @endif
