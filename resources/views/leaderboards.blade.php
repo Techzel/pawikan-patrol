@@ -190,7 +190,7 @@ to @extends('layouts.app')
                                                 <td class="py-4 px-6 text-white">
                                                     <div class="flex items-center gap-3">
                                                         @if($player->profile_picture)
-                                                            <img src="{{ asset('storage/' . $player->profile_picture) }}" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
+                                                            <img src="{{ Str::startsWith($player->profile_picture, 'data:') ? $player->profile_picture : asset('storage/' . $player->profile_picture) }}" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
                                                         @else
                                                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xs font-bold border border-white/20 shadow-sm text-white">
                                                                 {{ substr($player->name, 0, 1) }}
@@ -273,7 +273,7 @@ to @extends('layouts.app')
                                                 <td class="py-4 px-6 text-white">
                                                     <div class="flex items-center gap-3">
                                                         @if($player->profile_picture)
-                                                            <img src="{{ asset('storage/' . $player->profile_picture) }}" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
+                                                            <img src="{{ Str::startsWith($player->profile_picture, 'data:') ? $player->profile_picture : asset('storage/' . $player->profile_picture) }}" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
                                                         @else
                                                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xs font-bold border border-white/20 shadow-sm text-white">
                                                                 {{ substr($player->name, 0, 1) }}
@@ -356,7 +356,7 @@ to @extends('layouts.app')
                                                 <td class="py-4 px-6 text-white">
                                                     <div class="flex items-center gap-3">
                                                         @if($player->profile_picture)
-                                                            <img src="{{ asset('storage/' . $player->profile_picture) }}" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
+                                                            <img src="{{ Str::startsWith($player->profile_picture, 'data:') ? $player->profile_picture : asset('storage/' . $player->profile_picture) }}" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
                                                         @else
                                                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xs font-bold border border-white/20 shadow-sm text-white">
                                                                 {{ substr($player->name, 0, 1) }}
