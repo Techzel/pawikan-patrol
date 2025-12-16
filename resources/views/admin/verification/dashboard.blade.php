@@ -850,6 +850,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Modal functionality is ready for user verification actions
     
+    // Check for server-side flash messages
+    @if(session('success'))
+        showNotification('success', '{!! addslashes(session('success')) !!}');
+    @endif
+    
+    @if(session('error'))
+        showNotification('error', '{!! addslashes(session('error')) !!}');
+    @endif
+    
     // Note: Mobile menu functionality is handled by the shared navigation system
 });
 

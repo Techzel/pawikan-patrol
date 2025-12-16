@@ -560,6 +560,7 @@
         }
         
         // Auto-open modal if there are validation errors or registration success
+        @guest
         @if($errors->any() || session('error') || session('registration_success'))
             @if(session('registration_success'))
                 // If there's a registration success message, show login form
@@ -569,5 +570,6 @@
                 window.openAuthModal('{{ old('_form_type') === 'register' ? 'register' : 'login' }}');
             @endif
         @endif
+        @endguest
     })();
 </script>
