@@ -841,6 +841,13 @@
             const modal = document.getElementById('game-over-modal');
             modal.classList.add('hidden');
             
+            // Ensure music is playing
+            if (typeof bgMusic !== 'undefined' && bgMusic && bgMusic.paused) {
+                bgMusic.play().catch(e => console.log('Music resume failed:', e));
+                if(typeof isMusicPlaying !== 'undefined') isMusicPlaying = true;
+                if(typeof musicIcon !== 'undefined') musicIcon.textContent = '🔊';
+            }
+            
             if (currentDifficulty === 'easy') {
                 setDifficulty('medium');
             } else if (currentDifficulty === 'medium') {
@@ -917,11 +924,7 @@
             const saveStatus = document.getElementById('save-status');
             if (saveStatus) saveStatus.style.display = 'none';
             
-            // Stop background music
-            const bgMusic = document.getElementById('bg-music');
-            if (bgMusic) {
-                bgMusic.pause();
-            }
+            // Music continues playing
             
             // Play time's up sound
             const wrongSound = document.getElementById('wrong-sound');
@@ -1008,11 +1011,7 @@
                         congratsSound.play().catch(e => console.log('Congrats sound failed:', e));
                     }
                     
-                    // Stop background music
-                    const bgMusic = document.getElementById('bg-music');
-                    if (bgMusic) {
-                        bgMusic.pause();
-                    }
+                    // Music continues playing
                     
                     document.getElementById('game-over-modal').classList.remove('hidden');
                     

@@ -866,11 +866,7 @@
             const nextLevelBtn = document.getElementById('next-level-btn');
             if (nextLevelBtn) nextLevelBtn.classList.add('hidden');
             
-            // Stop background music
-            const bgMusic = document.getElementById('bg-music');
-            if (bgMusic) {
-                bgMusic.pause();
-            }
+            // Music continues playing
             
             // Play time's up sound
             const wrongSound = document.getElementById('wrong-sound');
@@ -1035,11 +1031,7 @@
                     congratsSound.play().catch(e => console.log('Congrats sound failed:', e));
                 }
                 
-                // Stop background music
-                const bgMusic = document.getElementById('bg-music');
-                if (bgMusic) {
-                    bgMusic.pause();
-                }
+                // Music continues playing
                 
                 modal.classList.remove('hidden');
             }, 500);
@@ -1291,6 +1283,13 @@
         function goToNextLevel() {
             // Close modal
             modal.classList.add('hidden');
+            
+            // Ensure music is playing
+            if (bgMusic && bgMusic.paused) {
+                bgMusic.play().catch(e => console.log('Music resume failed:', e));
+                isMusicPlaying = true;
+                musicIcon.textContent = '🔊';
+            }
             
             // Determine next level
             let nextLevel = 'easy';

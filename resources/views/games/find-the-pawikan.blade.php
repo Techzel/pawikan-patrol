@@ -862,14 +862,8 @@
                 }
             }
             
-            // Stop background music
-            if (bgMusic) {
-                bgMusic.pause();
-                isMusicPlaying = false;
-                updateMusicIcon();
-            }
+            // Music continues playing
             
-            // Show Success Screen
             // Show Success Screen
             finalScore.textContent = score + '/50';
             document.getElementById('finalTime').textContent = timerDisplay.textContent;
@@ -911,6 +905,13 @@
         function endGame() {
             gameActive = false;
             cancelAnimationFrame(animationId);
+            
+            // Stop background music
+            if (bgMusic) {
+                bgMusic.pause();
+                isMusicPlaying = false;
+                updateMusicIcon();
+            }
             finalScore.textContent = score + '/50';
             document.getElementById('finalTime').textContent = timerDisplay.textContent;
             difficultyLabel.textContent = "LEVEL: " + levelSettings[currentLevel].label;
