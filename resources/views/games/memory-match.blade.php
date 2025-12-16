@@ -866,7 +866,11 @@
             const nextLevelBtn = document.getElementById('next-level-btn');
             if (nextLevelBtn) nextLevelBtn.classList.add('hidden');
             
-            // Music continues playing
+            // Stop background music
+            const bgMusic = document.getElementById('bg-music');
+            if (bgMusic) {
+                bgMusic.pause();
+            }
             
             // Play time's up sound
             const wrongSound = document.getElementById('wrong-sound');
@@ -1031,7 +1035,11 @@
                     congratsSound.play().catch(e => console.log('Congrats sound failed:', e));
                 }
                 
-                // Music continues playing
+                // Stop background music
+                const bgMusic = document.getElementById('bg-music');
+                if (bgMusic) {
+                    bgMusic.pause();
+                }
                 
                 modal.classList.remove('hidden');
             }, 500);

@@ -784,6 +784,14 @@
             // Disable animations during shuffle
             board.classList.add('shuffling');
             
+            // Resume music if it was paused (Play Again)
+            const bgMusic = document.getElementById('bg-music');
+            if (bgMusic && bgMusic.paused) {
+                bgMusic.play().catch(e => console.log('Music resume failed:', e));
+                if(typeof isMusicPlaying !== 'undefined') isMusicPlaying = true;
+                if(typeof musicIcon !== 'undefined') musicIcon.textContent = '🔊';
+            }
+            
             for (let i = 0; i < shuffleMoves; i++) {
                 const neighbors = getNeighbors(emptyIndex);
                 // Avoid undoing the last move immediately
@@ -840,6 +848,13 @@
         function goToNextLevel() {
             const modal = document.getElementById('game-over-modal');
             modal.classList.add('hidden');
+            
+            // Ensure music is playing
+            if (typeof bgMusic !== 'undefined' && bgMusic && bgMusic.paused) {
+                bgMusic.play().catch(e => console.log('Music resume failed:', e));
+                if(typeof isMusicPlaying !== 'undefined') isMusicPlaying = true;
+                if(typeof musicIcon !== 'undefined') musicIcon.textContent = '🔊';
+            }
             
             if (currentDifficulty === 'easy') {
                 setDifficulty('medium');

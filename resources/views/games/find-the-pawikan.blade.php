@@ -862,7 +862,12 @@
                 }
             }
             
-            // Music continues playing
+            // Stop background music
+            if (bgMusic) {
+                bgMusic.pause();
+                isMusicPlaying = false;
+                updateMusicIcon();
+            }
             
             // Show Success Screen
             finalScore.textContent = score + '/50';

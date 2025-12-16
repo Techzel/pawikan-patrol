@@ -784,6 +784,14 @@
             // Disable animations during shuffle
             board.classList.add('shuffling');
             
+            // Resume music if it was paused (Play Again)
+            const bgMusic = document.getElementById('bg-music');
+            if (bgMusic && bgMusic.paused) {
+                bgMusic.play().catch(e => console.log('Music resume failed:', e));
+                if(typeof isMusicPlaying !== 'undefined') isMusicPlaying = true;
+                if(typeof musicIcon !== 'undefined') musicIcon.textContent = '🔊';
+            }
+            
             for (let i = 0; i < shuffleMoves; i++) {
                 const neighbors = getNeighbors(emptyIndex);
                 // Avoid undoing the last move immediately
@@ -924,7 +932,11 @@
             const saveStatus = document.getElementById('save-status');
             if (saveStatus) saveStatus.style.display = 'none';
             
-            // Music continues playing
+            // Stop background music
+            const bgMusic = document.getElementById('bg-music');
+            if (bgMusic) {
+                bgMusic.pause();
+            }
             
             // Play time's up sound
             const wrongSound = document.getElementById('wrong-sound');
@@ -1011,7 +1023,11 @@
                         congratsSound.play().catch(e => console.log('Congrats sound failed:', e));
                     }
                     
-                    // Music continues playing
+                    // Stop background music
+                    const bgMusic = document.getElementById('bg-music');
+                    if (bgMusic) {
+                        bgMusic.pause();
+                    }
                     
                     document.getElementById('game-over-modal').classList.remove('hidden');
                     

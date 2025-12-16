@@ -1292,6 +1292,13 @@
             // Close modal
             modal.classList.add('hidden');
             
+            // Ensure music is playing
+            if (bgMusic && bgMusic.paused) {
+                bgMusic.play().catch(e => console.log('Music resume failed:', e));
+                isMusicPlaying = true;
+                musicIcon.textContent = '🔊';
+            }
+            
             // Determine next level
             let nextLevel = 'easy';
             if (currentDifficulty === 'easy') {
