@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->longText('profile_picture')->change();
+            $table->dropColumn('profile_picture');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->longText('profile_picture')->nullable()->after('email');
         });
     }
 
