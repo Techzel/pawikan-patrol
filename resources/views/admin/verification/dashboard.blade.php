@@ -598,7 +598,7 @@
                                     <div class="flex items-center justify-center gap-2 action-buttons">
                                         <!-- View Button -->
                                         <button 
-                                            onclick="openUserModal({{ $user->id }})"
+                                            onclick="openUserModal('{{ $user->id }}')"
                                             class="action-btn bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/30 hover:border-blue-400/60"
                                             data-user-id="{{ $user->id }}"
                                             id="viewBtn{{ $user->id }}"
@@ -610,7 +610,7 @@
                                         @if($user->verification_status === 'pending')
                                             <!-- Approve Button -->
                                             <button 
-                                                onclick="approveUser({{ $user->id }})"
+                                                onclick="approveUser('{{ $user->id }}')"
                                                 class="action-btn bg-green-500/20 hover:bg-green-500/30 text-green-400 border-green-500/30 hover:border-green-400/60"
                                                 data-user-id="{{ $user->id }}"
                                                 id="approveBtn{{ $user->id }}"
@@ -621,7 +621,7 @@
 
                                             <!-- Reject Button -->
                                             <button 
-                                                onclick="openRejectModal({{ $user->id }})"
+                                                onclick="openRejectModal('{{ $user->id }}')"
                                                 class="action-btn bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border-amber-500/30 hover:border-amber-400/60"
                                                 data-user-id="{{ $user->id }}"
                                                 id="rejectBtn{{ $user->id }}"
@@ -1032,10 +1032,14 @@ function showNotification(type, message) {
 }
 
 // Approve user function
-function openApproveModal(userId) {
+// Approve user function
+window.openApproveModal = function(userId) {
     const modal = document.getElementById('approveUserModal');
     const form = document.getElementById('approveUserForm');
-    form.action = `{{ url('/admin/patrollers/verification') }}/${userId}/approve`;
+    // Use route helper for safe URL generation
+    const url = "{{ route('admin.verification.approve', ['id' => ':id']) }}";
+    form.action = url.replace(':id', userId);
+    
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
@@ -1048,18 +1052,22 @@ function closeApproveModal() {
     document.body.style.overflow = 'auto';
 }
 
-async function approveUser(userId) {
+window.approveUser = async function(userId) {
     console.log('Opening approve modal for user ID:', userId);
     openApproveModal(userId);
 }
 
 // Reject user function
-function openRejectModal(userId) {
+// Reject user function
+window.openRejectModal = function(userId) {
     const modal = document.getElementById('rejectUserModal');
     const form = document.getElementById('rejectUserForm');
     const reasonInput = document.getElementById('rejectReasonInput');
     
-    form.action = `{{ url('/admin/patrollers/verification') }}/${userId}/reject`;
+    // Use route helper for safe URL generation
+    const url = "{{ route('admin.verification.reject', ['id' => ':id']) }}";
+    form.action = url.replace(':id', userId);
+    
     reasonInput.value = '';
     
     modal.classList.remove('hidden');
