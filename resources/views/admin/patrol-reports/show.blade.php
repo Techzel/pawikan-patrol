@@ -162,7 +162,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($patrolReport->images as $image)
                             <div class="bg-gray-700 rounded-lg overflow-hidden">
-                                <img src="{{ asset('storage/' . $image) }}" alt="Report image" class="w-full h-48 object-cover hover:scale-105 transition-transform cursor-pointer" onclick="openImageModal('{{ asset('storage/' . $image) }}')">
+                                <img src="{{ Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image) }}" alt="Report image" class="w-full h-48 object-cover hover:scale-105 transition-transform cursor-pointer" onclick="openImageModal('{{ Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image) }}')">
                             </div>
                         @endforeach
                     </div>

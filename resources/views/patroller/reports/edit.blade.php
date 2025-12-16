@@ -509,9 +509,9 @@
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 @foreach($report->images as $image)
                                     <div class="relative group">
-                                        <img src="{{ asset('storage/' . $image) }}" alt="Report Image" class="w-full h-24 object-cover rounded-lg">
+                                        <img src="{{ Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image) }}" alt="Report Image" class="w-full h-24 object-cover rounded-lg">
                                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-lg flex items-center justify-center">
-                                            <a href="{{ asset('storage/' . $image) }}" target="_blank" class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <a href="{{ Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image) }}" target="_blank" class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                 <i class="fas fa-expand"></i>
                                             </a>
                                         </div>

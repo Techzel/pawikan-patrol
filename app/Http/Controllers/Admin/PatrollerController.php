@@ -153,8 +153,9 @@ class PatrollerController extends Controller
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('patrol-reports', 'public');
-                    $imagePaths[] = $path;
+                    $imageData = file_get_contents($image->getRealPath());
+                    $base64 = 'data:' . $image->getMimeType() . ';base64,' . base64_encode($imageData);
+                    $imagePaths[] = $base64;
                 }
             }
 
@@ -281,8 +282,9 @@ class PatrollerController extends Controller
             $imagePaths = $report->images ?? [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('patrol-reports', 'public');
-                    $imagePaths[] = $path;
+                    $imageData = file_get_contents($image->getRealPath());
+                    $base64 = 'data:' . $image->getMimeType() . ';base64,' . base64_encode($imageData);
+                    $imagePaths[] = $base64;
                 }
             }
 
@@ -455,12 +457,15 @@ class PatrollerController extends Controller
             ]);
 
             if ($request->hasFile('profile_picture')) {
-                if ($patroller->profile_picture) {
+                // Only delete if it's not a base64 string (meaning it's a legacy file path)
+                if ($patroller->profile_picture && !str_starts_with($patroller->profile_picture, 'data:')) {
                     Storage::disk('public')->delete($patroller->profile_picture);
                 }
 
-                $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-                $patroller->profile_picture = $path;
+                $image = $request->file('profile_picture');
+                $imageData = file_get_contents($image->getRealPath());
+                $base64 = 'data:' . $image->getMimeType() . ';base64,' . base64_encode($imageData);
+                $patroller->profile_picture = $base64;
             }
 
             $patroller->name = $validated['name'];
