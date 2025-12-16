@@ -193,7 +193,7 @@ to
                                                 <td class="py-4 px-6 text-white">
                                                     <div class="flex items-center gap-3">
                                                         <?php if($player->profile_picture): ?>
-                                                            <img src="<?php echo e(asset('storage/' . $player->profile_picture)); ?>" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
+                                                            <img src="<?php echo e(Str::startsWith($player->profile_picture, 'data:') ? $player->profile_picture : asset('storage/' . $player->profile_picture)); ?>" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
                                                         <?php else: ?>
                                                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xs font-bold border border-white/20 shadow-sm text-white">
                                                                 <?php echo e(substr($player->name, 0, 1)); ?>
@@ -277,7 +277,7 @@ to
                                                 <td class="py-4 px-6 text-white">
                                                     <div class="flex items-center gap-3">
                                                         <?php if($player->profile_picture): ?>
-                                                            <img src="<?php echo e(asset('storage/' . $player->profile_picture)); ?>" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
+                                                            <img src="<?php echo e(Str::startsWith($player->profile_picture, 'data:') ? $player->profile_picture : asset('storage/' . $player->profile_picture)); ?>" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
                                                         <?php else: ?>
                                                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xs font-bold border border-white/20 shadow-sm text-white">
                                                                 <?php echo e(substr($player->name, 0, 1)); ?>
@@ -361,7 +361,7 @@ to
                                                 <td class="py-4 px-6 text-white">
                                                     <div class="flex items-center gap-3">
                                                         <?php if($player->profile_picture): ?>
-                                                            <img src="<?php echo e(asset('storage/' . $player->profile_picture)); ?>" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
+                                                            <img src="<?php echo e(Str::startsWith($player->profile_picture, 'data:') ? $player->profile_picture : asset('storage/' . $player->profile_picture)); ?>" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
                                                         <?php else: ?>
                                                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xs font-bold border border-white/20 shadow-sm text-white">
                                                                 <?php echo e(substr($player->name, 0, 1)); ?>

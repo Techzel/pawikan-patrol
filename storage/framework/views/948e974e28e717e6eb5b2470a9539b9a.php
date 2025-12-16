@@ -92,39 +92,39 @@
         <div class="absolute inset-0 pointer-events-none flex flex-col justify-between px-4 pb-2 pt-24 md:px-8 md:pb-8 md:pt-32 z-20">
             
             <!-- Top Bar -->
-            <div class="flex flex-row justify-between items-start w-full">
-                <!-- Header -->
-                <div class="pointer-events-auto pl-14">
+            <div class="flex flex-row justify-center md:justify-between items-start w-full relative">
+                <!-- Header (Hidden on Mobile) -->
+                <div class="pointer-events-auto pl-14 hidden md:block">
                     <h1 class="text-2xl md:text-4xl font-bold text-white font-poppins drop-shadow-[0_0_10px_rgba(74,222,128,0.5)] leading-tight">
                         Ocean<br class="hidden md:block"> Guardian
                     </h1>
                     <p class="text-green-100/70 font-poppins text-[10px] md:text-xs mt-1 max-w-[150px] md:max-w-none uppercase tracking-widest">Defend the Turtle</p>
                 </div>
 
-                <!-- Stats HUD (Vertical Stack) -->
-                <div id="gameHUD" class="flex flex-col gap-2 items-end pointer-events-auto">
+                <!-- Stats HUD (Horizontal on Mobile, Vertical on Desktop) -->
+                <div id="gameHUD" class="flex flex-row md:flex-col gap-2 items-start md:items-end pointer-events-auto mx-auto md:mx-0">
                     
                     <!-- Status Group -->
-                    <div class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-32">
-                        <div class="px-3 py-2 border-b border-white/10 flex justify-between items-center">
-                            <span class="text-base">⭐</span> 
-                            <span id="levelDisplay" class="font-poppins text-xs font-bold text-white tracking-widest">EASY</span>
+                    <div class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-28 md:w-32 transform transition-all hover:scale-105">
+                        <div class="px-3 py-1.5 border-b border-white/10 flex justify-between items-center bg-white/5">
+                            <span class="text-xs md:text-base">⭐</span> 
+                            <span id="levelDisplay" class="font-poppins text-[10px] md:text-xs font-bold text-white tracking-widest">EASY</span>
                         </div>
-                        <div class="px-3 py-2 flex justify-between items-center bg-white/5">
-                            <span class="text-base">❤️</span> 
-                            <span id="healthDisplay" class="font-poppins text-sm font-bold text-green-400">100</span>
+                        <div class="px-3 py-1.5 flex justify-between items-center">
+                            <span class="text-xs md:text-base">❤️</span> 
+                            <span id="healthDisplay" class="font-poppins text-xs md:text-sm font-bold text-green-400">100</span>
                         </div>
                     </div>
 
                     <!-- Progress Group -->
-                    <div class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-32">
-                        <div class="px-3 py-2 border-b border-white/10 flex justify-between items-center">
-                            <span class="text-base text-green-400">🗑️</span> 
-                            <span id="scoreDisplay" class="font-poppins text-sm font-bold text-white">0/50</span>
+                    <div class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-28 md:w-32 transform transition-all hover:scale-105">
+                        <div class="px-3 py-1.5 border-b border-white/10 flex justify-between items-center bg-white/5">
+                            <span class="text-xs md:text-base text-green-400">🗑️</span> 
+                            <span id="scoreDisplay" class="font-poppins text-xs md:text-sm font-bold text-white">0/50</span>
                         </div>
-                        <div class="px-3 py-2 flex justify-between items-center bg-white/5">
-                            <span class="text-base">⏱️</span> 
-                            <span id="timerDisplay" class="font-poppins text-sm font-bold text-white">00:00</span>
+                        <div class="px-3 py-1.5 flex justify-between items-center">
+                            <span class="text-xs md:text-base">⏱️</span> 
+                            <span id="timerDisplay" class="font-poppins text-xs md:text-sm font-bold text-white">00:00</span>
                         </div>
                     </div>
 
@@ -134,14 +134,14 @@
             <!-- Bottom Bar (Controls & Info) -->
             <div class="flex flex-col items-center gap-3 pointer-events-auto pb-1 w-full">
                 <!-- In-Game Difficulty Control -->
-                <div class="flex gap-2 bg-black/20 backdrop-blur-md p-1.5 rounded-xl border border-white/10 shadow-lg max-w-full overflow-x-auto">
-                    <button id="hud-btn-easy" onclick="startGame('easy')" class="px-4 py-1.5 rounded-lg text-xs font-bold font-poppins transition-all bg-green-600 text-white border border-green-400">
+                <div class="flex gap-2 bg-black/20 backdrop-blur-md p-1 md:p-1.5 rounded-xl border border-white/10 shadow-lg max-w-full overflow-x-auto">
+                    <button id="hud-btn-easy" onclick="startGame('easy')" class="px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold font-poppins transition-all bg-green-600 text-white border border-green-400">
                         EASY
                     </button>
-                    <button id="hud-btn-medium" onclick="startGame('medium')" class="px-4 py-1.5 rounded-lg text-xs font-bold font-poppins transition-all bg-transparent text-white/50 border border-white/5 cursor-not-allowed flex items-center gap-1" disabled>
+                    <button id="hud-btn-medium" onclick="startGame('medium')" class="px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold font-poppins transition-all bg-transparent text-white/50 border border-white/5 cursor-not-allowed flex items-center gap-1" disabled>
                         MEDIUM <span>🔒</span>
                     </button>
-                    <button id="hud-btn-hard" onclick="startGame('hard')" class="px-4 py-1.5 rounded-lg text-xs font-bold font-poppins transition-all bg-transparent text-white/50 border border-white/5 cursor-not-allowed flex items-center gap-1" disabled>
+                    <button id="hud-btn-hard" onclick="startGame('hard')" class="px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold font-poppins transition-all bg-transparent text-white/50 border border-white/5 cursor-not-allowed flex items-center gap-1" disabled>
                         HARD <span>🔒</span>
                     </button>
                 </div>
@@ -155,8 +155,8 @@
             </div>
 
             <!-- Main Start Button (Centered) -->
-            <div id="mainStartContainer" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-30">
-                <button onclick="playClickSound(); startGame(currentLevel)" class="group relative px-10 py-5 bg-green-600 rounded-2xl font-bold text-white text-xl overflow-hidden shadow-[0_0_30px_rgba(72,187,120,0.5)] transition-all hover:bg-green-500 hover:shadow-[0_0_50px_rgba(72,187,120,0.7)] border border-white/20">
+            <div id="mainStartContainer" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-30 w-full flex justify-center px-4">
+                <button onclick="playClickSound(); startGame(currentLevel)" class="group relative px-6 py-3 md:px-10 md:py-5 bg-green-600 rounded-2xl font-bold text-white text-lg md:text-xl overflow-hidden shadow-[0_0_30px_rgba(72,187,120,0.5)] transition-all hover:bg-green-500 hover:shadow-[0_0_50px_rgba(72,187,120,0.7)] border border-white/20 whitespace-nowrap">
                     <span class="relative z-10 font-poppins tracking-widest">START DEFENSE</span>
                     <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </button>
@@ -446,7 +446,7 @@
                         }
                     } else {
                         hudBtn.disabled = true;
-                        hudBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold font-poppins transition-all bg-transparent text-white/50 border border-white/5 cursor-not-allowed flex items-center gap-1";
+                        hudBtn.className = "px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold font-poppins transition-all bg-transparent text-white/50 border border-white/5 cursor-not-allowed flex items-center gap-1";
                         hudBtn.innerHTML = lvl.toUpperCase() + ' <span>🔒</span>';
                     }
                 }
@@ -454,18 +454,19 @@
         }
 
         function applyActiveStyle(btn, lvl) {
-            btn.className = "px-4 py-1.5 rounded-lg text-xs font-bold font-poppins transition-all border shadow-[0_0_15px_rgba(72,187,120,0.4)] bg-green-600 text-white border-green-400";
+            btn.className = "px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold font-poppins transition-all border shadow-[0_0_15px_rgba(72,187,120,0.4)] bg-green-600 text-white border-green-400";
         }
 
         function applyInactiveStyle(btn, lvl) {
-            btn.className = "px-4 py-1.5 rounded-lg text-xs font-bold font-poppins transition-all bg-transparent text-gray-400 border border-white/10 opacity-70 hover:opacity-100 hover:text-white hover:border-white/30";
+            btn.className = "px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold font-poppins transition-all bg-transparent text-gray-400 border border-white/10 opacity-70 hover:opacity-100 hover:text-white hover:border-white/30";
         }
         
         function resize() {
             w = canvas.width = window.innerWidth;
             h = canvas.height = window.innerHeight;
             cx = w / 2;
-            cy = h / 2;
+            // Shift down slightly on mobile to account for top UI/Stats
+            cy = h / 2 + (w < 768 ? 50 : 0);
             scaleFactor = w < 768 ? 0.6 : 1;
             
             if(!gameActive) {

@@ -117,7 +117,7 @@ function getRankBadge($rank) {
                         <div class="relative inline-block mb-4">
                             <div class="relative">
                                 <?php if(auth()->user()->profile_picture): ?>
-                                    <img src="<?php echo e(asset('storage/' . auth()->user()->profile_picture)); ?>" 
+                                    <img src="<?php echo e(Str::startsWith(auth()->user()->profile_picture, 'data:') ? auth()->user()->profile_picture : asset('storage/' . auth()->user()->profile_picture)); ?>" 
                                          alt="Profile Picture" 
                                          class="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-ocean-500/30 mx-auto"
                                          onerror="this.onerror=null; this.src='<?php echo e(asset('images/default-avatar.png')); ?>';">

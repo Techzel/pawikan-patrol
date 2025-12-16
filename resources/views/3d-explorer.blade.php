@@ -233,24 +233,44 @@
 
 @media (max-width: 768px) {
     /* Wrapped Menu at Bottom */
+    /* Mobile Layout Refactoring: Labels below model */
+    .sketchfab-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: auto !important;
+        aspect-ratio: auto !important;
+        background: #000;
+    }
+
+    .sketchfab-wrapper iframe {
+        order: 1;
+        position: relative;
+        height: 350px !important; /* Fixed height for 3D view */
+        width: 100%;
+        aspect-ratio: unset;
+    }
+
     .anatomy-menu {
+        position: relative; /* Move out of overlay */
+        order: 2; /* Place below iframe */
         top: auto;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        bottom: auto;
+        left: auto;
+        right: auto;
         width: 100%;
         height: auto;
         transform: none;
         
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;        /* Allow items to wrap */
-        justify-content: center; /* Center them */
-        align-items: flex-end;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
         
-        padding: 8px 4px;
-        gap: 6px;
-        background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
+        padding: 12px 8px;
+        gap: 8px;
+        background: #111827; /* Dark background to match page flow */
+        border-top: 1px solid rgba(74, 222, 128, 0.2);
         z-index: 25;
     }
     

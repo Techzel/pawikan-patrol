@@ -613,9 +613,9 @@
                     <!-- Image Gallery Section -->
                     <div class="image-gallery">
                         <!-- Main Image Container -->
-                        <div class="main-image-container" onclick="openLightbox('<?php echo e(count($report['images']) > 0 ? asset('storage/' . $report['images'][0]) : ''); ?>')">
+                        <div class="main-image-container" onclick="openLightbox('<?php echo e(count($report['images']) > 0 ? (Str::startsWith($report['images'][0], 'data:') ? $report['images'][0] : asset('storage/' . $report['images'][0])) : ''); ?>')">
                             <?php if(count($report['images']) > 0): ?>
-                                <img src="<?php echo e(asset('storage/' . $report['images'][0])); ?>" 
+                                <img src="<?php echo e(Str::startsWith($report['images'][0], 'data:') ? $report['images'][0] : asset('storage/' . $report['images'][0])); ?>" 
                                      alt="<?php echo e($report['title']); ?>" 
                                      class="main-image" 
                                      id="main-image-<?php echo e($index); ?>">
@@ -638,10 +638,10 @@
                         <?php if(count($report['images']) > 1): ?>
                             <div class="thumbnail-strip">
                                 <?php $__currentLoopData = $report['images']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imgIndex => $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <img src="<?php echo e(asset('storage/' . $image)); ?>" 
+                                    <img src="<?php echo e(Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image)); ?>" 
                                          alt="Thumbnail <?php echo e($imgIndex + 1); ?>" 
                                          class="thumbnail <?php echo e($imgIndex === 0 ? 'active' : ''); ?>"
-                                         onclick="changeMainImage(<?php echo e($index); ?>, <?php echo e($imgIndex); ?>, '<?php echo e(asset('storage/' . $image)); ?>')">
+                                         onclick="changeMainImage(<?php echo e($index); ?>, <?php echo e($imgIndex); ?>, '<?php echo e(Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image)); ?>')">
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         <?php endif; ?>

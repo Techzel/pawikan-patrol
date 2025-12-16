@@ -257,15 +257,18 @@ function createSidebarContent(report) {
         <div class="mb-4">
             <h4 class="font-medium text-white mb-2 text-sm">📸 Report Images</h4>
             <div class="grid grid-cols-2 gap-2">
-                ${images.map((image, index) => `
-                    <div class="relative group cursor-pointer" onclick="openImageModal('${image}')">
-                        <img src="/storage/${image}" alt="Report Image ${index + 1}" 
-                             class="w-full h-16 object-cover rounded border border-white/20 hover:border-white/40 transition-all">
-                        <div class="absolute inset-0 bg-black/0 hover:bg-black/20 rounded transition-all flex items-center justify-center">
-                            <span class="text-white opacity-0 group-hover:opacity-100 text-xs">🔍</span>
+                ${images.map((image, index) => {
+                    const imgSrc = image.startsWith('data:') ? image : '/storage/' + image;
+                    return `
+                        <div class="relative group cursor-pointer" onclick="openImageModal('${image}')">
+                            <img src="${imgSrc}" alt="Report Image ${index + 1}" 
+                                 class="w-full h-16 object-cover rounded border border-white/20 hover:border-white/40 transition-all">
+                            <div class="absolute inset-0 bg-black/0 hover:bg-black/20 rounded transition-all flex items-center justify-center">
+                                <span class="text-white opacity-0 group-hover:opacity-100 text-xs">🔍</span>
+                            </div>
                         </div>
-                    </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
         </div>
     ` : '';
@@ -403,12 +406,13 @@ function closeSidebar() {
 }
 
 function openImageModal(imagePath) {
+    const imgSrc = imagePath.startsWith('data:') ? imagePath : '/storage/' + imagePath;
     // Create modal overlay
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50';
     modal.innerHTML = `
         <div class="relative max-w-4xl max-h-full p-4">
-            <img src="/storage/${imagePath}" alt="Report Image" class="max-w-full max-h-full rounded-lg">
+            <img src="${imgSrc}" alt="Report Image" class="max-w-full max-h-full rounded-lg">
             <button onclick="this.parentElement.parentElement.remove()" 
                     class="absolute top-2 right-2 text-white bg-black/50 rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/70">
                 ×

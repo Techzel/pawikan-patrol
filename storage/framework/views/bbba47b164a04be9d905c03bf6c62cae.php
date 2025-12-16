@@ -620,6 +620,7 @@ unset($__errorArgs, $__bag); ?>
         }
         
         // Auto-open modal if there are validation errors or registration success
+        <?php if(auth()->guard()->guest()): ?>
         <?php if($errors->any() || session('error') || session('registration_success')): ?>
             <?php if(session('registration_success')): ?>
                 // If there's a registration success message, show login form
@@ -628,6 +629,7 @@ unset($__errorArgs, $__bag); ?>
                 // If there are errors, show the form that was submitted
                 window.openAuthModal('<?php echo e(old('_form_type') === 'register' ? 'register' : 'login'); ?>');
             <?php endif; ?>
+        <?php endif; ?>
         <?php endif; ?>
     })();
 </script>
