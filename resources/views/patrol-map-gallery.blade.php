@@ -615,9 +615,9 @@
                     <!-- Image Gallery Section -->
                     <div class="image-gallery">
                         <!-- Main Image Container -->
-                        <div class="main-image-container" onclick="openLightbox('{{ count($report['images']) > 0 ? asset('storage/' . $report['images'][0]) : '' }}')">
+                        <div class="main-image-container" onclick="openLightbox('{{ count($report['images']) > 0 ? (Str::startsWith($report['images'][0], 'data:') ? $report['images'][0] : asset('storage/' . $report['images'][0])) : '' }}')">
                             @if(count($report['images']) > 0)
-                                <img src="{{ asset('storage/' . $report['images'][0]) }}" 
+                                <img src="{{ Str::startsWith($report['images'][0], 'data:') ? $report['images'][0] : asset('storage/' . $report['images'][0]) }}" 
                                      alt="{{ $report['title'] }}" 
                                      class="main-image" 
                                      id="main-image-{{ $index }}">
@@ -639,10 +639,10 @@
                         @if(count($report['images']) > 1)
                             <div class="thumbnail-strip">
                                 @foreach($report['images'] as $imgIndex => $image)
-                                    <img src="{{ asset('storage/' . $image) }}" 
+                                    <img src="{{ Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image) }}" 
                                          alt="Thumbnail {{ $imgIndex + 1 }}" 
                                          class="thumbnail {{ $imgIndex === 0 ? 'active' : '' }}"
-                                         onclick="changeMainImage({{ $index }}, {{ $imgIndex }}, '{{ asset('storage/' . $image) }}')">
+                                         onclick="changeMainImage({{ $index }}, {{ $imgIndex }}, '{{ Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image) }}')">
                                 @endforeach
                             </div>
                         @endif
