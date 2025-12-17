@@ -281,6 +281,7 @@
             }
             
             if (guestModalContent) {
+                guestModalContent.classList.remove('scale-100', 'opacity-100');
                 guestModalContent.classList.add('scale-75', 'opacity-0');
             }
             

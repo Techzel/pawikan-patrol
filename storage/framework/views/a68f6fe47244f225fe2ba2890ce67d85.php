@@ -82,14 +82,20 @@
 
         /* Special handling for map page */
         .map-page {
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        body.map-page {
+            background: #111827 !important; /* bg-gray-900 */
+            animation: none !important;
         }
 
         .map-page main {
             padding: 0;
             min-height: 100vh;
-            height: 100vh;
-            overflow: hidden;
+            height: auto;
+            overflow: visible;
         }
 
         .map-page .ocean-bg {

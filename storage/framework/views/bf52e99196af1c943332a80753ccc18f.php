@@ -2,6 +2,8 @@
     <?php $__env->startSection('container-class', 'w-full max-w-none'); ?>
 <?php endif; ?>
 
+<?php $__env->startSection('bodyClass', 'map-page'); ?>
+
 <?php $__env->startSection('content'); ?>
 <div id="patrol-map-page">
 <?php
@@ -372,6 +374,13 @@ function showReportInSidebar(report) {
     
     content.innerHTML = createSidebarContent(report);
     sidebar.classList.remove('hidden');
+    
+    // Auto-scroll to sidebar on mobile devices
+    if (window.innerWidth < 1024) {
+        setTimeout(() => {
+            sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
     
     // Ensure sidebar is visible in fullscreen mode
     const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
