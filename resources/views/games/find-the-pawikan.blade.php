@@ -14,6 +14,7 @@
     
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -40,7 +41,7 @@
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50 mb-4">
-        <a href="{{ route('games.index') }}" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
+        <a href="{{ route('games.index') }}" data-turbo="false" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -66,6 +67,7 @@
     </div>
 
     <style>
+        .turbo-progress-bar { visibility: hidden !important; display: none !important; }
         /* Custom slider styling */
         .slider::-webkit-slider-thumb {
             appearance: none;
@@ -190,7 +192,7 @@
                     <button id="actionBtn" onclick="startGame(currentLevel)" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold font-poppins transition-all shadow-lg hover:shadow-green-500/25 border border-white/10">
                         Try Again
                     </button>
-                    <a href="{{ route('games.index') }}" class="w-full py-3 bg-transparent border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white rounded-xl font-bold font-poppins transition-all text-sm">
+                    <a href="{{ route('games.index') }}" data-turbo="false" class="w-full py-3 bg-transparent border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white rounded-xl font-bold font-poppins transition-all text-sm">
                         Exit
                     </a>
                 </div>
@@ -258,6 +260,7 @@
 
     <!-- Scripts -->
     <script>
+    {
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -278,6 +281,7 @@
         const volumeSlider = document.getElementById('volume-slider');
         const volumePercent = document.getElementById('volume-percent');
         const bgMusic = document.getElementById('bg-music');
+        if (bgMusic) window.currentGameAudio = bgMusic;
         let isMusicPlaying = false;
 
         // Initialize Audio
@@ -996,9 +1000,25 @@
             @endauth
         }
 
+
+        // Stop music when navigating away via Turbo
+        const stopMusic = () => {
+            if (bgMusic) {
+                bgMusic.pause();
+                isMusicPlaying = false;
+            }
+            document.removeEventListener('turbo:before-visit', stopMusic);
+            document.removeEventListener('turbo:before-render', stopMusic);
+            window.removeEventListener('beforeunload', stopMusic);
+        };
+
+        document.addEventListener('turbo:before-visit', stopMusic);
+        document.addEventListener('turbo:before-render', stopMusic);
+        window.addEventListener('beforeunload', stopMusic);
+
         // Guest Modal Animation & Sound
         @guest
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('turbo:load', function() {
             const guestModal = document.getElementById('guest-modal');
             const guestModalContent = document.getElementById('guest-modal-content');
             const warningAudio = document.getElementById('warning-audio');
@@ -1047,6 +1067,7 @@
             }
         }
         @endguest
+    }
     </script>
     
     <style>

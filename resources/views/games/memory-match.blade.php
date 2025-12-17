@@ -17,6 +17,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -41,6 +42,7 @@
         }
     </script>
     <style>
+        .turbo-progress-bar { visibility: hidden !important; display: none !important; }
         /* Global font family */
         * {
             font-family: 'Cinzel', sans-serif;
@@ -106,6 +108,11 @@
             0%, 100% { transform: rotateY(0deg); }
             25% { transform: rotateY(-5deg); }
             75% { transform: rotateY(5deg); }
+        }
+
+        /* Flip animation */
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
         }
 
         /* Glow effect when card is flipped */
@@ -186,7 +193,7 @@
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50">
-        <a href="{{ route('games.index') }}" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
+        <a href="{{ route('games.index') }}" data-turbo="false" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -232,7 +239,7 @@
     
     <script>
         // Animate modal and play warning music when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('turbo:load', function() {
             const warningAudio = document.getElementById('warning-audio');
             const guestModal = document.getElementById('guest-modal');
             const guestModalContent = document.getElementById('guest-modal-content');
@@ -271,10 +278,22 @@
             }
             
             if (guestModalContent) {
-                guestModalContent.classList.remove('scale-100', 'opacity-100');
                 guestModalContent.classList.add('scale-75', 'opacity-0');
             }
             
+            // Start game music immediately and audibly
+            if (window.currentGameAudio) {
+                window.currentGameAudio.volume = 0.5; // Set to audible level immediately
+                window.currentGameAudio.play().catch(e => console.log('Audio start failed:', e));
+                // Update state variables if they exist in scope or UI
+                const icon = document.getElementById('music-icon');
+                if (icon) icon.textContent = '🔊';
+            }
+            
+
+            
+
+
             if (guestModal) {
                 guestModal.classList.remove('bg-black/90', 'backdrop-blur-md');
                 guestModal.classList.add('bg-black/0', 'backdrop-blur-0');
@@ -575,7 +594,7 @@
                         <button onclick="location.reload()" class="bg-ocean-600 hover:bg-ocean-500 text-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
                             Play Again
                         </button>
-                        <a href="/games" class="bg-transparent border border-ocean-600 text-ocean-300 hover:bg-ocean-900/30 font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
+                        <a href="/games" data-turbo="false" class="bg-transparent border border-ocean-600 text-ocean-300 hover:bg-ocean-900/30 font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
                             Exit
                         </a>
                     </div>
@@ -585,6 +604,7 @@
     </main>
 
     <script>
+    {
         // Game Configuration
         const allImages = [
             'baby-grn.png',
@@ -1166,6 +1186,9 @@
         const musicToggle = document.getElementById('music-toggle');
         const musicIcon = document.getElementById('music-icon');
         const bgMusic = document.getElementById('bg-music');
+        if (bgMusic) {
+            window.currentGameAudio = bgMusic;
+        }
         const volumeSlider = document.getElementById('volume-slider');
         const volumePercent = document.getElementById('volume-percent');
         let isMusicPlaying = false;
@@ -1220,7 +1243,23 @@
             }
         });
 
-        window.addEventListener('load', () => {
+        // Stop music when navigating away via Turbo or reloading
+        const stopMusic = () => {
+            if (bgMusic) {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+                isMusicPlaying = false;
+            }
+            document.removeEventListener('turbo:before-visit', stopMusic);
+            document.removeEventListener('turbo:before-render', stopMusic);
+            window.removeEventListener('beforeunload', stopMusic);
+        };
+
+        document.addEventListener('turbo:before-visit', stopMusic);
+        document.addEventListener('turbo:before-render', stopMusic);
+        window.addEventListener('beforeunload', stopMusic);
+
+        document.addEventListener('turbo:load', () => {
             // Reset progress for guest users
             @guest
             localStorage.removeItem('memoryMatch_easy_completed');
@@ -1273,18 +1312,15 @@
             initGame();
 
             // Auto-play music
+            // Ensure music is paused on load (User Request: Mute first before modal)
             if (bgMusic) {
-                const playPromise = bgMusic.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        isMusicPlaying = true;
-                        musicIcon.textContent = '🔊'; // Since default volume is 50%, use speaker icon
-                    }).catch(e => {
-                        console.log('Autoplay prevented:', e);
-                        // User interaction is required for audio Playback
-                    });
-                }
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+                isMusicPlaying = false;
+                if (musicIcon) musicIcon.textContent = '🔊'; // Reset icon (will update on play)
             }
+            
+            // Auto-play music removed (moved to guest modal close)
         });
 
         // Function to go to next level
@@ -1310,6 +1346,7 @@
             // Set difficulty and start new game
             setDifficulty(nextLevel);
         }
+    }
     </script>
 </body>
 </html>

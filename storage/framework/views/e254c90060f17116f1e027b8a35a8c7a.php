@@ -211,7 +211,7 @@
         </div>
 
         <script>
-        window.addEventListener('load', function initCarousel() {
+        document.addEventListener('turbo:load', function initCarousel() {
             const carousel = document.querySelector('#hero .carousel');
             if (!carousel) return;
             if (carousel.dataset.initialized === 'true') return;

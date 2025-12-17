@@ -20,6 +20,8 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <!-- Hotwire Turbo -->
+    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     
     <!-- Tailwind Configuration -->
     <script>
@@ -65,6 +67,12 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+        
+        /* Hide Turbo Progress Bar */
+        .turbo-progress-bar {
+            visibility: hidden !important;
+            display: none !important;
         }
         
         /* Optional: Use Poppins for specific elements if needed */
@@ -422,8 +430,23 @@
             }
         }
 
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
+        // GLOBAL AUDIO CLEANUP: Install Global Listener (Once)
+        if (!window.audioCleanupInstalled) {
+            const cleanupAudio = () => {
+                if (window.currentGameAudio) {
+                    window.currentGameAudio.pause();
+                    window.currentGameAudio.currentTime = 0;
+                    window.currentGameAudio = null;
+                }
+            };
+            document.addEventListener('turbo:before-render', cleanupAudio);
+            document.addEventListener('turbo:before-visit', cleanupAudio);
+            window.audioCleanupInstalled = true;
+        }
+
+        // Initialize everything when DOM is loaded or Turbo navigates
+        document.addEventListener('turbo:load', function() {
+
             // Initialize particle system
             new ParticleSystem();
             

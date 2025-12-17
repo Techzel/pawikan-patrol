@@ -12,7 +12,7 @@
     }
 </style>
 
-<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
+<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20" data-turbo="false">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->

@@ -1,3 +1,6 @@
+<!-- Page Transition Overlay -->
+<div id="page-transition-overlay" class="fixed inset-0 bg-slate-900 z-[10000] transition-opacity duration-500 pointer-events-none" style="opacity: 0;"></div>
+
 <style>
     nav, nav *,
     #mobile-menu, #mobile-menu * {
@@ -60,7 +63,7 @@
     }
 </style>
 
-<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
+<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20" data-turbo="false">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
@@ -516,4 +519,59 @@
 </script>
 
 <?php echo $__env->make('auth.modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+<script>
+    function fadeOutOverlay() {
+        const overlay = document.getElementById('page-transition-overlay');
+        if(overlay) {
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+            }, 50);
+        }
+    }
+
+    // Try multiple events to ensure it fades out
+    document.addEventListener('turbo:load', fadeOutOverlay);
+    document.addEventListener('DOMContentLoaded', fadeOutOverlay);
+    // Fallback safety
+    setTimeout(fadeOutOverlay, 300);
+
+    document.addEventListener('turbo:load', () => {
+        // Handle Mobile Menu
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        // Mobile Menu Logic (re-init for Turbo)
+        if (menuButton && mobileMenu) {
+            menuButton.onclick = function(e) {
+                e.preventDefault(); 
+                e.stopPropagation();
+                mobileMenu.classList.toggle('hidden');
+                const isHidden = mobileMenu.classList.contains('hidden');
+                this.querySelector('svg').innerHTML = isHidden 
+                    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />'
+                    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+            };
+        }
+    });
+
+    // Show overlay on click
+    document.addEventListener('turbo:click', (e) => {
+        const overlay = document.getElementById('page-transition-overlay');
+        // Check if it's a same-page anchor link
+        const href = e.detail.url; // URL string
+        if (href.includes('#') && href.split('#')[0] === window.location.href.split('#')[0]) {
+             return;
+        }
+
+        if(overlay) {
+             overlay.style.opacity = '1';
+        }
+    });
+    
+    // Safety timeout
+    document.addEventListener('turbo:visit', () => {
+         // ensuring...
+    });
+</script>
 <?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/navigation.blade.php ENDPATH**/ ?>

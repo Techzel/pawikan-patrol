@@ -214,9 +214,9 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <?php $__currentLoopData = $report->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="relative group">
-                                        <img src="<?php echo e(asset('storage/' . $image)); ?>" alt="Report Image" class="w-full h-48 object-cover rounded-lg">
+                                        <img src="<?php echo e(Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image)); ?>" alt="Report Image" class="w-full h-48 object-cover rounded-lg">
                                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-lg flex items-center justify-center">
-                                            <a href="<?php echo e(asset('storage/' . $image)); ?>" target="_blank" class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <a href="<?php echo e(Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image)); ?>" target="_blank" class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                 <i class="fas fa-expand text-2xl"></i>
                                             </a>
                                         </div>
