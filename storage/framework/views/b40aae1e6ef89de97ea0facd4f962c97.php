@@ -391,7 +391,7 @@
                             <div>
                                 <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Time</p>
                                 <div class="flex items-baseline gap-2 mt-0.5">
-                                    <span id="timer" class="text-3xl font-bold text-white">00:00.00</span>
+                                    <span id="timer" class="text-3xl font-bold text-white tabular-nums font-mono">00:00.00</span>
                                     <span id="time-limit-indicator" class="text-sm text-ocean-400 font-medium opacity-80"></span>
                                 </div>
                             </div>
@@ -410,7 +410,7 @@
                             </div>
                             <div>
                                 <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Moves</p>
-                                <p id="moves" class="text-3xl font-bold text-white mt-0.5">0</p>
+                                <p id="moves" class="text-3xl font-bold text-white mt-0.5 tabular-nums font-mono">0</p>
                             </div>
                         </div>
                     </div>
@@ -427,7 +427,7 @@
                             </div>
                             <div>
                                 <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Pairs Found</p>
-                                <p id="pairs" class="text-3xl font-bold text-white mt-0.5">0/8</p>
+                                <p id="pairs" class="text-3xl font-bold text-white mt-0.5 tabular-nums font-mono">0/8</p>
                             </div>
                         </div>
                     </div>
@@ -446,23 +446,23 @@
 
             <!-- Mobile Stats (Visible on mobile only) -->
             <div class="lg:hidden w-full max-w-4xl mx-auto mb-6 bg-deep-800/50 p-4 rounded-2xl border border-ocean-700/30 backdrop-blur-sm">
-                <div class="flex gap-8 justify-center">
-                    <div>
-                        <span class="text-ocean-400 text-sm block">Time</span>
-                        <div class="flex items-baseline gap-1">
-                            <span id="timer-mobile" class="text-2xl font-bold">00:00.00</span>
-                            <span id="time-limit-indicator-mobile" class="text-xs text-ocean-400 opacity-80"></span>
+                <div class="flex gap-4 sm:gap-8 justify-center">
+                    <div class="w-28 text-center bg-deep-900/50 rounded-lg p-2 border border-white/5">
+                        <span class="text-ocean-400 text-xs block uppercase tracking-wider mb-1">Time</span>
+                        <div class="flex items-baseline justify-center gap-1">
+                            <span id="timer-mobile" class="text-xl font-bold tabular-nums font-mono">00:00.00</span>
+                            <span id="time-limit-indicator-mobile" class="text-[10px] text-ocean-400 opacity-80"></span>
                         </div>
                     </div>
 
-                    <div>
-                        <span class="text-ocean-400 text-sm block">Moves</span>
-                        <span id="moves-mobile" class="text-2xl font-bold">0</span>
+                    <div class="w-20 text-center bg-deep-900/50 rounded-lg p-2 border border-white/5">
+                        <span class="text-ocean-400 text-xs block uppercase tracking-wider mb-1">Moves</span>
+                        <span id="moves-mobile" class="text-xl font-bold tabular-nums font-mono">0</span>
                     </div>
 
-                    <div>
-                        <span class="text-ocean-400 text-sm block">Pairs Found</span>
-                        <span id="pairs-mobile" class="text-2xl font-bold">0/8</span>
+                    <div class="w-24 text-center bg-deep-900/50 rounded-lg p-2 border border-white/5">
+                        <span class="text-ocean-400 text-xs block uppercase tracking-wider mb-1">Pairs</span>
+                        <span id="pairs-mobile" class="text-xl font-bold tabular-nums font-mono">0/8</span>
                     </div>
                 </div>
             </div>
@@ -759,7 +759,8 @@
             cards.sort(() => Math.random() - 0.5);
             
             // Update grid columns
-            grid.className = `grid grid-cols-${diff.gridCols} gap-3 md:gap-4 w-fit mx-auto perspective-1000`;
+            // Update grid columns with hybrid sizing: Fluid for Mobile, Fixed/Tight for Desktop
+            grid.className = `grid grid-cols-${diff.gridCols} gap-2 md:gap-4 w-full md:w-fit mx-auto perspective-1000 px-2`;
             
             // Clear grid
             grid.innerHTML = '';
@@ -792,7 +793,8 @@
             // Create cards
             cards.forEach((img, index) => {
                 const card = document.createElement('div');
-                card.className = 'card w-20 h-20 md:w-28 md:h-28 relative cursor-pointer group perspective-1000 hover:scale-105 transition-transform duration-300';
+                // Hybrid Sizing: Fluid aspect-ratio for Mobile, Fixed pixel dimensions for Desktop
+                card.className = 'card w-full aspect-square md:w-28 md:h-28 md:aspect-auto relative cursor-pointer group perspective-1000 hover:scale-105 transition-transform duration-300';
                 card.dataset.index = index;
                 card.dataset.image = img;
                 

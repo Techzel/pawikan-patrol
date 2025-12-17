@@ -348,18 +348,7 @@
 
 
 
-            <!-- Mobile Stats (Visible on mobile only) -->
-            <div class="lg:hidden flex flex-wrap justify-center gap-6 text-lg cinzel-subheading mb-6">
-                <div class="bg-deep-800/50 px-5 py-2 rounded-xl border border-ocean-700/50 backdrop-blur-sm">
-                    <span class="text-ocean-400">Time:</span>
-                    <span id="timer-mobile" class="ml-2 font-bold">00:00.00</span>
-                    <span id="time-limit-indicator-mobile" class="text-xs text-ocean-400 opacity-80 ml-1"></span>
-                </div>
-                <div class="bg-deep-800/50 px-5 py-2 rounded-xl border border-ocean-700/50 backdrop-blur-sm">
-                    <span class="text-ocean-400">Moves:</span>
-                    <span id="moves-mobile" class="ml-2 font-bold">0</span>
-                </div>
-            </div>
+
 
             <!-- Controls -->
             <div class="w-full max-w-4xl mx-auto mb-6">
@@ -401,6 +390,21 @@
                             🔄 Shuffle
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Mobile Stats (Moves above Game Board) -->
+            <div class="lg:hidden flex flex-wrap justify-center gap-4 text-sm font-bold font-mono mb-4">
+                <div class="bg-deep-800/80 px-4 py-2 rounded-lg border border-ocean-500/30 backdrop-blur-sm shadow-lg w-32 text-center">
+                    <span class="text-ocean-300 block text-xs uppercase tracking-wider mb-0.5">Time</span>
+                    <div class="flex items-center justify-center gap-1">
+                         <span id="timer-mobile" class="text-white text-lg tabular-nums">00:00.00</span>
+                         <span id="time-limit-indicator-mobile" class="text-[10px] text-ocean-400"></span>
+                    </div>
+                </div>
+                <div class="bg-deep-800/80 px-4 py-2 rounded-lg border border-ocean-500/30 backdrop-blur-sm shadow-lg w-24 text-center">
+                    <span class="text-ocean-300 block text-xs uppercase tracking-wider mb-0.5">Moves</span>
+                    <span id="moves-mobile" class="text-white text-lg tabular-nums">0</span>
                 </div>
             </div>
 
@@ -540,7 +544,24 @@
         ];
         let currentImageIndex = 0;
         
-        let boardSize = Math.min(window.innerWidth - 40, 500); // Responsive board size
+
+        
+        // Responsive board size calculation logic
+        const getResponsiveBoardSize = () => {
+             // For Desktop (lg+), prioritize the standard 500px size for best visibility
+             // User prefers larger size on desktop even if scrolling is needed
+             if (window.innerWidth >= 1024) {
+                 return 500;
+             }
+             
+             // For Mobile/Tablet, constrain by height to prevent vertical scrolling during play
+             const widthConstraint = window.innerWidth - 32; // horz padding
+             const heightConstraint = window.innerHeight - 420; // vertical overhead (header+controls)
+             const calculated = Math.min(widthConstraint, heightConstraint, 500);
+             return Math.max(calculated, 280); // Min usable size
+        };
+
+        let boardSize = getResponsiveBoardSize();
 
         // Initialize
         function initGame() {
@@ -560,7 +581,7 @@
              // Debounce
              clearTimeout(window.resizeTimer);
              window.resizeTimer = setTimeout(() => {
-                 boardSize = Math.min(window.innerWidth - 40, 500);
+                 boardSize = getResponsiveBoardSize();
                  board.style.width = `${boardSize}px`;
                  board.style.height = `${boardSize}px`;
                  

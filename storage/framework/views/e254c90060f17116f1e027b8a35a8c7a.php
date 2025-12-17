@@ -630,16 +630,16 @@
                     <div class="relative flex flex-col lg:flex-row items-center gap-6">
                         <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
                         <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
-                            <div class="bg-green-50 rounded-3xl p-6 lg:p-8 transform hover:scale-105 transition-all duration-500 shadow-lg border-4 border-green-300">
+                            <div class="bg-gray-900 rounded-3xl p-6 lg:p-8 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
                                 <div class="flex items-center gap-4 mb-4">
                                     <span class="text-4xl">🥚</span>
-                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-700">1. Nesting</h3>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">1. Nesting</h3>
                                 </div>
-                                <p class="text-gray-900 mb-4 text-base leading-relaxed">
+                                <p class="text-gray-300 mb-4 text-base leading-relaxed">
                                     Mother turtles return to Dahican Beach to lay their eggs, 
                                     continuing an ancient cycle that connects generations of Pawikan.
                                 </p>
-                                <div class="text-sm text-gray-800 space-y-1">
+                                <div class="text-sm text-gray-400 space-y-1">
                                     <div><strong>Season:</strong> November to March</div>
                                     <div><strong>Duration:</strong> 2-3 hours per nest</div>
                                 </div>

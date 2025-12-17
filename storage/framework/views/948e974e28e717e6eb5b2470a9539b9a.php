@@ -204,7 +204,8 @@
         
         <!-- Guest Mode Modal --> 
         <!-- Warning Audio -->
-        <audio id="warning-audio">
+        <!-- Warning Audio - Autoplay enabled -->
+        <audio id="warning-audio" autoplay>
             <source src="<?php echo e(asset('audio/warning.mp3')); ?>" type="audio/mpeg">
         </audio>
         
@@ -1033,12 +1034,14 @@
                     guestModalContent.classList.add('scale-100', 'opacity-100');
                     
                     // Play warning sound (matching Memory Match)
+                    /* Warning audio handled by HTML autoplay
                     if (warningAudio) {
                         setTimeout(() => {
                             warningAudio.currentTime = 0;
                             warningAudio.play().catch(e => console.log('Warning audio autoplay prevented:', e));
                         }, 300);
                     }
+                    */
                 }, 100);
             }
         });
