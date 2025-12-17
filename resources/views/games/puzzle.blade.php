@@ -116,7 +116,8 @@
 
     @if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller')))
     <!-- Warning Audio -->
-    <audio id="warning-audio">
+    <!-- Warning Audio - Autoplay enabled -->
+    <audio id="warning-audio" autoplay>
         <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
     </audio>
     
@@ -170,6 +171,8 @@
                     guestModalContent.classList.add('scale-100', 'opacity-100');
                     
                     // Play warning music after modal starts appearing (300ms delay)
+                    /* Warning audio handled by HTML autoplay
+                    // Play warning music after modal starts appearing (300ms delay)
                     if (warningAudio) {
                         setTimeout(() => {
                             const playPromise = warningAudio.play();
@@ -181,6 +184,7 @@
                             }
                         }, 300);
                     }
+                    */
                 }, 100);
             }
         });

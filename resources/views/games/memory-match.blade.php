@@ -202,7 +202,8 @@
 
     @if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller')))
     <!-- Warning Audio -->
-    <audio id="warning-audio">
+    <!-- Warning Audio - Autoplay enabled for mobile compatibility -->
+    <audio id="warning-audio" autoplay>
         <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
     </audio>
     
@@ -252,6 +253,7 @@
                     guestModalContent.classList.remove('scale-75', 'opacity-0');
                     guestModalContent.classList.add('scale-100', 'opacity-100');
                     
+                    /* Warning audio handled by HTML autoplay for better mobile support
                     if (warningAudio) {
                         setTimeout(() => {
                             const playPromise = warningAudio.play();
@@ -263,6 +265,7 @@
                             }
                         }, 300);
                     }
+                    */
                 }, 100);
             }
         });
