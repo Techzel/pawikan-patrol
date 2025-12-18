@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Pawikan Memory Match - Educational Games')
 
-@push('styles')
+<?php $__env->startSection('title', 'Pawikan Memory Match - Educational Games'); ?>
+
+<?php $__env->startPush('styles'); ?>
 <style>
     .perspective-1000 {
         perspective: 1000px;
@@ -123,22 +123,22 @@
         font-family: 'Poppins', sans-serif !important;
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div id="memory-game-container" class="min-h-screen text-white overflow-x-hidden selection:bg-ocean-500 selection:text-white relative">
     <!-- Background Image -->
     <div class="fixed inset-0 z-0 overflow-hidden">
-        <img src="{{ asset('img/under-sea.gif') }}" alt="Background" class="w-full h-full object-cover opacity-90">
+        <img src="<?php echo e(asset('img/under-sea.gif')); ?>" alt="Background" class="w-full h-full object-cover opacity-90">
         <div class="absolute inset-0 bg-black/70"></div>
     </div>
     
     <!-- Game Activity Script -->
-    <script src="{{ asset('js/game-activity.js') }}"></script>
+    <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50">
-        <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
+        <a href="<?php echo e(route('games.index')); ?>" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -147,54 +147,54 @@
 
     <!-- Game Audio Elements -->
     <audio id="bg-music" loop>
-        <source src="{{ asset('audio/memory.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/memory.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="correct-sound">
-        <source src="{{ asset('audio/correct.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/correct.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="wrong-sound">
-        <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/wrong.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="congratulations-sound">
-        <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/ma complete ang task.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="click-sound">
-        <source src="{{ asset('audio/click sa puzzle ug matching.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/click sa puzzle ug matching.mp3')); ?>" type="audio/mpeg">
     </audio>
 
-    @if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller')))
+    <?php if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller'))): ?>
     <!-- Warning Audio -->
     <!-- Warning Audio - Autoplay enabled for mobile compatibility -->
     <audio id="warning-audio">
-        <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/warning.mp3')); ?>" type="audio/mpeg">
     </audio>
     
     <div id="guest-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-0 transition-all duration-700 ease-out">
         <div class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out" id="guest-modal-content">
-            <button onclick="window.showPageLoader(); window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+            <button onclick="window.showPageLoader(); window.location.href = '<?php echo e(route('games.index')); ?>'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
             <div class="text-5xl mb-4">⚠️</div>
             <h2 class="text-2xl font-bold text-white mb-2">
-                @auth Warning @else Guest Mode @endauth
+                <?php if(auth()->guard()->check()): ?> Warning <?php else: ?> Guest Mode <?php endif; ?>
             </h2>
             <p class="text-gray-300 mb-8 font-poppins">
-                @auth
-                    Game recording is disabled for {{ ucfirst(Auth::user()->role) }} accounts.
-                @else
+                <?php if(auth()->guard()->check()): ?>
+                    Game recording is disabled for <?php echo e(ucfirst(Auth::user()->role)); ?> accounts.
+                <?php else: ?>
                     If you do not login, the game will not be recorded.
-                @endauth
+                <?php endif; ?>
             </p>
             <div class="flex flex-col gap-3">
-                @guest
+                <?php if(auth()->guard()->guest()): ?>
                 <a href="#" onclick="event.preventDefault(); openAuthModal('login')" class="bg-ocean-600 hover:bg-ocean-500 text-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins w-full">
                     Login Now
                 </a>
-                @endguest
+                <?php endif; ?>
                 <button onclick="closeGuestModal()" class="bg-transparent border border-gray-600 text-gray-400 hover:text-white hover:border-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins w-full">
-                    @auth Play without saving @else Play as Guest @endauth
+                    <?php if(auth()->guard()->check()): ?> Play without saving <?php else: ?> Play as Guest <?php endif; ?>
                 </button>
             </div>
         </div>
@@ -268,7 +268,7 @@
             }
         };
     </script>
-    @endif
+    <?php endif; ?>
 
     <main class="pt-24 pb-12 relative z-10 min-h-screen">
         <!-- Music Control with Volume -->
@@ -323,11 +323,11 @@
         </style>
         
         <audio id="bg-music" loop>
-            <source src="{{ asset('audio/memory.mp3') }}" type="audio/mpeg">
+            <source src="<?php echo e(asset('audio/memory.mp3')); ?>" type="audio/mpeg">
         </audio>
         
         <audio id="congratulations-sound">
-            <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
+            <source src="<?php echo e(asset('audio/ma complete ang task.mp3')); ?>" type="audio/mpeg">
         </audio>
 
         <div class="container mx-auto px-4">
@@ -518,8 +518,8 @@
                     <h2 id="modal-title" class="text-3xl font-bold text-ocean-300 mb-2 font-poppins">Congratulations!</h2>
                     <p id="modal-message" class="text-gray-300 mb-2 font-poppins">You've matched all the pairs!</p>
                     
-                    @auth
-                        @if(Auth::user()->role === 'player' || Auth::user()->role === 'user')
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if(Auth::user()->role === 'player' || Auth::user()->role === 'user'): ?>
                         <div id="save-status" class="mb-6">
                             <p class="text-yellow-400 text-sm font-poppins flex items-center justify-center gap-2">
                                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -529,12 +529,12 @@
                                 Saving game...
                             </p>
                         </div>
-                        @else
+                        <?php else: ?>
                         <p class="text-gray-400 mb-6 font-poppins">&nbsp;</p>
-                        @endif
-                    @else
+                        <?php endif; ?>
+                    <?php else: ?>
                         <p class="text-gray-400 mb-6 font-poppins">&nbsp;</p>
-                    @endauth
+                    <?php endif; ?>
                     
                     <div class="grid grid-cols-3 gap-2 mb-8 text-left bg-black/30 p-4 rounded-xl font-poppins">
                         <div>
@@ -568,9 +568,9 @@
     </main>
 
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     (function() {
         // Game Configuration
@@ -616,8 +616,8 @@
 
         // Get user-specific storage key prefix
         // Get user-specific storage key prefix
-        const isLoggedIn = @auth true @else false @endauth;
-        const userStoragePrefix = @auth '{{ Auth::id() }}_' @else '' @endauth;
+        const isLoggedIn = <?php if(auth()->guard()->check()): ?> true <?php else: ?> false <?php endif; ?>;
+        const userStoragePrefix = <?php if(auth()->guard()->check()): ?> '<?php echo e(Auth::id()); ?>_' <?php else: ?> '' <?php endif; ?>;
 
         // Check and load unlocked levels from localStorage
         function loadUnlockedLevels() {
@@ -766,10 +766,10 @@
                 card.innerHTML = `
                     <div class="card-inner w-full h-full relative transform-style-3d">
                         <div class="card-front absolute w-full h-full backface-hidden bg-deep-800 border-2 border-ocean-700/30 rounded-xl flex items-center justify-center overflow-hidden shadow-lg group-hover:border-ocean-500/50 transition-colors">
-                            <img src="{{ asset('img/lg.png') }}" alt="Card Back" class="w-3/4 h-3/4 object-contain opacity-50">
+                            <img src="<?php echo e(asset('img/lg.png')); ?>" alt="Card Back" class="w-3/4 h-3/4 object-contain opacity-50">
                         </div>
                         <div class="card-back absolute w-full h-full backface-hidden rotate-y-180 bg-deep-900 border-2 border-ocean-400 rounded-xl flex items-center justify-center overflow-hidden shadow-ocean-500/20 shadow-lg relative">
-                            <img src="{{ asset('img') }}/${img}" alt="Card Front" class="w-full h-full object-cover">
+                            <img src="<?php echo e(asset('img')); ?>/${img}" alt="Card Front" class="w-full h-full object-cover">
                             <!-- Status Icons -->
                             <div class="status-overlay check-overlay hidden rounded-xl">
                                 <div class="status-icon">✅</div>
@@ -1038,8 +1038,8 @@
             }, 500);
             
             // Record game activity for logged-in players
-            @auth
-            @if(Auth::user()->role === 'player' || Auth::user()->role === 'user')
+            <?php if(auth()->guard()->check()): ?>
+            <?php if(Auth::user()->role === 'player' || Auth::user()->role === 'user'): ?>
             console.log('Checking gameActivity...', window.gameActivity);
             if (window.gameActivity) {
                 try {
@@ -1108,8 +1108,8 @@
                     `;
                 }
             }
-            @endif
-            @endauth
+            <?php endif; ?>
+            <?php endif; ?>
         }
 
         // Click sound function - Card Flip Style
@@ -1230,17 +1230,17 @@
         window.addEventListener('beforeunload', stopMusic);
         document.addEventListener('turbo:load', () => {
             // Reset progress for guest users
-            @guest
+            <?php if(auth()->guard()->guest()): ?>
             localStorage.removeItem('memoryMatch_easy_completed');
             localStorage.removeItem('memoryMatch_medium_completed');
             localStorage.removeItem('memoryMatch_last_difficulty');
-            @endguest
+            <?php endif; ?>
             
             // First, unlock levels based on completion
             loadUnlockedLevels();
             
             // Then, load last played difficulty for logged-in users
-            @auth
+            <?php if(auth()->guard()->check()): ?>
             const lastDifficulty = localStorage.getItem(`${userStoragePrefix}memoryMatch_last_difficulty`);
             if (lastDifficulty && (lastDifficulty === 'easy' || lastDifficulty === 'medium' || lastDifficulty === 'hard')) {
                 // Check if the level is actually unlocked before loading it
@@ -1276,7 +1276,7 @@
                     });
                 }
             }
-            @endauth
+            <?php endif; ?>
             
             initGame();
 
@@ -1315,5 +1315,7 @@
         };
     })();
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/games/memory-match.blade.php ENDPATH**/ ?>

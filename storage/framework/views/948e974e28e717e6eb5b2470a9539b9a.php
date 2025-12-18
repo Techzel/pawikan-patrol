@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Ocean Guardian - Defense Game')
 
-@push('styles')
+<?php $__env->startSection('title', 'Ocean Guardian - Defense Game'); ?>
+
+<?php $__env->startPush('styles'); ?>
 <style>
     /* Custom slider styling */
     .slider::-webkit-slider-thumb {
@@ -23,36 +23,36 @@
     .animate-float { animation: float 6s ease-in-out infinite; }
     @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div id="pawikan-game-container" class="min-h-screen text-white overflow-hidden selection:bg-ocean-500 selection:text-white relative">
     <!-- Background (CSS fallback / Main Design) -->
     <div class="fixed inset-0 z-0 bg-gradient-to-b from-ocean-800 to-deep-900"></div>
     
     <!-- Game Activity Script -->
-    <script src="{{ asset('js/game-activity.js') }}"></script>
+    <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
     
     <!-- Audio Elements -->
     <audio id="bg-music" loop>
-        <source src="{{ asset('audio/ocean-bg.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/ocean-bg.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="click-sound">
-        <source src="{{ asset('audio/click sa puzzle ug matching.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/click sa puzzle ug matching.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="congratulations-sound">
-        <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/ma complete ang task.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="wrong-sound">
-        <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/wrong.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="warning-audio">
-        <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/warning.mp3')); ?>" type="audio/mpeg">
     </audio>
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50 mb-4">
-        <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
+        <a href="<?php echo e(route('games.index')); ?>" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -159,11 +159,12 @@
                     </button>
                 </div>
 
-                @auth
+                <?php if(auth()->guard()->check()): ?>
                 <div class="bg-black/20 backdrop-blur-sm px-4 py-1 rounded-full border border-white/10 text-[10px] text-green-100/80 mt-1">
-                    Guardian: {{ Auth::user()->name }}
+                    Guardian: <?php echo e(Auth::user()->name); ?>
+
                 </div>
-                @endauth
+                <?php endif; ?>
             </div>
 
             <!-- Main Start Button (Centered) -->
@@ -203,7 +204,7 @@
                     <button id="actionBtn" onclick="startGame(currentLevel)" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold font-poppins transition-all shadow-lg hover:shadow-green-500/25 border border-white/10">
                         Try Again
                     </button>
-                    <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="w-full py-3 bg-transparent border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white rounded-xl font-bold font-poppins transition-all text-sm">
+                    <a href="<?php echo e(route('games.index')); ?>" onclick="window.showPageLoader()" class="w-full py-3 bg-transparent border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white rounded-xl font-bold font-poppins transition-all text-sm">
                         Exit
                     </a>
                 </div>
@@ -215,10 +216,10 @@
         <!-- Guest Mode Modal --> 
 
         <!-- Guest Mode Modal (Animated) --> 
-        @guest
+        <?php if(auth()->guard()->guest()): ?>
         <div id="guest-modal" class="absolute inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-700 ease-out hidden pointer-events-auto cursor-default"> <!-- Start with background effect -->
             <div id="guest-modal-content" class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out">
-                <button onclick="window.showPageLoader(); window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <button onclick="window.showPageLoader(); window.location.href = '<?php echo e(route('games.index')); ?>'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -240,16 +241,16 @@
                 </div>
             </div>
         </div>
-        @endguest
+        <?php endif; ?>
 
     <!-- Game Activity Script -->
-    <script src="{{ asset('js/game-activity.js') }}"></script>
+    <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
 
     <!-- Scripts -->
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     (function() {
         const canvas = document.getElementById('gameCanvas');
@@ -379,7 +380,7 @@
         // Progress Logic:
         // Guests: always restart/reset on refresh (Session only)
         // Users: save/load progress (Persistent)
-        const isLoggedIn = @auth true @else false @endauth;
+        const isLoggedIn = <?php if(auth()->guard()->check()): ?> true <?php else: ?> false <?php endif; ?>;
         
         let unlockedLevels = ['easy']; // Default
         
@@ -411,16 +412,16 @@
         let w, h, cx, cy;
         let scaleFactor = 1;
         const turtleImg = new Image();
-        turtleImg.src = "{{ asset('img/hawksbill.png') }}";
+        turtleImg.src = "<?php echo e(asset('img/hawksbill.png')); ?>";
         
         let rays = [];
         let bubbles = [];
 
         // Level Configuration
         const levelSettings = {
-            'easy': { baseSpeed: 2.2, spawnRate: 60, label: 'EASY', img: "{{ asset('img/olive.png') }}", target: 50 },
-            'medium': { baseSpeed: 3.5, spawnRate: 45, label: 'MEDIUM', img: "{{ asset('img/green.png') }}", target: 50 },
-            'hard': { baseSpeed: 6.0, spawnRate: 25, label: 'HARD', img: "{{ asset('img/hawksbill.png') }}", target: 50 }
+            'easy': { baseSpeed: 2.2, spawnRate: 60, label: 'EASY', img: "<?php echo e(asset('img/olive.png')); ?>", target: 50 },
+            'medium': { baseSpeed: 3.5, spawnRate: 45, label: 'MEDIUM', img: "<?php echo e(asset('img/green.png')); ?>", target: 50 },
+            'hard': { baseSpeed: 6.0, spawnRate: 25, label: 'HARD', img: "<?php echo e(asset('img/hawksbill.png')); ?>", target: 50 }
         };
 
         // Functions must be defined before use if locally scoped, but var is functional.
@@ -966,7 +967,7 @@
         }
 
         function saveGame(v) {
-            @auth
+            <?php if(auth()->guard()->check()): ?>
             saveStatus.innerHTML = '<span class="animate-pulse text-yellow-300">Syncing...</span>';
             
             window.gameActivity.recordFindThePawikan(v, currentLevel)
@@ -999,9 +1000,9 @@
                 console.error(e);
                 saveStatus.innerHTML='<span class="text-red-300">Offline</span>';
             });
-            @else
+            <?php else: ?>
             saveStatus.innerHTML = 'Login to rank up!';
-            @endauth
+            <?php endif; ?>
         }
 
 
@@ -1021,7 +1022,7 @@
         window.addEventListener('beforeunload', stopMusic);
 
         // Guest Modal Animation & Sound
-        @guest
+        <?php if(auth()->guard()->guest()): ?>
         document.addEventListener('turbo:load', function() {
             const guestModal = document.getElementById('guest-modal');
             const guestModalContent = document.getElementById('guest-modal-content');
@@ -1070,14 +1071,16 @@
                 }, 700);
             }
         }
-        @endguest
+        <?php endif; ?>
     })();
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     .animate-float { animation: float 6s ease-in-out infinite; }
     @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/games/find-the-pawikan.blade.php ENDPATH**/ ?>

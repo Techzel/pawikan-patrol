@@ -6,7 +6,7 @@
 <style>
     /* Global font family for index */
     #games-index-container {
-        font-family: 'Cinzel', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     #games-index-container main, #games-index-container main * {
@@ -14,7 +14,7 @@
     }
 
     #games-index-container main h1, #games-index-container main h2, #games-index-container main h3 {
-        font-family: 'Cinzel', serif !important;
+        font-family: 'Poppins', sans-serif !important;
     }
 
     .glass { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.1); }

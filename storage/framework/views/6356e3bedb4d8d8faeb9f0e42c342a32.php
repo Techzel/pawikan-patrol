@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Pawikan Puzzle - Educational Games')
 
-@push('styles')
+<?php $__env->startSection('title', 'Pawikan Puzzle - Educational Games'); ?>
+
+<?php $__env->startPush('styles'); ?>
 <style>
     .puzzle-tile {
         transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s, filter 0.2s;
@@ -43,22 +43,22 @@
         font-family: 'Poppins', sans-serif !important;
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div id="puzzle-game-container" class="min-h-screen text-white overflow-x-hidden selection:bg-ocean-500 selection:text-white relative">
     <!-- Background Image -->
     <div class="fixed inset-0 z-0">
-        <img src="{{ asset('img/under-sea.gif') }}" alt="Background" class="w-full h-full object-cover opacity-90">
+        <img src="<?php echo e(asset('img/under-sea.gif')); ?>" alt="Background" class="w-full h-full object-cover opacity-90">
         <div class="absolute inset-0 bg-black/70"></div>
     </div>
     
     <!-- Game Activity Script -->
-    <script src="{{ asset('js/game-activity.js') }}"></script>
+    <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50">
-        <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
+        <a href="<?php echo e(route('games.index')); ?>" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -67,53 +67,53 @@
 
     <!-- Game Audio Elements -->
     <audio id="bg-music" loop>
-        <source src="{{ asset('audio/puzzle-loop.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/puzzle-loop.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="move-sound">
-        <source src="{{ asset('audio/puzzle-move.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/puzzle-move.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="click-sound">
-        <source src="{{ asset('audio/click sa puzzle ug matching.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/click sa puzzle ug matching.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="wrong-sound">
-        <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/wrong.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="congratulations-sound">
-        <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/ma complete ang task.mp3')); ?>" type="audio/mpeg">
     </audio>
 
-    @if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller')))
+    <?php if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller'))): ?>
     <!-- Warning Audio -->
     <audio id="warning-audio">
-        <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
+        <source src="<?php echo e(asset('audio/warning.mp3')); ?>" type="audio/mpeg">
     </audio>
     
     <div id="guest-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-0 transition-all duration-700 ease-out">
         <div class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out" id="guest-modal-content">
-            <button onclick="window.showPageLoader(); window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+            <button onclick="window.showPageLoader(); window.location.href = '<?php echo e(route('games.index')); ?>'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
             <div class="text-5xl mb-4">⚠️</div>
             <h2 class="text-2xl font-bold text-white mb-2">
-                @auth Warning @else Guest Mode @endauth
+                <?php if(auth()->guard()->check()): ?> Warning <?php else: ?> Guest Mode <?php endif; ?>
             </h2>
             <p class="text-gray-300 mb-8 font-poppins">
-                @auth
-                    Game recording is disabled for {{ ucfirst(Auth::user()->role) }} accounts.
-                @else
+                <?php if(auth()->guard()->check()): ?>
+                    Game recording is disabled for <?php echo e(ucfirst(Auth::user()->role)); ?> accounts.
+                <?php else: ?>
                     If you do not login, the game will not be recorded.
-                @endauth
+                <?php endif; ?>
             </p>
             <div class="flex flex-col gap-3">
-                @guest
+                <?php if(auth()->guard()->guest()): ?>
                 <a href="#" onclick="event.preventDefault(); openAuthModal('login')" class="bg-ocean-600 hover:bg-ocean-500 text-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins w-full">
                     Login Now
                 </a>
-                @endguest
+                <?php endif; ?>
                 <button onclick="closeGuestModal()" class="bg-transparent border border-gray-600 text-gray-400 hover:text-white hover:border-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins w-full">
-                    @auth Play without saving @else Play as Guest @endauth
+                    <?php if(auth()->guard()->check()): ?> Play without saving <?php else: ?> Play as Guest <?php endif; ?>
                 </button>
             </div>
         </div>
@@ -194,7 +194,7 @@
             }
         };
     </script>
-    @endif
+    <?php endif; ?>
 
     <main class="pt-24 pb-12 relative z-10 min-h-screen flex flex-col">
         <!-- Music Control with Volume -->
@@ -249,17 +249,17 @@
         </style>
         
         <audio id="bg-music" loop>
-            <source src="{{ asset('audio/puzzle-loop.mp3') }}" type="audio/mpeg">
+            <source src="<?php echo e(asset('audio/puzzle-loop.mp3')); ?>" type="audio/mpeg">
         </audio>
         <audio id="move-sound">
-            <source src="{{ asset('audio/puzzle-move.mp3') }}" type="audio/mpeg">
+            <source src="<?php echo e(asset('audio/puzzle-move.mp3')); ?>" type="audio/mpeg">
         </audio>
         
         <audio id="congratulations-sound">
-            <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
+            <source src="<?php echo e(asset('audio/ma complete ang task.mp3')); ?>" type="audio/mpeg">
         </audio>
         <audio id="wrong-sound">
-            <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
+            <source src="<?php echo e(asset('audio/wrong.mp3')); ?>" type="audio/mpeg">
         </audio>
 
         <div class="container mx-auto px-4">
@@ -321,13 +321,13 @@
                     <!-- Image Selection -->
                     <div class="flex gap-2">
                         <button onclick="setPuzzleImage(0)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Green Sea Turtle">
-                            <img src="{{ asset('img/green-sea-turtle.png') }}" class="w-full h-full object-cover">
+                            <img src="<?php echo e(asset('img/green-sea-turtle.png')); ?>" class="w-full h-full object-cover">
                         </button>
                         <button onclick="setPuzzleImage(1)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Hawksbill Sea Turtle">
-                            <img src="{{ asset('img/hawksbill-sea-turtle.png') }}" class="w-full h-full object-cover">
+                            <img src="<?php echo e(asset('img/hawksbill-sea-turtle.png')); ?>" class="w-full h-full object-cover">
                         </button>
                         <button onclick="setPuzzleImage(2)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Olive Sea Turtle">
-                            <img src="{{ asset('img/olive-sea-turtle.png') }}" class="w-full h-full object-cover">
+                            <img src="<?php echo e(asset('img/olive-sea-turtle.png')); ?>" class="w-full h-full object-cover">
                         </button>
                     </div>
 
@@ -384,7 +384,7 @@
                         
                         <!-- Preview Overlay -->
                         <div id="preview-overlay" class="absolute inset-4 z-20 hidden rounded-lg overflow-hidden">
-                            <img src="{{ asset('img/green-sea-turtle.png') }}" class="w-full h-full object-cover opacity-90" alt="Preview">
+                            <img src="<?php echo e(asset('img/green-sea-turtle.png')); ?>" class="w-full h-full object-cover opacity-90" alt="Preview">
                             <div class="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-center py-2 text-sm">Preview Mode</div>
                         </div>
                     </div>
@@ -394,7 +394,7 @@
                         <div class="bg-gradient-to-br from-deep-800/90 to-deep-900/90 p-4 rounded-2xl border border-ocean-500/20 backdrop-blur-sm shadow-lg">
                             <h3 class="text-ocean-300 font-bold text-sm mb-3 text-center uppercase tracking-wider">Target Image</h3>
                             <div class="rounded-lg overflow-hidden border-2 border-ocean-500/30">
-                                <img id="reference-image" src="{{ asset('img/green-sea-turtle.png') }}" class="w-full h-auto" alt="Reference" style="max-width: 280px;">
+                                <img id="reference-image" src="<?php echo e(asset('img/green-sea-turtle.png')); ?>" class="w-full h-auto" alt="Reference" style="max-width: 280px;">
                             </div>
                         </div>
                     </div>
@@ -429,8 +429,8 @@
                         </div>
                     </div>
                     
-                    @auth
-                        @if(Auth::user()->role === 'player' || Auth::user()->role === 'user')
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if(Auth::user()->role === 'player' || Auth::user()->role === 'user'): ?>
                         <div id="save-status" class="mb-6">
                             <p class="text-yellow-400 text-sm font-poppins flex items-center justify-center gap-2">
                                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -440,12 +440,12 @@
                                 Saving game...
                             </p>
                         </div>
-                        @else
+                        <?php else: ?>
                         <p class="text-gray-400 mb-6 font-poppins">&nbsp;</p>
-                        @endif
-                    @else
+                        <?php endif; ?>
+                    <?php else: ?>
                         <p class="text-gray-400 mb-6 font-poppins">&nbsp;</p>
-                    @endauth
+                    <?php endif; ?>
                     
                     <div class="flex gap-4 justify-center">
                         <button id="next-level-btn" onclick="goToNextLevel()" class="bg-gradient-to-r from-ocean-600 to-ocean-500 hover:from-ocean-500 hover:to-ocean-400 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg shadow-ocean-500/30 font-poppins hidden">
@@ -462,14 +462,14 @@
             </div>
         </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     (function() {
         // Game State
-        const isLoggedIn = @auth true @else false @endauth;
-        const userStoragePrefix = @auth '{{ Auth::id() }}_' @else '' @endauth;
+        const isLoggedIn = <?php if(auth()->guard()->check()): ?> true <?php else: ?> false <?php endif; ?>;
+        const userStoragePrefix = <?php if(auth()->guard()->check()): ?> '<?php echo e(Auth::id()); ?>_' <?php else: ?> '' <?php endif; ?>;
         
         let size = 3; 
         // ... (rest of the game code remains inside the IIFE)
@@ -507,9 +507,9 @@
         
         // Puzzle Images
         const puzzleImages = [
-            "{{ asset('img/green-sea-turtle.png') }}",
-            "{{ asset('img/hawksbill-sea-turtle.png') }}",
-            "{{ asset('img/olive-sea-turtle.png') }}"
+            "<?php echo e(asset('img/green-sea-turtle.png')); ?>",
+            "<?php echo e(asset('img/hawksbill-sea-turtle.png')); ?>",
+            "<?php echo e(asset('img/olive-sea-turtle.png')); ?>"
         ];
         let currentImageIndex = 0;
         
@@ -1041,8 +1041,8 @@
                 }, 500);
                 
                 // Record game activity
-                @auth
-                @if(Auth::user()->role === 'player' || Auth::user()->role === 'user')
+                <?php if(auth()->guard()->check()): ?>
+                <?php if(Auth::user()->role === 'player' || Auth::user()->role === 'user'): ?>
                 if (window.gameActivity) {
                     (async () => {
                         try {
@@ -1077,8 +1077,8 @@
                         }
                     })();
                 }
-                @endif
-                @endauth
+                <?php endif; ?>
+                <?php endif; ?>
             }
         }
 
@@ -1230,4 +1230,6 @@
         window.addEventListener('beforeunload', stopMusic);
     })();
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/games/puzzle.blade.php ENDPATH**/ ?>
