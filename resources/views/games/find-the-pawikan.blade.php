@@ -1,47 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Ocean Guardian - Defense Game</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/lg.png') }}">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'ocean': { 300: '#67e8f9', 400: '#22d3ee', 500: '#06b6d4', 600: '#0891b2', 800: '#155e75', 900: '#164e63' },
-                        'deep': { 800: '#1e293b', 900: '#0f172a' }
-                    },
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        poppins: ['Poppins', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-black min-h-screen text-white overflow-hidden selection:bg-ocean-500 selection:text-white">
+@extends('layouts.app')
 
+@section('title', 'Ocean Guardian - Defense Game')
+
+@push('styles')
+<style>
+    /* Custom slider styling */
+    .slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #22d3ee;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    }
+
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
+</style>
+@endpush
+
+@section('content')
+<div id="pawikan-game-container" class="min-h-screen text-white overflow-hidden selection:bg-ocean-500 selection:text-white relative">
     <!-- Background (CSS fallback / Main Design) -->
     <div class="fixed inset-0 z-0 bg-gradient-to-b from-ocean-800 to-deep-900"></div>
     
-    @include('navigation')
+    <!-- Game Activity Script -->
+    <script src="{{ asset('js/game-activity.js') }}"></script>
+    
+    <!-- Audio Elements -->
+    <audio id="bg-music" loop>
+        <source src="{{ asset('audio/ocean-bg.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="click-sound">
+        <source src="{{ asset('audio/click sa puzzle ug matching.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="congratulations-sound">
+        <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="wrong-sound">
+        <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="warning-audio">
+        <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
+    </audio>
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50 mb-4">
-        <a href="{{ route('games.index') }}" data-turbo="false" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
+        <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -192,7 +203,7 @@
                     <button id="actionBtn" onclick="startGame(currentLevel)" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold font-poppins transition-all shadow-lg hover:shadow-green-500/25 border border-white/10">
                         Try Again
                     </button>
-                    <a href="{{ route('games.index') }}" data-turbo="false" class="w-full py-3 bg-transparent border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white rounded-xl font-bold font-poppins transition-all text-sm">
+                    <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="w-full py-3 bg-transparent border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white rounded-xl font-bold font-poppins transition-all text-sm">
                         Exit
                     </a>
                 </div>
@@ -202,37 +213,12 @@
         </div>
         
         <!-- Guest Mode Modal --> 
-        <!-- Warning Audio -->
-        <!-- Warning Audio - Autoplay enabled -->
-        <audio id="warning-audio" autoplay>
-            <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
-        </audio>
-        
-
-        
-        <!-- Click Sound Effect -->
-        <audio id="click-sound">
-            <source src="{{ asset('audio/click sa puzzle ug matching.mp3') }}" type="audio/mpeg">
-        </audio>
-        
-        <audio id="congratulations-sound">
-            <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
-        </audio>
-        
-        <audio id="wrong-sound">
-            <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
-        </audio>
-
-        <!-- Background Music -->
-        <audio id="bg-music" loop>
-            <source src="{{ asset('audio/ocean-bg.mp3') }}" type="audio/mpeg">
-        </audio>
 
         <!-- Guest Mode Modal (Animated) --> 
         @guest
         <div id="guest-modal" class="absolute inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-700 ease-out hidden pointer-events-auto cursor-default"> <!-- Start with background effect -->
             <div id="guest-modal-content" class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out">
-                <button onclick="window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <button onclick="window.showPageLoader(); window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -260,10 +246,16 @@
     <script src="{{ asset('js/game-activity.js') }}"></script>
 
     <!-- Scripts -->
-    <script>
-    {
+</div>
+@endsection
+
+@push('scripts')
+<script>
+    (function() {
         const canvas = document.getElementById('gameCanvas');
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
+        // ... (rest of the game code remains inside the IIFE)
         
         // UI Refs
         const mainStartContainer = document.getElementById('mainStartContainer');
@@ -304,6 +296,16 @@
                     updateMusicIcon();
                 }
             });
+
+            // Precision Loop to hide MP3 gaps (User request: "continues looping effect")
+            bgMusic.addEventListener('timeupdate', function() {
+                // Return to start slightly before the technical end to hide silent trailing padding
+                const buffer = 0.2; // 200ms
+                if (this.currentTime > this.duration - buffer && this.loop) {
+                    this.currentTime = 0;
+                    this.play().catch(e => {});
+                }
+            });
         }
 
         if (volumeSlider && bgMusic) {
@@ -331,18 +333,46 @@
         let score = 0;
         let health = 100;
         let difficulty = 1; // Internal ramping factor
-        var currentLevel = 'easy'; // Selected Mode (var to ensure window access)
+        window.currentLevel = 'easy'; 
         
         let startTime;
         let timerInterval;
         let elapsedSeconds = 0;
         
-        // Sound effect function
+        // Sound effect helper functions
         function playClickSound() {
             const clickSound = document.getElementById('click-sound');
             if (clickSound) {
                 clickSound.currentTime = 0;
-                clickSound.play().catch(e => console.log('Sound play failed:', e));
+                clickSound.volume = 1.0;
+                clickSound.play().catch(e => console.log('Click sound failed:', e));
+            }
+        }
+
+        function playCorrectSound() {
+            const sound = document.getElementById('click-sound'); // Use click sound for trash collection
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 1.0;
+                sound.play().catch(e => console.log('Correct sound failed:', e));
+            }
+        }
+
+        function playWrongSound() {
+            const sound = document.getElementById('wrong-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 1.0;
+                sound.play().catch(e => console.log('Wrong sound failed:', e));
+            }
+        }
+
+        function playCongratsSound() {
+            const sound = document.getElementById('congratulations-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 1.0;
+                sound.play().catch(e => console.log('Congrats sound failed:', e));
             }
         }
         
@@ -626,7 +656,7 @@
                     enemies.splice(i, 1);
                     score++;
                     scoreDisplay.textContent = score + '/50';
-                    playSound(600 + Math.random()*200, 'sine', 0.1);
+                    playCorrectSound();
                     if(score % 10 === 0) difficulty++;
                     
                     // Win Condition
@@ -675,7 +705,7 @@
                     enemies.splice(i, 1);
                     i--;
                     createParticles(cx, cy, 20, '#ef4444');
-                    playSound(150, 'sawtooth', 0.4);
+                    playWrongSound();
                     // Critical hit shake could go here
                     if(health <= 0) endGame();
                 }
@@ -713,16 +743,6 @@
             }
         }
 
-        // Utils
-        let audioCtx;
-        function playSound(f,t,d) {
-            if(!window.AudioContext)return;
-            if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-            const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-            o.frequency.value=f;o.type=t;o.connect(g);g.connect(audioCtx.destination);
-            o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d);
-            o.stop(audioCtx.currentTime+d);
-        }
         function createParticles(x,y,c,col) {
             for(let i=0;i<c;i++) particles.push({x,y,vx:(Math.random()-.5)*6,vy:(Math.random()-.5)*6,life:1,color:col});
         }
@@ -774,7 +794,7 @@
             requestAnimationFrame(drawIdle);
         }
 
-        function startGame(level) {
+        window.startGame = function(level) {
             console.log('Starting game level:', level);
             
             // Failsafe: Always allow easy
@@ -824,8 +844,8 @@
                 
                 gameLoop();
                 
-                // Start background music
-                if (bgMusic) {
+                // Start background music (if not already playing)
+                if (bgMusic && bgMusic.paused) {
                     bgMusic.play().then(() => {
                         isMusicPlaying = true;
                         updateMusicIcon();
@@ -887,7 +907,7 @@
             title.className = "text-xl font-bold text-green-400 mb-2 font-poppins tracking-wider uppercase drop-shadow-md";
             
             icon.textContent = "🛡️";
-            btn.textContent = nextLevel ? "Next Level" : "Replay Hard";
+            btn.textContent = nextLevel ? "Next Level" : "Play Again";
             btn.className = "w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold font-poppins transition-all shadow-lg hover:shadow-green-500/25 border border-white/10";
             btn.onclick = () => {
                 updateButtons();
@@ -898,16 +918,8 @@
             gameOverScreen.classList.remove('hidden');
             
             // Play congratulations sound
-            const congratsSound = document.getElementById('congratulations-sound');
-            if (congratsSound) {
-                congratsSound.currentTime = 0;
-                congratsSound.play().catch(e => console.log('Congrats sound failed:', e));
-            }
+            playCongratsSound();
             
-            // Victory Sound Effect
-            playSound(523.25, 'sine', 0.1); // C5
-            setTimeout(() => playSound(659.25, 'sine', 0.1), 100); // E5
-            setTimeout(() => playSound(783.99, 'sine', 0.3), 200); // G5 
 
             saveGame(elapsedSeconds);
         }
@@ -947,17 +959,8 @@
             mainStartContainer.classList.add('hidden'); // Ensure Start button stays hidden
             
             // Play game over sound
-            const wrongSound = document.getElementById('wrong-sound');
-            if (wrongSound) {
-                wrongSound.currentTime = 0;
-                wrongSound.play().catch(e => console.log('Game over sound failed:', e));
-            }
+            playWrongSound();
             
-            // Game Over Sound Effect
-            playSound(150, 'sawtooth', 0.4);
-            setTimeout(() => playSound(100, 'sawtooth', 0.6), 300);
-
-            setTimeout(() => playSound(100, 'sawtooth', 0.6), 300);
 
             // saveGame(score); // Don't save failed attempts to time-based leaderboard
         }
@@ -1033,19 +1036,17 @@
                     guestModalContent.classList.add('scale-100', 'opacity-100');
                     
                     // Play warning sound (matching Memory Match)
-                    /* Warning audio handled by HTML autoplay
                     if (warningAudio) {
                         setTimeout(() => {
                             warningAudio.currentTime = 0;
                             warningAudio.play().catch(e => console.log('Warning audio autoplay prevented:', e));
                         }, 300);
                     }
-                    */
                 }, 100);
             }
         });
 
-        function closeGuestModal() {
+        window.closeGuestModal = function() {
             const guestModal = document.getElementById('guest-modal');
             const guestModalContent = document.getElementById('guest-modal-content');
             const warningAudio = document.getElementById('warning-audio');
@@ -1070,14 +1071,13 @@
             }
         }
         @endguest
-    }
-    </script>
-    
-    <style>
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
-    </style>
-    
-    @include('auth.modal')
-</body>
-</html>
+    })();
+</script>
+@endpush
+
+@push('styles')
+<style>
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
+</style>
+@endpush

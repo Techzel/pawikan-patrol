@@ -20,11 +20,16 @@ class PatrolReportController extends Controller
     {
         // If it's not an AJAX request, return the view with initial data
         if (!$request->expectsJson()) {
-            $reports = PatrolReport::with(['user', 'photos', 'verifier'])
+            $reports = PatrolReport::with(['patroller:id,name', 'photos:id,patrol_report_id', 'verifier:id,name'])
+                ->select([
+                    'id', 'patroller_id', 'report_type', 'title', 'description', 
+                    'status', 'priority', 'created_at', 'incident_datetime'
+                ])
                 ->latest()
                 ->paginate(20);
             
             $patrollers = \App\Models\User::where('role', 'patroller')
+                ->select(['id', 'name'])
                 ->orderBy('name')
                 ->get();
             
@@ -62,7 +67,12 @@ class PatrolReportController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $query = PatrolReport::with(['user', 'photos', 'verifier'])
+        $query = PatrolReport::with(['patroller:id,name', 'photos:id,patrol_report_id', 'verifier:id,name'])
+            ->select([
+                'id', 'patroller_id', 'report_type', 'title', 'description', 
+                'status', 'priority', 'created_at', 'incident_datetime',
+                'species', 'gender', 'egg_count', 'latitude', 'longitude', 'location'
+            ])
             ->latest();
             
         // Apply status filter if provided, otherwise show all reports

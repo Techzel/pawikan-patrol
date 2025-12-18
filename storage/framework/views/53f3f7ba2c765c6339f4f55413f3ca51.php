@@ -97,7 +97,7 @@
     display: flex;
     flex-direction: column;
     gap: 0; /* Removed gap completely for tighter stacking */
-    z-index: 20;
+    z-index: 50;
     width: 220px;
     background: transparent;
     border-radius: 0;
@@ -135,6 +135,8 @@
     color: #4ade80;
     background: rgba(0, 0, 0, 0.2); /* Subtle hover bg for better hit area */
     transform: translateX(4px);
+    pointer-events: all;
+    cursor: pointer;
 }
 
 .anatomy-menu-item.active {
@@ -483,231 +485,141 @@
     </div>
 </div>
 
-<!-- Sketchfab Viewer API -->
-<script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
-
 <script>
-    let greenTurtleApi = null;
-    
-    // Camera coordinates calibrated to user screenshots
-    // Camera coordinates calibrated to user screenshots
-    const cameraCoordinatesGreen = {
-        'Head': { 
-            position: [0.25, 0.35, 0.35],   // Same as Flipper position
-            target: [0.2, 0.0, 0.0]        // Same as Flipper target
-        },
-        'Eye': { 
-            position: [0.24, -0.11, 0.1],   // Medium Close-up Side View
-            target: [0.2, 0.05, 0.0]       // Focused on Head/Eye area
-        },
-        'Carapace': { 
-            position: [0.0, 0.05, 1.0],    // Elevated Side Angle (Highlighting Shell Shape)
-            target: [0.0, 0.0, 0.0]       // Centered on Shell Mask
-        },
-        'Tail': { 
-            position: [-1.2, 0.3, 0.0],    // Zoomed Out Rear View
-            target: [-0.4, 0.05, 0.0]      // Focused on Tail Tip
-        },
-        'Plastron': { 
-            position: [0.0, 0.0, -0.7],    // Camera from left side, turtle swimming horizontally
-            target: [0.0, 0.0, 0.0]        // Looking at center of turtle
-        },
-        'Flipper': { 
-            position: [0.6, -0.3, 0.6],     // Standard zoomed-out view (Default-like)
-            target: [0.0, 0.0, 0.0]        // Centered on the whole turtle
+    (function() {
+        let greenTurtleApi = null;
+        let hawksbillTurtleApi = null;
+        let oliveRidleyApi = null;
+        
+        const cameraCoordinatesGreen = {
+            'Head': { position: [0.25, 0.35, 0.35], target: [0.2, 0.0, 0.0] },
+            'Eye': { position: [0.24, -0.11, 0.1], target: [0.2, 0.05, 0.0] },
+            'Carapace': { position: [0.0, 0.05, 1.0], target: [0.0, 0.0, 0.0] },
+            'Tail': { position: [-1.2, 0.3, 0.0], target: [-0.4, 0.05, 0.0] },
+            'Plastron': { position: [0.0, 0.0, -0.7], target: [0.0, 0.0, 0.0] },
+            'Flipper': { position: [0.6, -0.3, 0.6], target: [0.0, 0.0, 0.0] }
+        };
+
+        const cameraCoordinatesHawksbill = {
+            'Head': { position: [0.7, -0.13, 0.12], target: [0.1, 0.0, 0.0] },
+            'Eye': { position: [0.7, -0.13, 0.12], target: [0.15, 0.05, 0.0] },
+            'Carapace': { position: [0.0, 0.1, 1.1], target: [0.0, 0.0, 0.0] },
+            'Tail': { position: [-1.1, 0.3, 0.0], target: [-0.3, 0.0, 0.0] },
+            'Plastron': { position: [0.0, 0.0, -0.7], target: [0.0, 0.0, 0.0] },
+            'Flipper': { position: [0.5, -0.2, 0.7], target: [0.2, -0.1, 0.1] }
+        };
+
+        const cameraCoordinatesOlive = {
+            'Head': { position: [0.5, -0.45, 0.25], target: [0.15, 0.0, 0.0] },
+            'Eye': { position: [0.6, -0.45, 0.12], target: [0.15, 0.05, 0.0] },
+            'Carapace': { position: [0.0, 0.05, 1.0], target: [0.0, 0.0, 0.0] },
+            'Tail': { position: [-1.2, 0.3, 0.0], target: [-0.3, 0.0, 0.0] },
+            'Plastron': { position: [0.0, 0.0, -0.7], target: [0.0, 0.0, 0.0] },
+            'Flipper': { position: [0.6, -0.3, 0.6], target: [0.2, -0.2, 0.1] }
+        };
+
+        const partDescriptions = {
+            'Head': 'The rounded, blunt head houses the brain and sensory organs with powerful jaws adapted for herbivorous feeding, excellent underwater vision, and the ability to detect Earth\'s magnetic field for navigation to Dahican\'s nesting beaches.',
+            'Eye': 'Large eyes with special salt glands provide color vision both underwater and on land, helping green sea turtles navigate Dahican\'s waters while removing excess salt from seawater.',
+            'Carapace': 'The smooth, heart-shaped upper shell is typically olive to brown with radiating patterns, made of bone covered by keratin scutes, measuring 3-4 feet in length and providing protection from predators.',
+            'Tail': 'The relatively short tail aids in steering while swimming and is notably longer and thicker in males (extending beyond the carapace) for use during mating, serving as a key identifier of gender.',
+            'Plastron': 'The yellowish-white lower shell provides crucial underside protection, is slightly concave in males and flat in females, and connects to the carapace by a bridge to create a protective box for vital organs.',
+            'Flipper': 'The long, paddle-like front flippers are the primary means of propulsion enabling speeds up to 35 mph, each featuring a single claw used for feeding and climbing onto Dahican\'s beaches during nesting season.'
+        };
+
+        const partDescriptionsHawksbill = {
+            'Head': 'The narrow, pointed head features a distinctive hawk-like beak perfectly adapted for reaching into crevices to feed on sponges, with excellent vision for navigating complex coral reef environments in Dahican waters.',
+            'Eye': 'Sharp eyes with protective eyelids and salt-excreting glands enable the Hawksbill to hunt for sponges in reef crevices while efficiently removing excess salt from their specialized diet.',
+            'Carapace': 'The beautiful amber and brown patterned shell features overlapping scutes creating the prized "tortoiseshell" appearance, measuring 2-3 feet in length with serrated rear edges for protection.',
+            'Tail': 'The short tail is proportionally smaller than other species, with males having longer tails extending beyond the carapace for reproduction, also aiding in precise maneuvering through coral formations.',
+            'Plastron': 'The pale yellow plastron provides underside protection and is slightly concave in males for mating, connected to the ornate carapace by a flexible bridge allowing some movement.',
+            'Flipper': 'Two claws on each front flipper distinguish Hawksbills from other species, providing excellent grip for climbing rocky surfaces and manipulating sponges during feeding in Dahican\'s coral reefs.'
+        };
+
+        const partDescriptionsOlive = {
+            'Head': 'The rounded head is proportionally large for their small body size, equipped with powerful jaws for their omnivorous diet and excellent sensory capabilities for detecting prey and navigating to Dahican\'s nesting beaches during arribadas.',
+            'Eye': 'Large, expressive eyes with specialized glands efficiently remove salt while providing keen vision for hunting diverse prey including jellyfish, crabs, and fish in Dahican\'s coastal waters.',
+            'Carapace': 'The distinctive olive-green heart-shaped shell measures 2-2.5 feet with 5-9 pairs of costal scutes (more than other species), providing lightweight protection perfect for their active lifestyle and mass nesting events.',
+            'Tail': 'The relatively short tail serves multiple functions in swimming agility and reproduction, with males having noticeably longer tails for mating during the spectacular arribada nesting events at Dahican.',
+            'Plastron': 'The yellowish plastron is flat in females and slightly concave in males, providing essential protection while being lightweight enough for the smallest sea turtle species to navigate efficiently.',
+            'Flipper': 'Compact, paddle-shaped flippers with typically one or two claws enable both powerful swimming for long migrations and precise digging during arribadas when thousands nest simultaneously on Dahican beaches.'
+        };
+
+        function initExplorers() {
+            const greenIframe = document.getElementById('green-turtle-iframe');
+            if (greenIframe && window.Sketchfab) {
+                const client = new Sketchfab(greenIframe);
+                client.init('422f77a6fba64e7e8969984e552f111a', {
+                    success: function(api) { greenTurtleApi = api; api.start(); },
+                    error: function() { console.error('Sketchfab Error'); },
+                    autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, ui_watermark: 0
+                });
+            }
+
+            const hawksbillIframe = document.getElementById('hawksbill-turtle-iframe');
+            if (hawksbillIframe && window.Sketchfab) {
+                const client = new Sketchfab(hawksbillIframe);
+                client.init('0c0316cbed524374ab219f6d94b105c9', {
+                    success: function(api) { hawksbillTurtleApi = api; api.start(); },
+                    error: function() { console.error('Hawksbill Error'); },
+                    autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, ui_watermark: 0
+                });
+            }
+
+            const oliveIframe = document.getElementById('olive-ridley-iframe');
+            if (oliveIframe && window.Sketchfab) {
+                const client = new Sketchfab(oliveIframe);
+                client.init('acbe292c128246ed8e532bfd9e646a03', {
+                    success: function(api) { oliveRidleyApi = api; api.start(); },
+                    error: function() { console.error('Olive Ridley Error'); },
+                    autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, ui_watermark: 0
+                });
+            }
         }
-    };
 
-    const cameraCoordinatesHawksbill = {
-        'Head': { position: [0.7, -0.13, 0.12], target: [0.1, 0.0, 0.0] },
-        'Eye': { position: [0.7, -0.13, 0.12], target: [0.15, 0.05, 0.0] },
-        'Carapace': { position: [0.0, 0.1, 1.1], target: [0.0, 0.0, 0.0] },
-        'Tail': { position: [-1.1, 0.3, 0.0], target: [-0.3, 0.0, 0.0] },
-        'Plastron': { position: [0.0, 0.0, -0.7], target: [0.0, 0.0, 0.0] },
-        'Flipper': { position: [0.5, -0.2, 0.7], target: [0.2, -0.1, 0.1] }
-    };
+        window.activatePart = function(partName, element) {
+            if (greenTurtleApi && cameraCoordinatesGreen[partName]) {
+                const coords = cameraCoordinatesGreen[partName];
+                greenTurtleApi.setCameraLookAt(coords.position, coords.target, 2.0);
+            }
+            document.querySelectorAll('.anatomy-menu-item').forEach(item => item.classList.remove('active'));
+            if (element) element.classList.add('active');
+            const descriptionText = document.getElementById('description-text');
+            if (descriptionText && partDescriptions[partName]) descriptionText.textContent = partDescriptions[partName];
+        };
 
-    const cameraCoordinatesOlive = {
-        'Head': { position: [0.5, -0.45, 0.25], target: [0.15, 0.0, 0.0] },
-        'Eye': { position: [0.6, -0.45, 0.12], target: [0.15, 0.05, 0.0] },
-        'Carapace': { position: [0.0, 0.05, 1.0], target: [0.0, 0.0, 0.0] },
-        'Tail': { position: [-1.2, 0.3, 0.0], target: [-0.3, 0.0, 0.0] },
-        'Plastron': { position: [0.0, 0.0, -0.7], target: [0.0, 0.0, 0.0] },
-        'Flipper': { position: [0.6, -0.3, 0.6], target: [0.2, -0.2, 0.1] }
-    };
+        window.activatePartHawksbill = function(partName, element) {
+            if (hawksbillTurtleApi && cameraCoordinatesHawksbill[partName]) {
+                const coords = cameraCoordinatesHawksbill[partName];
+                hawksbillTurtleApi.setCameraLookAt(coords.position, coords.target, 2.0);
+            }
+            const menuItems = element.closest('.anatomy-menu').querySelectorAll('.anatomy-menu-item');
+            menuItems.forEach(item => item.classList.remove('active'));
+            if (element) element.classList.add('active');
+            const descriptionText = document.getElementById('description-text-hawksbill');
+            if (descriptionText && partDescriptionsHawksbill[partName]) descriptionText.textContent = partDescriptionsHawksbill[partName];
+        };
 
-    const partDescriptions = {
-        'Head': 'The rounded, blunt head houses the brain and sensory organs with powerful jaws adapted for herbivorous feeding, excellent underwater vision, and the ability to detect Earth\'s magnetic field for navigation to Dahican\'s nesting beaches.',
-        'Eye': 'Large eyes with special salt glands provide color vision both underwater and on land, helping green sea turtles navigate Dahican\'s waters while removing excess salt from seawater.',
-        'Carapace': 'The smooth, heart-shaped upper shell is typically olive to brown with radiating patterns, made of bone covered by keratin scutes, measuring 3-4 feet in length and providing protection from predators.',
-        'Tail': 'The relatively short tail aids in steering while swimming and is notably longer and thicker in males (extending beyond the carapace) for use during mating, serving as a key identifier of gender.',
-        'Plastron': 'The yellowish-white lower shell provides crucial underside protection, is slightly concave in males and flat in females, and connects to the carapace by a bridge to create a protective box for vital organs.',
-        'Flipper': 'The long, paddle-like front flippers are the primary means of propulsion enabling speeds up to 35 mph, each featuring a single claw used for feeding and climbing onto Dahican\'s beaches during nesting season.'
-    };
+        window.activatePartOlive = function(partName, element) {
+            if (oliveRidleyApi && cameraCoordinatesOlive[partName]) {
+                const coords = cameraCoordinatesOlive[partName];
+                oliveRidleyApi.setCameraLookAt(coords.position, coords.target, 2.0);
+            }
+            const menuItems = element.closest('.anatomy-menu').querySelectorAll('.anatomy-menu-item');
+            menuItems.forEach(item => item.classList.remove('active'));
+            if (element) element.classList.add('active');
+            const descriptionText = document.getElementById('description-text-olive');
+            if (descriptionText && partDescriptionsOlive[partName]) descriptionText.textContent = partDescriptionsOlive[partName];
+        };
 
-
-
-    // Initialize Sketchfab API
-    document.addEventListener('DOMContentLoaded', function() {
-        const iframe = document.getElementById('green-turtle-iframe');
-        if (iframe) {
-            const client = new Sketchfab(iframe);
-            
-            client.init('422f77a6fba64e7e8969984e552f111a', {
-                success: function(api) {
-                    greenTurtleApi = api;
-                    api.start();
-                    api.addEventListener('viewerready', function() {
-                        console.log('Green Turtle Viewer Ready');
-                    });
-                },
-                error: function() { console.error('Sketchfab API error'); },
-                autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, 
-                ui_inspector: 0, ui_stop: 0, ui_watermark: 0
-            });
-        }
-    });
-
-
-
-    function activatePart(partName, element) {
-        // 1. Camera Animation
-        // 1. Camera Animation
-        if (greenTurtleApi && cameraCoordinatesGreen[partName]) {
-            const coords = cameraCoordinatesGreen[partName];
-            greenTurtleApi.setCameraLookAt(coords.position, coords.target, 2.0);
-        }
-
-        // 2. UI Updates (Menu Active State)
-        document.querySelectorAll('.anatomy-menu-item').forEach(item => {
-            item.classList.remove('active');
+        // Turbo Load Listener
+        document.addEventListener('turbo:load', function() {
+            if (document.getElementById('green-turtle-iframe')) {
+                initExplorers();
+            }
         });
-        if (element) {
-            element.classList.add('active');
-        }
-
-        // 3. Update Description Display
-        const descriptionText = document.getElementById('description-text');
-        if (descriptionText && partDescriptions[partName]) {
-            descriptionText.textContent = partDescriptions[partName];
-        }
-    }
-
-
-
-
-    // ========================================
-    // HAWKSBILL TURTLE
-    // ========================================
-    let hawksbillTurtleApi = null;
-
-    const partDescriptionsHawksbill = {
-        'Head': 'The narrow, pointed head features a distinctive hawk-like beak perfectly adapted for reaching into crevices to feed on sponges, with excellent vision for navigating complex coral reef environments in Dahican waters.',
-        'Eye': 'Sharp eyes with protective eyelids and salt-excreting glands enable the Hawksbill to hunt for sponges in reef crevices while efficiently removing excess salt from their specialized diet.',
-        'Carapace': 'The beautiful amber and brown patterned shell features overlapping scutes creating the prized "tortoiseshell" appearance, measuring 2-3 feet in length with serrated rear edges for protection.',
-        'Tail': 'The short tail is proportionally smaller than other species, with males having longer tails extending beyond the carapace for reproduction, also aiding in precise maneuvering through coral formations.',
-        'Plastron': 'The pale yellow plastron provides underside protection and is slightly concave in males for mating, connected to the ornate carapace by a flexible bridge allowing some movement.',
-        'Flipper': 'Two claws on each front flipper distinguish Hawksbills from other species, providing excellent grip for climbing rocky surfaces and manipulating sponges during feeding in Dahican\'s coral reefs.'
-    };
-
-
-
-    // Initialize Hawksbill Sketchfab API
-    document.addEventListener('DOMContentLoaded', function() {
-        const hawksbillIframe = document.getElementById('hawksbill-turtle-iframe');
-        if (hawksbillIframe) {
-            const client = new Sketchfab(hawksbillIframe);
-            client.init('0c0316cbed524374ab219f6d94b105c9', {
-                success: function(api) {
-                    hawksbillTurtleApi = api;
-                    api.start();
-                    api.addEventListener('viewerready', function() {
-                        console.log('Hawksbill Turtle Viewer Ready');
-                    });
-                },
-                error: function() { console.error('Hawksbill Sketchfab API error'); },
-                autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, 
-                ui_inspector: 0, ui_stop: 0, ui_watermark: 0
-            });
-        }
-    });
-
-    function activatePartHawksbill(partName, element) {
-        if (hawksbillTurtleApi && cameraCoordinatesHawksbill[partName]) {
-            const coords = cameraCoordinatesHawksbill[partName];
-            hawksbillTurtleApi.setCameraLookAt(coords.position, coords.target, 2.0);
-        }
-
-        const menuItems = element.closest('.anatomy-menu').querySelectorAll('.anatomy-menu-item');
-        menuItems.forEach(item => item.classList.remove('active'));
-        if (element) {
-            element.classList.add('active');
-        }
-
-        // Update Description Display
-        const descriptionText = document.getElementById('description-text-hawksbill');
-        if (descriptionText && partDescriptionsHawksbill[partName]) {
-            descriptionText.textContent = partDescriptionsHawksbill[partName];
-        }
-    }
-
-
-
-
-    // ========================================
-    // OLIVE RIDLEY TURTLE
-    // ========================================
-    let oliveRidleyApi = null;
-
-    const partDescriptionsOlive = {
-        'Head': 'The rounded head is proportionally large for their small body size, equipped with powerful jaws for their omnivorous diet and excellent sensory capabilities for detecting prey and navigating to Dahican\'s nesting beaches during arribadas.',
-        'Eye': 'Large, expressive eyes with specialized glands efficiently remove salt while providing keen vision for hunting diverse prey including jellyfish, crabs, and fish in Dahican\'s coastal waters.',
-        'Carapace': 'The distinctive olive-green heart-shaped shell measures 2-2.5 feet with 5-9 pairs of costal scutes (more than other species), providing lightweight protection perfect for their active lifestyle and mass nesting events.',
-        'Tail': 'The relatively short tail serves multiple functions in swimming agility and reproduction, with males having noticeably longer tails for mating during the spectacular arribada nesting events at Dahican.',
-        'Plastron': 'The yellowish plastron is flat in females and slightly concave in males, providing essential protection while being lightweight enough for the smallest sea turtle species to navigate efficiently.',
-        'Flipper': 'Compact, paddle-shaped flippers with typically one or two claws enable both powerful swimming for long migrations and precise digging during arribadas when thousands nest simultaneously on Dahican beaches.'
-    };
-
-
-
-    // Initialize Olive Ridley Sketchfab API
-    document.addEventListener('DOMContentLoaded', function() {
-        const oliveIframe = document.getElementById('olive-ridley-iframe');
-        if (oliveIframe) {
-            const client = new Sketchfab(oliveIframe);
-            client.init('acbe292c128246ed8e532bfd9e646a03', {
-                success: function(api) {
-                    oliveRidleyApi = api;
-                    api.start();
-                    api.addEventListener('viewerready', function() {
-                        console.log('Olive Ridley Viewer Ready');
-                    });
-                },
-                error: function() { console.error('Olive Ridley Sketchfab API error'); },
-                autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, 
-                ui_inspector: 0, ui_stop: 0, ui_watermark: 0
-            });
-        }
-    });
-
-    function activatePartOlive(partName, element) {
-        if (oliveRidleyApi && cameraCoordinatesOlive[partName]) {
-            const coords = cameraCoordinatesOlive[partName];
-            oliveRidleyApi.setCameraLookAt(coords.position, coords.target, 2.0);
-        }
-
-        const menuItems = element.closest('.anatomy-menu').querySelectorAll('.anatomy-menu-item');
-        menuItems.forEach(item => item.classList.remove('active'));
-        if (element) {
-            element.classList.add('active');
-        }
-
-        // Update Description Display
-        const descriptionText = document.getElementById('description-text-olive');
-        if (descriptionText && partDescriptionsOlive[partName]) {
-            descriptionText.textContent = partDescriptionsOlive[partName];
-        }
-    }
+    })();
+</script>
 
 
 

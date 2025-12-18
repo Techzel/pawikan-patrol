@@ -2,73 +2,75 @@
 
 @php
 // Helper function to get rank badge information
-function getRankBadge($rank) {
-    if (!$rank) return null;
-    
-    if ($rank == 1) {
-        return [
-            'title' => 'Champion',
-            'icon' => '👑',
-            'class' => 'bg-gradient-to-r from-yellow-500/30 to-yellow-600/30 border-2 border-yellow-500/50 text-yellow-400',
-            'text_class' => 'text-yellow-400',
-            'description' => 'The ultimate champion!'
-        ];
-    } elseif ($rank <= 3) {
-        return [
-            'title' => 'Elite',
-            'icon' => '🥈',
-            'class' => 'bg-gradient-to-r from-gray-300/30 to-gray-400/30 border-2 border-gray-400/50 text-gray-300',
-            'text_class' => 'text-gray-300',
-            'description' => 'Among the elite players!'
-        ];
-    } elseif ($rank <= 10) {
-        return [
-            'title' => 'Master',
-            'icon' => '🥉',
-            'class' => 'bg-gradient-to-r from-orange-600/30 to-orange-700/30 border-2 border-orange-600/50 text-orange-400',
-            'text_class' => 'text-orange-400',
-            'description' => 'Master player status!'
-        ];
-    } elseif ($rank <= 25) {
-        return [
-            'title' => 'Expert',
-            'icon' => '⭐',
-            'class' => 'bg-gradient-to-r from-blue-500/30 to-blue-600/30 border-2 border-blue-500/50 text-blue-400',
-            'text_class' => 'text-blue-400',
-            'description' => 'Expert level achieved!'
-        ];
-    } elseif ($rank <= 50) {
-        return [
-            'title' => 'Advanced',
-            'icon' => '🎯',
-            'class' => 'bg-gradient-to-r from-green-500/30 to-green-600/30 border-2 border-green-500/50 text-green-400',
-            'text_class' => 'text-green-400',
-            'description' => 'Advanced player!'
-        ];
-    } elseif ($rank <= 100) {
-        return [
-            'title' => 'Skilled',
-            'icon' => '🔥',
-            'class' => 'bg-gradient-to-r from-purple-500/30 to-purple-600/30 border-2 border-purple-500/50 text-purple-400',
-            'text_class' => 'text-purple-400',
-            'description' => 'Skilled performer!'
-        ];
-    } elseif ($rank <= 250) {
-        return [
-            'title' => 'Rising',
-            'icon' => '💪',
-            'class' => 'bg-gradient-to-r from-cyan-500/30 to-cyan-600/30 border-2 border-cyan-500/50 text-cyan-400',
-            'text_class' => 'text-cyan-400',
-            'description' => 'Rising star!'
-        ];
-    } else {
-        return [
-            'title' => 'Player',
-            'icon' => '🌟',
-            'class' => 'bg-gradient-to-r from-indigo-500/30 to-indigo-600/30 border-2 border-indigo-500/50 text-indigo-400',
-            'text_class' => 'text-indigo-400',
-            'description' => 'Keep playing and climbing!'
-        ];
+if (!function_exists('getRankBadge')) {
+    function getRankBadge($rank) {
+        if (!$rank) return null;
+        
+        if ($rank == 1) {
+            return [
+                'title' => 'Champion',
+                'icon' => '👑',
+                'class' => 'bg-gradient-to-r from-yellow-500/30 to-yellow-600/30 border-2 border-yellow-500/50 text-yellow-400',
+                'text_class' => 'text-yellow-400',
+                'description' => 'The ultimate champion!'
+            ];
+        } elseif ($rank <= 3) {
+            return [
+                'title' => 'Elite',
+                'icon' => '🥈',
+                'class' => 'bg-gradient-to-r from-gray-300/30 to-gray-400/30 border-2 border-gray-400/50 text-gray-300',
+                'text_class' => 'text-gray-300',
+                'description' => 'Among the elite players!'
+            ];
+        } elseif ($rank <= 10) {
+            return [
+                'title' => 'Master',
+                'icon' => '🥉',
+                'class' => 'bg-gradient-to-r from-orange-600/30 to-orange-700/30 border-2 border-orange-600/50 text-orange-400',
+                'text_class' => 'text-orange-400',
+                'description' => 'Master player status!'
+            ];
+        } elseif ($rank <= 25) {
+            return [
+                'title' => 'Expert',
+                'icon' => '⭐',
+                'class' => 'bg-gradient-to-r from-blue-500/30 to-blue-600/30 border-2 border-blue-500/50 text-blue-400',
+                'text_class' => 'text-blue-400',
+                'description' => 'Expert level achieved!'
+            ];
+        } elseif ($rank <= 50) {
+            return [
+                'title' => 'Advanced',
+                'icon' => '🎯',
+                'class' => 'bg-gradient-to-r from-green-500/30 to-green-600/30 border-2 border-green-500/50 text-green-400',
+                'text_class' => 'text-green-400',
+                'description' => 'Advanced player!'
+            ];
+        } elseif ($rank <= 100) {
+            return [
+                'title' => 'Skilled',
+                'icon' => '🔥',
+                'class' => 'bg-gradient-to-r from-purple-500/30 to-purple-600/30 border-2 border-purple-500/50 text-purple-400',
+                'text_class' => 'text-purple-400',
+                'description' => 'Skilled performer!'
+            ];
+        } elseif ($rank <= 250) {
+            return [
+                'title' => 'Rising',
+                'icon' => '💪',
+                'class' => 'bg-gradient-to-r from-cyan-500/30 to-cyan-600/30 border-2 border-cyan-500/50 text-cyan-400',
+                'text_class' => 'text-cyan-400',
+                'description' => 'Rising star!'
+            ];
+        } else {
+            return [
+                'title' => 'Player',
+                'icon' => '🌟',
+                'class' => 'bg-gradient-to-r from-indigo-500/30 to-indigo-600/30 border-2 border-indigo-500/50 text-indigo-400',
+                'text_class' => 'text-indigo-400',
+                'description' => 'Keep playing and climbing!'
+            ];
+        }
     }
 }
 @endphp
@@ -688,590 +690,373 @@ function getRankBadge($rank) {
     </div>
 </div>
 
+@push('scripts')
 <script>
-// Profile edit toggle functionality
-document.getElementById('editProfileBtn').addEventListener('click', function() {
-    document.getElementById('profileDisplay').style.display = 'none';
-    document.getElementById('profileEditForm').style.display = 'block';
-    this.style.display = 'none';
-});
+(function() {
+    let leaderboardUpdateInterval;
+    let currentLeaderboardData = {
+        overall: [],
+        quiz: [],
+        word_scramble: []
+    };
 
-document.getElementById('cancelEditBtn').addEventListener('click', function() {
-    document.getElementById('profileDisplay').style.display = 'grid';
-    document.getElementById('profileEditForm').style.display = 'none';
-    document.getElementById('editProfileBtn').style.display = 'inline-block';
-});
-
-// Profile picture upload
-function submitProfilePictureForm(input) {
-    if (input.files && input.files[0]) {
-        document.getElementById('profilePictureLoading').style.display = 'flex';
-        document.getElementById('profilePictureForm').submit();
-    }
-}
-
-// Password visibility toggle
-function togglePassword(fieldId) {
-    const field = document.getElementById(fieldId);
-    const eye = document.getElementById(fieldId + '-eye');
-    
-    if (field.type === 'password') {
-        field.type = 'text';
-        eye.classList.remove('fa-eye');
-        eye.classList.add('fa-eye-slash');
-    } else {
-        field.type = 'password';
-        eye.classList.remove('fa-eye-slash');
-        eye.classList.add('fa-eye');
-    }
-}
-
-// Function to update user statistics display
-function updateUserStats(stats) {
-    if (!stats || typeof stats !== 'object') return;
-    
-    // Update total score
-
-    
-    // Update total games played
-    const totalGamesElements = document.querySelectorAll('[data-stat="total-games"]');
-    totalGamesElements.forEach(element => {
-        element.textContent = stats.total_games || 0;
-    });
-
-    // Update Memory Match stats
-    if (stats.memory_match) {
-        document.querySelectorAll('[data-stat="memory-games"]').forEach(el => {
-            el.textContent = stats.memory_match.games;
-        });
-        document.querySelectorAll('[data-stat="memory-best-time"]').forEach(el => {
-            const time = stats.memory_match.best_time;
-            if (time > 0) {
-                const minutes = Math.floor(time / 60).toString().padStart(2, '0');
-                const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
-                el.textContent = `${minutes}:${seconds}`;
+    window.togglePassword = function(fieldId) {
+        const field = document.getElementById(fieldId);
+        const eye = document.getElementById(fieldId + '-eye');
+        if (field && eye) {
+            if (field.type === 'password') {
+                field.type = 'text';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
             } else {
-                el.textContent = '--';
-            }
-        });
-    }
-
-    // Update Puzzle stats
-    if (stats.puzzle) {
-        document.querySelectorAll('[data-stat="puzzle-games"]').forEach(el => {
-            el.textContent = stats.puzzle.games;
-        });
-        document.querySelectorAll('[data-stat="puzzle-best-time"]').forEach(el => {
-            const time = stats.puzzle.best_time;
-            if (time > 0) {
-                const minutes = Math.floor(time / 60).toString().padStart(2, '0');
-                const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
-                el.textContent = `${minutes}:${seconds}`;
-            } else {
-                el.textContent = '--';
-            }
-        });
-    }
-
-    // Update Find the Pawikan stats
-    if (stats.find_the_pawikan) {
-        document.querySelectorAll('[data-stat="find-games"]').forEach(el => {
-            el.textContent = stats.find_the_pawikan.games;
-        });
-        document.querySelectorAll('[data-stat="find-best-time"]').forEach(el => {
-            const time = stats.find_the_pawikan.best_time;
-            if (time > 0) {
-                const minutes = Math.floor(time / 60).toString().padStart(2, '0');
-                const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
-                el.textContent = `${minutes}:${seconds}`;
-            } else {
-                el.textContent = '--';
-            }
-        });
-    }
-}
-
-// Listen for custom events from game activity updates
-document.addEventListener('userStatsUpdated', function(event) {
-    updateUserStats(event.detail);
-});
-
-// Listen for game completion events to update stats immediately
-window.addEventListener('gameCompleted', async function(event) {
-    console.log('Game completed, refreshing stats...', event.detail);
-    
-    // Fetch fresh statistics from the server
-    try {
-        const response = await fetch('/game-activities/statistics', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-            }
-        });
-        
-        if (response.ok) {
-            const stats = await response.json();
-            updateUserStats(stats);
-            
-            // Show a subtle notification
-            const notification = document.createElement('div');
-            notification.className = 'fixed bottom-4 right-4 bg-green-500/20 text-green-400 px-4 py-3 rounded-lg border border-green-500/30 z-50 flex items-center gap-2 shadow-lg animate-fade-in';
-            notification.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span class="text-sm font-medium">Profile updated!</span>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Remove notification after 3 seconds
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateY(20px)';
-                notification.style.transition = 'all 0.3s ease';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
-        }
-    } catch (error) {
-        console.error('Error fetching updated stats:', error);
-    }
-});
-
-// Auto-refresh statistics every 30 seconds
-setInterval(async function() {
-    try {
-        // Check if gameActivity is available and DOM elements exist
-        if (typeof gameActivity !== 'undefined' && 
-            document.querySelector('[data-stat="total-score"]') && 
-            document.querySelector('[data-stat="total-games"]')) {
-            const stats = await gameActivity.getStatistics();
-            if (stats.success && stats.data) {
-                updateUserStats(stats.data);
+                field.type = 'password';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
             }
         }
-    } catch (error) {
-        console.log('Auto-refresh stats failed:', error);
-    }
-}, 30000);
+    };
 
-// Leaderboard tab switching functionality
-function showLeaderboardTab(tabName) {
-    // Hide all leaderboard content
-    document.querySelectorAll('.leaderboard-content').forEach(content => {
-        content.classList.add('hidden');
-    });
-    
-    // Remove active class from all tabs
-    document.querySelectorAll('.leaderboard-tab').forEach(tab => {
-        tab.classList.remove('active', 'bg-ocean-500/20', 'text-ocean-400');
-        tab.classList.add('text-gray-400', 'hover:text-white');
-    });
-    
-    // Show selected leaderboard content
-    document.getElementById(tabName + '-leaderboard').classList.remove('hidden');
-    
-    // Add active class to selected tab
-    const activeTab = document.getElementById(tabName + '-tab');
-    activeTab.classList.add('active', 'bg-ocean-500/20', 'text-ocean-400');
-    activeTab.classList.remove('text-gray-400', 'hover:text-white');
-    
-    // Add animation effect
-    const leaderboardContent = document.getElementById(tabName + '-leaderboard');
-    leaderboardContent.style.opacity = '0';
-    leaderboardContent.style.transform = 'translateY(10px)';
-    
-    setTimeout(() => {
-        leaderboardContent.style.transition = 'all 0.3s ease';
-        leaderboardContent.style.opacity = '1';
-        leaderboardContent.style.transform = 'translateY(0)';
-    }, 50);
-}
+    window.submitProfilePictureForm = function(input) {
+        if (input.files && input.files[0]) {
+            document.getElementById('profilePictureLoading').style.display = 'flex';
+            document.getElementById('profilePictureForm').submit();
+        }
+    };
 
-// Initialize leaderboard tabs styling
-document.addEventListener('DOMContentLoaded', function() {
-    // Set initial styles for all tabs
-    document.querySelectorAll('.leaderboard-tab').forEach(tab => {
-        if (!tab.classList.contains('active')) {
+    window.updateUserStats = function(stats) {
+        if (!stats || typeof stats !== 'object') return;
+        const totalGamesElements = document.querySelectorAll('[data-stat="total-games"]');
+        totalGamesElements.forEach(element => {
+            element.textContent = stats.total_games || 0;
+        });
+
+        if (stats.memory_match) {
+            document.querySelectorAll('[data-stat="memory-games"]').forEach(el => el.textContent = stats.memory_match.games);
+            document.querySelectorAll('[data-stat="memory-best-time"]').forEach(el => {
+                const time = stats.memory_match.best_time;
+                if (time > 0) {
+                    const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+                    const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
+                    el.textContent = `${minutes}:${seconds}`;
+                } else {
+                    el.textContent = '--';
+                }
+            });
+        }
+
+        if (stats.puzzle) {
+            document.querySelectorAll('[data-stat="puzzle-games"]').forEach(el => el.textContent = stats.puzzle.games);
+            document.querySelectorAll('[data-stat="puzzle-best-time"]').forEach(el => {
+                const time = stats.puzzle.best_time;
+                if (time > 0) {
+                    const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+                    const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
+                    el.textContent = `${minutes}:${seconds}`;
+                } else {
+                    el.textContent = '--';
+                }
+            });
+        }
+
+        if (stats.find_the_pawikan) {
+            document.querySelectorAll('[data-stat="find-games"]').forEach(el => el.textContent = stats.find_the_pawikan.games);
+            document.querySelectorAll('[data-stat="find-best-time"]').forEach(el => {
+                const time = stats.find_the_pawikan.best_time;
+                if (time > 0) {
+                    const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+                    const seconds = (Math.round(time) % 60).toString().padStart(2, '0');
+                    el.textContent = `${minutes}:${seconds}`;
+                } else {
+                    el.textContent = '--';
+                }
+            });
+        }
+    };
+
+    window.showLeaderboardTab = function(tabName) {
+        document.querySelectorAll('.leaderboard-content').forEach(content => content.classList.add('hidden'));
+        document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+            tab.classList.remove('active', 'bg-ocean-500/20', 'text-ocean-400');
             tab.classList.add('text-gray-400', 'hover:text-white');
-        } else {
-            tab.classList.add('bg-ocean-500/20', 'text-ocean-400');
-        }
-    });
-});
-
-// Leaderboard filtering and sorting functions
-function applyLeaderboardFilter() {
-    const filter = document.getElementById('leaderboard-filter').value;
-    const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
-    
-    // Show loading state
-    showLeaderboardLoading(activeTab);
-    
-    // Simulate filtering (in real app, this would be an API call)
-    setTimeout(() => {
-        console.log('Applying filter:', filter, 'for tab:', activeTab);
-        hideLeaderboardLoading(activeTab);
-        showNotification('Filter applied: ' + getFilterLabel(filter), 'info');
-    }, 500);
-}
-
-function applyLeaderboardSort() {
-    const sort = document.getElementById('leaderboard-sort').value;
-    const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
-    
-    // Show loading state
-    showLeaderboardLoading(activeTab);
-    
-    // Simulate sorting (in real app, this would be an API call)
-    setTimeout(() => {
-        console.log('Applying sort:', sort, 'for tab:', activeTab);
-        hideLeaderboardLoading(activeTab);
-        showNotification('Sorted by: ' + getSortLabel(sort), 'info');
-    }, 500);
-}
-
-function applyLeaderboardTimeFilter() {
-    const time = document.getElementById('leaderboard-time').value;
-    const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
-    
-    // Show loading state
-    showLeaderboardLoading(activeTab);
-    
-    // Simulate time filtering (in real app, this would be an API call)
-    setTimeout(() => {
-        console.log('Applying time filter:', time, 'for tab:', activeTab);
-        hideLeaderboardLoading(activeTab);
-        showNotification('Time filter: ' + getTimeLabel(time), 'info');
-    }, 500);
-}
-
-function refreshLeaderboard() {
-    const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
-    const refreshButton = document.querySelector('button[onclick="refreshLeaderboard()"]');
-    const refreshIcon = refreshButton.querySelector('i');
-    
-    // Show loading state
-    refreshIcon.classList.add('animate-spin');
-    refreshButton.disabled = true;
-    showLeaderboardLoading(activeTab);
-    
-    // Simulate refresh (in real app, this would be an API call)
-    setTimeout(() => {
-        refreshIcon.classList.remove('animate-spin');
-        refreshButton.disabled = false;
-        hideLeaderboardLoading(activeTab);
-        showNotification('Leaderboard refreshed successfully!', 'success');
-        
-        // Add a subtle animation to indicate refresh
-        const leaderboardContent = document.getElementById(activeTab + '-leaderboard');
-        leaderboardContent.style.transform = 'scale(0.98)';
-        setTimeout(() => {
-            leaderboardContent.style.transform = 'scale(1)';
-        }, 200);
-    }, 1000);
-}
-
-function showLeaderboardLoading(tabName) {
-    const leaderboardContent = document.getElementById(tabName + '-leaderboard');
-    const existingOverlay = leaderboardContent.querySelector('.loading-overlay');
-    
-    if (!existingOverlay) {
-        const overlay = document.createElement('div');
-        overlay.className = 'loading-overlay absolute inset-0 bg-deep-900/50 flex items-center justify-center rounded-lg z-10';
-        overlay.innerHTML = `
-            <div class="flex items-center gap-3 text-white">
-                <i class="fas fa-spinner animate-spin text-xl"></i>
-                <span class="text-sm font-medium">Loading...</span>
-            </div>
-        `;
-        leaderboardContent.style.position = 'relative';
-        leaderboardContent.appendChild(overlay);
-    }
-}
-
-function hideLeaderboardLoading(tabName) {
-    const leaderboardContent = document.getElementById(tabName + '-leaderboard');
-    const overlay = leaderboardContent.querySelector('.loading-overlay');
-    
-    if (overlay) {
-        overlay.remove();
-    }
-}
-
-function getFilterLabel(filter) {
-    const labels = {
-        'all': 'All Players',
-        'friends': 'Friends',
-        'recent': 'Recent Players'
-    };
-    return labels[filter] || filter;
-}
-
-function getSortLabel(sort) {
-    const labels = {
-        'score': 'Score',
-        'accuracy': 'Accuracy',
-        'games': 'Games Played',
-        'recent': 'Most Recent'
-    };
-    return labels[sort] || sort;
-}
-
-function getTimeLabel(time) {
-    const labels = {
-        'all': 'All Time',
-        'month': 'This Month',
-        'week': 'This Week',
-        'today': 'Today'
-    };
-    return labels[time] || time;
-}
-
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    const bgColor = type === 'success' ? 'bg-green-500/20' : type === 'error' ? 'bg-red-500/20' : 'bg-ocean-500/20';
-    const textColor = type === 'success' ? 'text-green-400' : type === 'error' ? 'text-red-400' : 'text-ocean-400';
-    const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
-    
-    notification.className = `fixed top-4 right-4 ${bgColor} ${textColor} px-4 py-3 rounded-lg border border-current/30 z-50 flex items-center gap-2 shadow-lg`;
-    notification.innerHTML = `
-        <i class="fas ${icon}"></i>
-        <span class="text-sm font-medium">${message}</span>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Animate in
-    notification.style.transform = 'translateX(100%)';
-    notification.style.transition = 'transform 0.3s ease';
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 10);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// Real-time leaderboard updates
-let leaderboardUpdateInterval;
-let currentLeaderboardData = {
-    overall: [],
-    quiz: [],
-    word_scramble: []
-};
-
-// Initialize real-time updates
-function initializeRealTimeUpdates() {
-    // Update leaderboards every 30 seconds
-    leaderboardUpdateInterval = setInterval(() => {
-        updateAllLeaderboards();
-    }, 30000);
-    
-    // Initial update
-    updateAllLeaderboards();
-    
-    // Add visibility change listener to pause updates when tab is not visible
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            clearInterval(leaderboardUpdateInterval);
-        } else {
-            initializeRealTimeUpdates();
-        }
-    });
-}
-
-// Update all leaderboards with real-time data
-function updateAllLeaderboards() {
-    const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
-    
-    // Simulate API calls to get updated leaderboard data
-    ['overall', 'quiz', 'word_scramble'].forEach(type => {
-        simulateLeaderboardUpdate(type);
-    });
-}
-
-// Simulate leaderboard update (in real app, this would fetch from API)
-function simulateLeaderboardUpdate(type) {
-    // Show subtle loading indicator
-    const liveIndicator = document.querySelector('.fa-sync-alt.animate-spin');
-    if (liveIndicator) {
-        liveIndicator.style.opacity = '0.7';
-    }
-    
-    setTimeout(() => {
-        // Simulate data changes
-        const leaderboardElement = document.getElementById(`${type}-leaderboard-list`);
-        if (leaderboardElement) {
-            // Add subtle animation to indicate update
-            leaderboardElement.style.transition = 'opacity 0.3s ease';
-            leaderboardElement.style.opacity = '0.8';
-            
-            setTimeout(() => {
-                leaderboardElement.style.opacity = '1';
-                
-                // Add rank change animations if positions changed
-                animateRankChanges(type);
-            }, 300);
-        }
-        
-        if (liveIndicator) {
-            liveIndicator.style.opacity = '1';
-        }
-    }, 1000);
-}
-
-// Animate rank changes in leaderboards
-function animateRankChanges(type) {
-    const leaderboardItems = document.querySelectorAll(`#${type}-leaderboard .leaderboard-content > div:last-child > div`);
-    
-    leaderboardItems.forEach((item, index) => {
-        // Add subtle pulse animation to rank badges
-        const rankBadge = item.querySelector('.rounded-full');
-        if (rankBadge && Math.random() > 0.7) { // Random chance for animation
-            rankBadge.style.transition = 'transform 0.5s ease';
-            rankBadge.style.transform = 'scale(1.1)';
-            setTimeout(() => {
-                rankBadge.style.transform = 'scale(1)';
-            }, 500);
-        }
-        
-        // Add score update animation
-        const scoreElement = item.querySelector('.text-green-400');
-        if (scoreElement && Math.random() > 0.8) { // Random chance for animation
-            const originalScore = scoreElement.textContent;
-            scoreElement.style.transition = 'color 0.3s ease';
-            scoreElement.style.color = '#fbbf24'; // Yellow for update
-            setTimeout(() => {
-                scoreElement.style.color = '#4ade80'; // Back to green
-            }, 1000);
-        }
-    });
-}
-
-// Enhanced leaderboard entry animations
-function animateLeaderboardEntry(entry, delay = 0) {
-    entry.style.opacity = '0';
-    entry.style.transform = 'translateX(-20px)';
-    entry.style.transition = 'all 0.4s ease';
-    
-    setTimeout(() => {
-        entry.style.opacity = '1';
-        entry.style.transform = 'translateX(0)';
-    }, delay);
-}
-
-// Add hover effects and micro-interactions
-function enhanceLeaderboardInteractions() {
-    const leaderboardEntries = document.querySelectorAll('.leaderboard-content > div:last-child > div');
-    
-    leaderboardEntries.forEach((entry, index) => {
-        // Add staggered entrance animation
-        animateLeaderboardEntry(entry, index * 50);
-        
-        // Enhanced hover effects
-        entry.addEventListener('mouseenter', () => {
-            entry.style.transform = 'translateX(4px)';
-            entry.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.2)';
         });
         
-        entry.addEventListener('mouseleave', () => {
-            entry.style.transform = 'translateX(0)';
-            entry.style.boxShadow = 'none';
-        });
+        const content = document.getElementById(tabName + '-leaderboard');
+        if (content) {
+            content.classList.remove('hidden');
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                content.style.transition = 'all 0.3s ease';
+                content.style.opacity = '1';
+                content.style.transform = 'translateY(0)';
+            }, 50);
+        }
         
-        // Add click ripple effect
-        entry.addEventListener('click', (e) => {
-            const ripple = document.createElement('div');
-            ripple.className = 'absolute inset-0 bg-white/10 rounded-lg pointer-events-none';
-            ripple.style.opacity = '0';
-            ripple.style.transform = 'scale(0.8)';
-            ripple.style.transition = 'all 0.3s ease';
-            
-            entry.style.position = 'relative';
-            entry.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.style.opacity = '1';
-                ripple.style.transform = 'scale(1)';
-            }, 10);
-            
-            setTimeout(() => {
-                ripple.style.opacity = '0';
-                ripple.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    if (ripple.parentNode) {
-                        ripple.parentNode.removeChild(ripple);
-                    }
-                }, 300);
-            }, 200);
-        });
-    });
-}
-
-// Initialize enhanced interactions when tabs are switched
-function initializeEnhancedInteractions() {
-    // Initialize for active tab
-    const activeTab = document.querySelector('.leaderboard-tab.active');
-    if (activeTab) {
-        const tabName = activeTab.id.replace('-tab', '');
+        const activeTab = document.getElementById(tabName + '-tab');
+        if (activeTab) {
+            activeTab.classList.add('active', 'bg-ocean-500/20', 'text-ocean-400');
+            activeTab.classList.remove('text-gray-400', 'hover:text-white');
+        }
+        
         setTimeout(() => {
             enhanceLeaderboardInteractions();
-        }, 100);
-    }
-}
+        }, 350);
+    };
 
-// Modify the existing showLeaderboardTab function to include enhanced interactions
-const originalShowLeaderboardTab = showLeaderboardTab;
-showLeaderboardTab = function(tabName) {
-    // Call original function
-    originalShowLeaderboardTab(tabName);
-    
-    // Add enhanced interactions after tab switch
-    setTimeout(() => {
-        enhanceLeaderboardInteractions();
-    }, 350);
-};
+    window.applyLeaderboardFilter = function() {
+        const filter = document.getElementById('leaderboard-filter').value;
+        const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
+        showLeaderboardLoading(activeTab);
+        setTimeout(() => {
+            hideLeaderboardLoading(activeTab);
+            showNotification('Filter applied: ' + getFilterLabel(filter), 'info');
+        }, 500);
+    };
 
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Set initial styles for all tabs
-    document.querySelectorAll('.leaderboard-tab').forEach(tab => {
-        if (!tab.classList.contains('active')) {
-            tab.classList.add('text-gray-400', 'hover:text-white');
-        } else {
-            tab.classList.add('bg-ocean-500/20', 'text-ocean-400');
+    window.applyLeaderboardSort = function() {
+        const sort = document.getElementById('leaderboard-sort').value;
+        const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
+        showLeaderboardLoading(activeTab);
+        setTimeout(() => {
+            hideLeaderboardLoading(activeTab);
+            showNotification('Sorted by: ' + getSortLabel(sort), 'info');
+        }, 500);
+    };
+
+    window.applyLeaderboardTimeFilter = function() {
+        const time = document.getElementById('leaderboard-time').value;
+        const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
+        showLeaderboardLoading(activeTab);
+        setTimeout(() => {
+            hideLeaderboardLoading(activeTab);
+            showNotification('Time filter: ' + getTimeLabel(time), 'info');
+        }, 500);
+    };
+
+    window.refreshLeaderboard = function() {
+        const activeTab = document.querySelector('.leaderboard-tab.active').id.replace('-tab', '');
+        const refreshButton = document.querySelector('button[onclick="refreshLeaderboard()"]');
+        const refreshIcon = refreshButton ? refreshButton.querySelector('i') : null;
+        
+        if (refreshIcon) refreshIcon.classList.add('animate-spin');
+        if (refreshButton) refreshButton.disabled = true;
+        showLeaderboardLoading(activeTab);
+        
+        setTimeout(() => {
+            if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+            if (refreshButton) refreshButton.disabled = false;
+            hideLeaderboardLoading(activeTab);
+            showNotification('Leaderboard refreshed successfully!', 'success');
+            const leaderboardContent = document.getElementById(activeTab + '-leaderboard');
+            if (leaderboardContent) {
+                leaderboardContent.style.transform = 'scale(0.98)';
+                setTimeout(() => leaderboardContent.style.transform = 'scale(1)', 200);
+            }
+        }, 1000);
+    };
+
+    function showLeaderboardLoading(tabName) {
+        const leaderboardContent = document.getElementById(tabName + '-leaderboard');
+        if (!leaderboardContent) return;
+        const existingOverlay = leaderboardContent.querySelector('.loading-overlay');
+        if (!existingOverlay) {
+            const overlay = document.createElement('div');
+            overlay.className = 'loading-overlay absolute inset-0 bg-deep-900/50 flex items-center justify-center rounded-lg z-10';
+            overlay.innerHTML = `<div class="flex items-center gap-3 text-white"><i class="fas fa-spinner animate-spin text-xl"></i><span class="text-sm font-medium">Loading...</span></div>`;
+            leaderboardContent.style.position = 'relative';
+            leaderboardContent.appendChild(overlay);
         }
-    });
-    
-    // Initialize real-time updates
-    initializeRealTimeUpdates();
-    
-    // Initialize enhanced interactions
-    initializeEnhancedInteractions();
-    
-    // Add periodic pulse animation to live indicator
-    const liveIndicator = document.querySelector('.fa-sync-alt.animate-spin');
-    if (liveIndicator) {
-        setInterval(() => {
-            liveIndicator.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                liveIndicator.style.transform = 'scale(1)';
-            }, 500);
-        }, 5000);
     }
-});
+
+    function hideLeaderboardLoading(tabName) {
+        const leaderboardContent = document.getElementById(tabName + '-leaderboard');
+        const overlay = leaderboardContent ? leaderboardContent.querySelector('.loading-overlay') : null;
+        if (overlay) overlay.remove();
+    }
+
+    function getFilterLabel(filter) {
+        const labels = { 'all': 'All Players', 'friends': 'Friends', 'recent': 'Recent Players' };
+        return labels[filter] || filter;
+    }
+
+    function getSortLabel(sort) {
+        const labels = { 'score': 'Score', 'accuracy': 'Accuracy', 'games': 'Games Played', 'recent': 'Most Recent' };
+        return labels[sort] || sort;
+    }
+
+    function getTimeLabel(time) {
+        const labels = { 'all': 'All Time', 'month': 'This Month', 'week': 'This Week', 'today': 'Today' };
+        return labels[time] || time;
+    }
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500/20' : type === 'error' ? 'bg-red-500/20' : 'bg-ocean-500/20';
+        const textColor = type === 'success' ? 'text-green-400' : type === 'error' ? 'text-red-400' : 'text-ocean-400';
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+        notification.className = `fixed top-24 right-4 ${bgColor} ${textColor} px-4 py-3 rounded-lg border border-current/30 z-[100] flex items-center gap-2 shadow-lg`;
+        notification.innerHTML = `<i class="fas ${icon}"></i><span class="text-sm font-medium">${message}</span>`;
+        document.body.appendChild(notification);
+        notification.style.transform = 'translateX(100%)';
+        notification.style.transition = 'transform 0.3s ease';
+        setTimeout(() => notification.style.transform = 'translateX(0)', 10);
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => { if (notification.parentNode) notification.parentNode.removeChild(notification); }, 300);
+        }, 3000);
+    }
+
+    function initializeRealTimeUpdates() {
+        if (leaderboardUpdateInterval) clearInterval(leaderboardUpdateInterval);
+        leaderboardUpdateInterval = setInterval(() => updateAllLeaderboards(), 30000);
+        updateAllLeaderboards();
+    }
+
+    function updateAllLeaderboards() {
+        const activeTabEl = document.querySelector('.leaderboard-tab.active');
+        if (!activeTabEl) return;
+        const activeTab = activeTabEl.id.replace('-tab', '');
+        ['overall', 'quiz', 'word_scramble'].forEach(type => simulateLeaderboardUpdate(type));
+    }
+
+    function simulateLeaderboardUpdate(type) {
+        const liveIndicator = document.querySelector('.fa-sync-alt.animate-spin');
+        if (liveIndicator) liveIndicator.style.opacity = '0.7';
+        setTimeout(() => {
+            const leaderboardElement = document.getElementById(`${type}-leaderboard-list`);
+            if (leaderboardElement) {
+                leaderboardElement.style.transition = 'opacity 0.3s ease';
+                leaderboardElement.style.opacity = '0.8';
+                setTimeout(() => {
+                    leaderboardElement.style.opacity = '1';
+                    animateRankChanges(type);
+                }, 300);
+            }
+            if (liveIndicator) liveIndicator.style.opacity = '1';
+        }, 1000);
+    }
+
+    function animateRankChanges(type) {
+        const leaderboardItems = document.querySelectorAll(`#${type}-leaderboard .leaderboard-content > div:last-child > div`);
+        leaderboardItems.forEach((item, index) => {
+            const rankBadge = item.querySelector('.rounded-full');
+            if (rankBadge && Math.random() > 0.7) {
+                rankBadge.style.transition = 'transform 0.5s ease';
+                rankBadge.style.transform = 'scale(1.1)';
+                setTimeout(() => rankBadge.style.transform = 'scale(1)', 500);
+            }
+            const scoreElement = item.querySelector('.text-green-400');
+            if (scoreElement && Math.random() > 0.8) {
+                scoreElement.style.transition = 'color 0.3s ease';
+                scoreElement.style.color = '#fbbf24';
+                setTimeout(() => scoreElement.style.color = '#4ade80', 1000);
+            }
+        });
+    }
+
+    function animateLeaderboardEntry(entry, delay = 0) {
+        entry.style.opacity = '0';
+        entry.style.transform = 'translateX(-20px)';
+        entry.style.transition = 'all 0.4s ease';
+        setTimeout(() => {
+            entry.style.opacity = '1';
+            entry.style.transform = 'translateX(0)';
+        }, delay);
+    }
+
+    function enhanceLeaderboardInteractions() {
+        const leaderboardEntries = document.querySelectorAll('.leaderboard-content > div:last-child > div');
+        leaderboardEntries.forEach((entry, index) => {
+            animateLeaderboardEntry(entry, index * 50);
+            entry.addEventListener('mouseenter', () => {
+                entry.style.transform = 'translateX(4px)';
+                entry.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.2)';
+            });
+            entry.addEventListener('mouseleave', () => {
+                entry.style.transform = 'translateX(0)';
+                entry.style.boxShadow = 'none';
+            });
+            entry.addEventListener('click', (e) => {
+                const ripple = document.createElement('div');
+                ripple.className = 'absolute inset-0 bg-white/10 rounded-lg pointer-events-none';
+                ripple.style.opacity = '0';
+                ripple.style.transform = 'scale(0.8)';
+                ripple.style.transition = 'all 0.3s ease';
+                entry.style.position = 'relative';
+                entry.appendChild(ripple);
+                setTimeout(() => { ripple.style.opacity = '1'; ripple.style.transform = 'scale(1)'; }, 10);
+                setTimeout(() => {
+                    ripple.style.opacity = '0';
+                    ripple.style.transform = 'scale(1.1)';
+                    setTimeout(() => { if (ripple.parentNode) ripple.parentNode.removeChild(ripple); }, 300);
+                }, 200);
+            });
+        });
+    }
+
+    window.addEventListener('gameCompleted', async function(event) {
+        try {
+            const response = await fetch('/game-activities/statistics', {
+                method: 'GET',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') }
+            });
+            if (response.ok) {
+                const stats = await response.json();
+                updateUserStats(stats);
+                showNotification('Profile updated!', 'success');
+            }
+        } catch (error) { console.error('Error fetching updated stats:', error); }
+    });
+
+    const init = () => {
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const profileDisplay = document.getElementById('profileDisplay');
+        const profileEditForm = document.getElementById('profileEditForm');
+
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', function() {
+                if (profileDisplay) profileDisplay.style.display = 'none';
+                if (profileEditForm) profileEditForm.style.display = 'block';
+                this.style.display = 'none';
+            });
+        }
+
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', function() {
+                if (profileDisplay) profileDisplay.style.display = 'grid';
+                if (profileEditForm) profileEditForm.style.display = 'none';
+                if (editProfileBtn) editProfileBtn.style.display = 'inline-block';
+            });
+        }
+
+        document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+            if (!tab.classList.contains('active')) {
+                tab.classList.add('text-gray-400', 'hover:text-white');
+            } else {
+                tab.classList.add('bg-ocean-500/20', 'text-ocean-400');
+            }
+        });
+
+        initializeRealTimeUpdates();
+        const activeTab = document.querySelector('.leaderboard-tab.active');
+        if (activeTab) setTimeout(() => enhanceLeaderboardInteractions(), 100);
+
+        const liveIndicator = document.querySelector('.fa-sync-alt.animate-spin');
+        if (liveIndicator) {
+            setInterval(() => {
+                liveIndicator.style.transform = 'scale(1.2)';
+                setTimeout(() => liveIndicator.style.transform = 'scale(1)', 500);
+            }, 5000);
+        }
+    };
+
+    document.addEventListener('turbo:load', init);
+    document.addEventListener('turbo:before-visit', () => {
+        if (leaderboardUpdateInterval) clearInterval(leaderboardUpdateInterval);
+    });
+    init();
+})();
 </script>
+@endpush
 @endsection

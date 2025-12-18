@@ -1,215 +1,177 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pawikan Memory Match - Educational Games</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/lg.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/lg.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('img/lg.png') }}">
-    <link rel="shortcut icon" href="{{ asset('img/lg.png') }}">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'ocean': {
-                            300: '#67e8f9',
-                            400: '#22d3ee',
-                            500: '#06b6d4',
-                            600: '#0891b2',
-                            700: '#0e7490',
-                            800: '#155e75',
-                            900: '#164e63'
-                        },
-                        'deep': {
-                            800: '#1e293b',
-                            900: '#0f172a'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .turbo-progress-bar { visibility: hidden !important; display: none !important; }
-        /* Global font family */
-        * {
-            font-family: 'Cinzel', sans-serif;
-        }
+@extends('layouts.app')
 
-        /* Apply Poppins to main content only */
-        main, main * {
-            font-family: 'Poppins', sans-serif;
-        }
+@section('title', 'Pawikan Memory Match - Educational Games')
 
-        /* ONLY Page Title uses Cinzel */
-        main h1 {
-            font-family: 'Cinzel', serif !important;
-        }
-        
-        .cinzel-heading { font-weight: 700; letter-spacing: 0.05em; }
-        .cinzel-subheading { font-weight: 600; letter-spacing: 0.03em; }
-        .cinzel-body { font-weight: 400; letter-spacing: 0.01em; line-height: 1.6; }
-        .font-poppins { font-family: 'Poppins', sans-serif; }
+@push('styles')
+<style>
+    .perspective-1000 {
+        perspective: 1000px;
+    }
 
-        .perspective-1000 {
-            perspective: 1000px;
-        }
+    .transform-style-3d {
+        transform-style: preserve-3d;
+    }
 
-        .transform-style-3d {
-            transform-style: preserve-3d;
-        }
+    .backface-hidden {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
 
-        .backface-hidden {
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
+    .rotate-y-180 {
+        transform: rotateY(180deg);
+    }
 
-        .rotate-y-180 {
-            transform: rotateY(180deg);
-        }
+    /* Enhanced card flip animation */
+    .card {
+        transition: transform 0.3s ease;
+    }
 
-        /* Enhanced card flip animation */
-        .card {
-            transition: transform 0.3s ease;
-        }
+    .card:hover {
+        transform: translateY(-5px);
+        filter: drop-shadow(0 10px 20px rgba(6, 182, 212, 0.3));
+    }
 
-        .card:hover {
-            transform: translateY(-5px);
-            filter: drop-shadow(0 10px 20px rgba(6, 182, 212, 0.3));
-        }
+    .card-inner {
+        transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+        transform-style: preserve-3d;
+    }
 
-        .card-inner {
-            transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
-            transform-style: preserve-3d;
-        }
+    .card.flipped .card-inner {
+        transform: rotateY(180deg);
+    }
 
-        .card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
+    /* Add subtle wobble on hover when not flipped */
+    .card:not(.flipped):hover .card-inner {
+        animation: cardWobble 0.5s ease;
+    }
 
-        /* Add subtle wobble on hover when not flipped */
-        .card:not(.flipped):hover .card-inner {
-            animation: cardWobble 0.5s ease;
-        }
+    @keyframes cardWobble {
+        0%, 100% { transform: rotateY(0deg); }
+        25% { transform: rotateY(-5deg); }
+        75% { transform: rotateY(5deg); }
+    }
 
-        @keyframes cardWobble {
-            0%, 100% { transform: rotateY(0deg); }
-            25% { transform: rotateY(-5deg); }
-            75% { transform: rotateY(5deg); }
-        }
+    /* Flip animation */
+    .card.flipped .card-inner {
+        transform: rotateY(180deg);
+    }
 
-        /* Flip animation */
-        .card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
+    /* Glow effect when card is flipped */
+    .card.flipped {
+        filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.5));
+    }
 
-        /* Glow effect when card is flipped */
-        .card.flipped {
-            filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.5));
-        }
+    .card.matched {
+        opacity: 0.6;
+        pointer-events: none;
+        transform: scale(0.95);
+        transition: all 0.5s ease;
+    }
 
-        .card.matched {
-            opacity: 0.6;
-            pointer-events: none;
-            transform: scale(0.95);
-            transition: all 0.5s ease;
-        }
+    /* Enhanced card faces */
+    .card-front, .card-back {
+        transition: all 0.3s ease;
+    }
 
-        /* Enhanced card faces */
-        .card-front, .card-back {
-            transition: all 0.3s ease;
-        }
+    .card:hover .card-front {
+        border-color: rgba(6, 182, 212, 0.6);
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+    }
 
-        .card:hover .card-front {
-            border-color: rgba(6, 182, 212, 0.6);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
-        }
+    .status-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+    }
 
-        .status-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 10;
-        }
+    .status-overlay.show {
+        opacity: 1;
+    }
 
-        .status-overlay.show {
-            opacity: 1;
-        }
+    .status-icon {
+        font-size: 3rem;
+        animation: iconPop 0.5s ease;
+    }
 
-        .status-icon {
-            font-size: 3rem;
-            animation: iconPop 0.5s ease;
-        }
+    @keyframes iconPop {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
 
-        @keyframes iconPop {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
+    @keyframes zoomOut {
+        0% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
 
-        @keyframes zoomOut {
-            0% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-    </style>
-</head>
-<body class="bg-black min-h-screen text-white overflow-x-hidden selection:bg-ocean-500 selection:text-white relative">
+    /* GLOBAL font family override for game */
+    #memory-game-container {
+        font-family: 'Cinzel', sans-serif;
+    }
 
-    <!-- Background Image with Zoom Out Effect -->
+    #memory-game-container main, #memory-game-container main * {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    #memory-game-container main h1 {
+        font-family: 'Cinzel', serif !important;
+    }
+</style>
+@endpush
+
+@section('content')
+<div id="memory-game-container" class="min-h-screen text-white overflow-x-hidden selection:bg-ocean-500 selection:text-white relative">
+    <!-- Background Image -->
     <div class="fixed inset-0 z-0 overflow-hidden">
         <img src="{{ asset('img/under-sea.gif') }}" alt="Background" class="w-full h-full object-cover opacity-90">
         <div class="absolute inset-0 bg-black/70"></div>
     </div>
-
-    <!-- Game Audio Effects -->
-    <audio id="correct-sound">
-        <source src="{{ asset('audio/correct.mp3') }}" type="audio/mpeg">
-    </audio>
-    <audio id="wrong-sound">
-        <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
-    </audio>
     
     <!-- Game Activity Script -->
     <script src="{{ asset('js/game-activity.js') }}"></script>
-    
-    @include('navigation')
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50">
-        <a href="{{ route('games.index') }}" data-turbo="false" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
+        <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
         </a>
     </div>
 
+    <!-- Game Audio Elements -->
+    <audio id="bg-music" loop>
+        <source src="{{ asset('audio/memory.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="correct-sound">
+        <source src="{{ asset('audio/correct.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="wrong-sound">
+        <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="congratulations-sound">
+        <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="click-sound">
+        <source src="{{ asset('audio/click sa puzzle ug matching.mp3') }}" type="audio/mpeg">
+    </audio>
+
     @if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller')))
     <!-- Warning Audio -->
     <!-- Warning Audio - Autoplay enabled for mobile compatibility -->
-    <audio id="warning-audio" autoplay>
+    <audio id="warning-audio">
         <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
     </audio>
     
     <div id="guest-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-0 transition-all duration-700 ease-out">
         <div class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out" id="guest-modal-content">
-            <button onclick="window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+            <button onclick="window.showPageLoader(); window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -253,7 +215,6 @@
                     guestModalContent.classList.remove('scale-75', 'opacity-0');
                     guestModalContent.classList.add('scale-100', 'opacity-100');
                     
-                    /* Warning audio handled by HTML autoplay for better mobile support
                     if (warningAudio) {
                         setTimeout(() => {
                             const playPromise = warningAudio.play();
@@ -265,12 +226,11 @@
                             }
                         }, 300);
                     }
-                    */
                 }, 100);
             }
         });
         
-        function closeGuestModal() {
+        window.closeGuestModal = function() {
             const warningAudio = document.getElementById('warning-audio');
             const guestModal = document.getElementById('guest-modal');
             const guestModalContent = document.getElementById('guest-modal-content');
@@ -306,7 +266,7 @@
                     guestModal.remove();
                 }, 700);
             }
-        }
+        };
     </script>
     @endif
 
@@ -595,10 +555,10 @@
                         <button id="next-level-btn" onclick="goToNextLevel()" class="bg-gradient-to-r from-ocean-600 to-ocean-500 hover:from-ocean-500 hover:to-ocean-400 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg shadow-ocean-500/30 font-poppins hidden">
                             Next Level →
                         </button>
-                        <button onclick="location.reload()" class="bg-ocean-600 hover:bg-ocean-500 text-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
+                        <button onclick="window.showPageLoader(); location.reload()" class="bg-ocean-600 hover:bg-ocean-500 text-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
                             Play Again
                         </button>
-                        <a href="/games" data-turbo="false" class="bg-transparent border border-ocean-600 text-ocean-300 hover:bg-ocean-900/30 font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
+                        <a href="/games" onclick="window.showPageLoader()" class="bg-transparent border border-ocean-600 text-ocean-300 hover:bg-ocean-900/30 font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
                             Exit
                         </a>
                     </div>
@@ -607,8 +567,12 @@
         </div>
     </main>
 
-    <script>
-    {
+</div>
+@endsection
+
+@push('scripts')
+<script>
+    (function() {
         // Game Configuration
         const allImages = [
             'baby-grn.png',
@@ -690,7 +654,7 @@
             }
         }
 
-        function setDifficulty(level) {
+        window.setDifficulty = function(level) {
             const btn = document.getElementById(`btn-${level}`);
             const btnMobile = document.getElementById(`btn-${level}-mobile`);
             
@@ -1052,6 +1016,8 @@
                 const nextLevelBtn = document.getElementById('next-level-btn');
                 if (currentDifficulty === 'easy' || currentDifficulty === 'medium') {
                     nextLevelBtn.classList.remove('hidden');
+                } else {
+                    nextLevelBtn.classList.add('hidden');
                 }
                 
                 // Play congratulations sound
@@ -1061,11 +1027,7 @@
                     congratsSound.play().catch(e => console.log('Congrats sound failed:', e));
                 }
                 
-                // Stop background music
-                const bgMusic = document.getElementById('bg-music');
-                if (bgMusic) {
-                    bgMusic.pause();
-                }
+                // Music continues through victory screen
                 
                 modal.classList.remove('hidden');
             }, 500);
@@ -1147,26 +1109,11 @@
 
         // Click sound function - Card Flip Style
         function playClickSound() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Lower pitch, short duration for a "thwip" card sound
-                oscillator.type = 'triangle';
-                oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.1);
-                
-                gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
-            } catch (e) {
-                console.log('Audio not supported');
+            const sound = document.getElementById('click-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 0.6;
+                sound.play().catch(e => console.log('Click sound failed:', e));
             }
         }
 
@@ -1249,6 +1196,18 @@
             }
         });
 
+        // Precision Loop to hide MP3 gaps (User request: "continues looping effect")
+        if (bgMusic) {
+            bgMusic.addEventListener('timeupdate', function() {
+                // Return to start slightly before the technical end to hide silent trailing padding
+                const buffer = 0.2; 
+                if (this.currentTime > this.duration - buffer && this.loop) {
+                    this.currentTime = 0;
+                    this.play().catch(e => {});
+                }
+            });
+        }
+
         // Stop music when navigating away via Turbo or reloading
         const stopMusic = () => {
             if (bgMusic) {
@@ -1264,7 +1223,6 @@
         document.addEventListener('turbo:before-visit', stopMusic);
         document.addEventListener('turbo:before-render', stopMusic);
         window.addEventListener('beforeunload', stopMusic);
-
         document.addEventListener('turbo:load', () => {
             // Reset progress for guest users
             @guest
@@ -1325,12 +1283,10 @@
                 isMusicPlaying = false;
                 if (musicIcon) musicIcon.textContent = '🔊'; // Reset icon (will update on play)
             }
-            
-            // Auto-play music removed (moved to guest modal close)
         });
 
         // Function to go to next level
-        function goToNextLevel() {
+        window.goToNextLevel = function() {
             // Close modal
             modal.classList.add('hidden');
             
@@ -1351,9 +1307,8 @@
             
             // Set difficulty and start new game
             setDifficulty(nextLevel);
-        }
-    }
-    </script>
-</body>
-</html>
+        };
+    })();
+</script>
+@endpush
 

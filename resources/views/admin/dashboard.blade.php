@@ -403,7 +403,7 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const modal = document.getElementById('createPatrollerModal');
     const createPatrollerForm = document.getElementById('createPatrollerForm');
     const passwordInput = document.getElementById('password');
@@ -424,8 +424,14 @@ document.addEventListener('DOMContentLoaded', () => {
         button.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
     };
 
-    togglePasswordBtn.addEventListener('click', () => toggleVisibility(passwordInput, togglePasswordBtn));
-    toggleConfirmPasswordBtn.addEventListener('click', () => toggleVisibility(confirmPasswordInput, toggleConfirmPasswordBtn));
+    // Remove existing event listeners to prevent duplication if visited multiple times
+    const newTogglePasswordBtn = togglePasswordBtn.cloneNode(true);
+    togglePasswordBtn.parentNode.replaceChild(newTogglePasswordBtn, togglePasswordBtn);
+    newTogglePasswordBtn.addEventListener('click', () => toggleVisibility(passwordInput, newTogglePasswordBtn));
+
+    const newToggleConfirmPasswordBtn = toggleConfirmPasswordBtn.cloneNode(true);
+    toggleConfirmPasswordBtn.parentNode.replaceChild(newToggleConfirmPasswordBtn, toggleConfirmPasswordBtn);
+    newToggleConfirmPasswordBtn.addEventListener('click', () => toggleVisibility(confirmPasswordInput, newToggleConfirmPasswordBtn));
 
     const openModal = () => {
         modal.classList.remove('hidden');
@@ -440,16 +446,16 @@ document.addEventListener('DOMContentLoaded', () => {
         createPatrollerForm.reset();
         passwordInput.type = 'password';
         confirmPasswordInput.type = 'password';
-        togglePasswordBtn.querySelector('i').classList.remove('fa-eye-slash');
-        togglePasswordBtn.querySelector('i').classList.add('fa-eye');
-        togglePasswordBtn.setAttribute('aria-label', 'Show password');
-        toggleConfirmPasswordBtn.querySelector('i').classList.remove('fa-eye-slash');
-        toggleConfirmPasswordBtn.querySelector('i').classList.add('fa-eye');
-        toggleConfirmPasswordBtn.setAttribute('aria-label', 'Show confirm password');
+        const pwIcon = newTogglePasswordBtn.querySelector('i');
+        pwIcon.classList.remove('fa-eye-slash');
+        pwIcon.classList.add('fa-eye');
+        newTogglePasswordBtn.setAttribute('aria-label', 'Show password');
+        
+        const cpwIcon = newToggleConfirmPasswordBtn.querySelector('i');
+        cpwIcon.classList.remove('fa-eye-slash');
+        cpwIcon.classList.add('fa-eye');
+        newToggleConfirmPasswordBtn.setAttribute('aria-label', 'Show confirm password');
     };
-
-    // Removed backdrop click and Escape key close functionality
-    // Modal now only closes via X button or Cancel button
 
     window.openCreatePatrollerModal = openModal;
     window.closeCreatePatrollerModal = closeModal;
@@ -458,27 +464,35 @@ document.addEventListener('DOMContentLoaded', () => {
 // Delete Patroller Modal Functions
 let patrollerIdToDelete = null;
 
-function deletePatroller(patrollerId) {
+window.deletePatroller = function(patrollerId) {
     patrollerIdToDelete = patrollerId;
     const modal = document.getElementById('deletePatrollerModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
+    if(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
-function closeDeletePatrollerModal() {
+window.closeDeletePatrollerModal = function() {
     const modal = document.getElementById('deletePatrollerModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    document.body.style.overflow = 'auto';
+    if(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }
     patrollerIdToDelete = null;
 }
 
 // Confirm delete button handler
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const confirmDeleteBtn = document.getElementById('confirmDeleteButton');
     if (confirmDeleteBtn) {
-        confirmDeleteBtn.addEventListener('click', function() {
+        // Clone to remove previous listeners
+        const newConfirmBtn = confirmDeleteBtn.cloneNode(true);
+        confirmDeleteBtn.parentNode.replaceChild(newConfirmBtn, confirmDeleteBtn);
+        
+        newConfirmBtn.addEventListener('click', function() {
             if (patrollerIdToDelete) {
                 // Create form element
                 const form = document.createElement('form');

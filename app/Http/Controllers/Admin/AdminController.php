@@ -493,6 +493,17 @@ class AdminController extends Controller
         $verifiedPercentage = $totalUsers > 0 ? round(($verifiedUsers / $totalUsers) * 100, 1) : 0;
         $rejectedPercentage = $totalUsers > 0 ? round(($rejectedUsers / $totalUsers) * 100, 1) : 0;
         
+        // Additional helpful stats
+        $verifiedToday = User::where('role', 'user')
+            ->where('verification_status', 'verified')
+            ->whereDate('updated_at', today())
+            ->count();
+            
+        $rejectedThisMonth = User::where('role', 'user')
+            ->where('verification_status', 'rejected')
+            ->whereMonth('updated_at', now()->month)
+            ->count();
+
         $recentActivity = User::where('role', 'user')
             ->whereIn('verification_status', ['pending', 'verified', 'rejected'])
             ->with('verifiedBy')
@@ -508,6 +519,8 @@ class AdminController extends Controller
             'pendingPercentage' => $pendingPercentage,
             'verifiedPercentage' => $verifiedPercentage,
             'rejectedPercentage' => $rejectedPercentage,
+            'verifiedToday' => $verifiedToday,
+            'rejectedThisMonth' => $rejectedThisMonth,
             'recentActivity' => $recentActivity
         ]);
     }

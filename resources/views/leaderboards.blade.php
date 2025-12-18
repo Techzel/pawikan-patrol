@@ -1,6 +1,81 @@
-to @extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Leaderboards - Pawikan Patrol')
+
+@push('styles')
+<style>
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) translateX(0px); }
+        25% { transform: translateY(-20px) translateX(10px); }
+        50% { transform: translateY(-10px) translateX(-10px); }
+        75% { transform: translateY(-30px) translateX(5px); }
+    }
+    
+    @keyframes pulse-slow {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.6; }
+    }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-float { animation: float 8s ease-in-out infinite; }
+    .animation-delay-2000 { animation-delay: 2s; }
+    .animation-delay-4000 { animation-delay: 4s; }
+    .animation-delay-6000 { animation-delay: 6s; }
+    .animation-delay-8000 { animation-delay: 8s; }
+    .animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+    
+    /* Glass morphism enhancements */
+    .glass-morphism {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Leaderboard table enhancements */
+    .leaderboard-table {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .leaderboard-table th {
+        background: rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .leaderboard-table td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Simple Tab Buttons */
+    .tab-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 24px;
+        color: rgba(156, 163, 175, 1);
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-weight: 500;
+        font-family: 'Poppins', sans-serif !important;
+    }
+    
+    .tab-btn:hover { color: rgba(229, 231, 235, 1); }
+    .tab-btn.active { color: white; border-bottom-color: #16a34a; }
+    .tab-content-container { position: relative; }
+    .leaderboard-content { transition: opacity 0.3s ease; }
+    .leaderboard-content.hidden { display: none; }
+    .leaderboard-content.active { display: block; animation: slideIn 0.3s ease-out; }
+</style>
+@endpush
 
 @section('content')
 <div class="min-h-screen bg-gray-900 py-8 relative overflow-hidden">
@@ -30,7 +105,7 @@ to @extends('layouts.app')
                 <span class="text-3xl animate-bounce">🏆</span>
             </div>
             <h1 class="text-5xl md:text-6xl font-bold text-green-400 mb-4 drop-shadow-lg" style="font-family: 'Poppins', sans-serif;">Leaderboards</h1>
-            <p class="text-xl text-gray-300 max-w-2xl mx-auto cinzel-body">Compete with the best players and climb your way to the top of the rankings</p>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto cinzel-body text-center">Compete with the best players and climb your way to the top of the rankings</p>
         </div>  
 
         @if(!auth()->check() || (auth()->user()->role !== 'admin' && auth()->user()->role !== 'patroller'))
@@ -40,7 +115,6 @@ to @extends('layouts.app')
             
             @auth
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
                 <!-- Memory Match Rank -->
                 <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 text-center transform hover:scale-105 transition-all duration-200 border border-white/20 relative overflow-hidden group">
                     <div class="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -100,7 +174,7 @@ to @extends('layouts.app')
             </div>
             @else
             <div class="text-center py-8 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10">
-                <p class="text-xl text-gray-300 mb-4">Log in to see your rankings and track your progress!</p>
+                <p class="text-xl text-gray-300 mb-4 font-poppins">Log in to see your rankings and track your progress!</p>
                 <a href="#" onclick="event.preventDefault(); openAuthModal('login')" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
                     <span>Log In / Register</span>
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,11 +188,9 @@ to @extends('layouts.app')
 
         <!-- Leaderboards Container -->
         <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden relative">
-
-            
             <!-- Tab Navigation -->
             <div class="border-b border-white/10">
-                <div class="flex justify-center gap-8 px-6">
+                <div class="flex justify-center flex-wrap gap-4 sm:gap-8 px-6">
                     <button class="tab-btn active" data-tab="memory-match">
                         <span class="text-xl">🧠</span>
                         <span>Memory</span>
@@ -209,7 +281,7 @@ to @extends('layouts.app')
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td colspan="4" class="py-12 px-6 text-center text-gray-400">
+                                            <td colspan="5" class="py-12 px-6 text-center text-gray-400">
                                                 <div class="text-4xl mb-2">🧠</div>
                                                 <p>No records yet. Be the first!</p>
                                             </td>
@@ -292,7 +364,7 @@ to @extends('layouts.app')
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td colspan="4" class="py-12 px-6 text-center text-gray-400">
+                                            <td colspan="5" class="py-12 px-6 text-center text-gray-400">
                                                 <div class="text-4xl mb-2">🧩</div>
                                                 <p>No records yet. Be the first!</p>
                                             </td>
@@ -375,7 +447,7 @@ to @extends('layouts.app')
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td colspan="4" class="py-12 px-6 text-center text-gray-400">
+                                            <td colspan="5" class="py-12 px-6 text-center text-gray-400">
                                                 <div class="text-4xl mb-2">🐢</div>
                                                 <p>No records yet. Be the first!</p>
                                             </td>
@@ -388,147 +460,20 @@ to @extends('layouts.app')
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 
-<!-- Custom CSS Animations -->
-<style>
-    @keyframes float {
-        0%, 100% {
-            transform: translateY(0px) translateX(0px);
-        }
-        25% {
-            transform: translateY(-20px) translateX(10px);
-        }
-        50% {
-            transform: translateY(-10px) translateX(-10px);
-        }
-        75% {
-            transform: translateY(-30px) translateX(5px);
-        }
-    }
-    
-    @keyframes pulse-slow {
-        0%, 100% {
-            opacity: 0.3;
-        }
-        50% {
-            opacity: 0.6;
-        }
-    }
-    
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-    .animate-float {
-        animation: float 8s ease-in-out infinite;
-    }
-    
-    .animation-delay-2000 {
-        animation-delay: 2s;
-    }
-    
-    .animation-delay-4000 {
-        animation-delay: 4s;
-    }
-    
-    .animation-delay-6000 {
-        animation-delay: 6s;
-    }
-    
-    .animation-delay-8000 {
-        animation-delay: 8s;
-    }
-    
-    .animate-pulse-slow {
-        animation: pulse-slow 4s ease-in-out infinite;
-    }
-    
-    /* Glass morphism enhancements */
-    .glass-morphism {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Leaderboard table enhancements */
-    .leaderboard-table {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .leaderboard-table th {
-        background: rgba(255, 255, 255, 0.1);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .leaderboard-table td {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    /* Simple Tab Buttons */
-    .tab-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 24px;
-        color: rgba(156, 163, 175, 1);
-        background: transparent;
-        border: none;
-        border-bottom: 3px solid transparent;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        font-weight: 500;
-    }
-    
-    .tab-btn:hover {
-        color: rgba(229, 231, 235, 1);
-    }
-    
-    .tab-btn.active {
-        color: white;
-        border-bottom-color: #16a34a;
-    }
-    
-    /* Content slide animations */
-    .tab-content-container {
-        position: relative;
-    }
-    
-    .leaderboard-content {
-        transition: opacity 0.3s ease;
-    }
-    
-    .leaderboard-content.hidden {
-        display: none;
-    }
-    
-    .leaderboard-content.active {
-        display: block;
-        animation: slideIn 0.3s ease-out;
-    }
-</style>
+@include('auth.modal')
+@endsection
 
-<!-- JavaScript for tab switching -->
+@push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    (function() {
         // Tab switching functionality
         const tabButtons = document.querySelectorAll('.tab-btn');
         const leaderboardContents = document.querySelectorAll('.leaderboard-content');
         
-        function switchTab(targetTab) {
+        window.switchTab = function(targetTab) {
             // Update button states
             tabButtons.forEach(btn => {
                 if (btn.dataset.tab === targetTab) {
@@ -548,42 +493,7 @@ to @extends('layouts.app')
                     content.classList.remove('active');
                 }
             });
-        }
-        
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const targetTab = button.dataset.tab;
-                switchTab(targetTab);
-            });
-        });
-        
-        // Initialize first tab
-        switchTab('memory-match');
-        
-        // Add refresh functionality
-        const refreshButtons = ['refreshMemoryMatch', 'refreshPuzzle', 'refreshFindPawikan'];
-        refreshButtons.forEach(buttonId => {
-            const button = document.getElementById(buttonId);
-            if (button) {
-                button.addEventListener('click', () => {
-                    // Add loading state
-                    const originalContent = button.innerHTML;
-                    button.innerHTML = '<span class="animate-spin inline-block mr-2">⟳</span> Loading...';
-                    button.disabled = true;
-                    
-                    // Reload the page to get fresh data
-                    window.location.reload();
-                });
-            }
-        });
-        
-        // Initialize filters for all games on load
-        document.querySelectorAll('select[onchange^="window.filterLeaderboard"]').forEach(select => {
-            const gameType = select.getAttribute('onchange').match(/'([^']+)'/)[1];
-            select.value = 'all';
-            window.filterLeaderboard(select, gameType);
-        });
-    });
+        };
         
         // Expose filter function globally
         window.filterLeaderboard = function(selectElement, gameType) {
@@ -630,14 +540,14 @@ to @extends('layouts.app')
                 }
             });
             
-            // Handle "No records" message if all filtered out
+            // Handle \"No records\" message if all filtered out
             let noRecordsMsg = content.querySelector('.no-records-row');
             if (visibleCount === 0) {
                 if (!noRecordsMsg) {
                     const tbody = content.querySelector('tbody');
                     noRecordsMsg = document.createElement('tr');
                     noRecordsMsg.className = 'no-records-row';
-                    noRecordsMsg.innerHTML = '<td colspan="5" class="py-12 px-6 text-center text-gray-400"><p>No records for this selection yet.</p></td>';
+                    noRecordsMsg.innerHTML = '<td colspan=\"5\" class=\"py-12 px-6 text-center text-gray-400\"><p>No records for this selection yet.</p></td>';
                     tbody.appendChild(noRecordsMsg);
                 } else {
                     noRecordsMsg.style.display = '';
@@ -646,8 +556,42 @@ to @extends('layouts.app')
                 noRecordsMsg.style.display = 'none';
             }
         };
-    </script>
 
-@include('auth.modal')
+        window.refreshLeaderboard = function(gameType) {
+            const buttonId = gameType === 'memory-match' ? 'refreshMemoryMatch' : 
+                           (gameType === 'puzzle' ? 'refreshPuzzle' : 'refreshFindPawikan');
+            const button = document.getElementById(buttonId);
+            if (button) {
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<span class=\"animate-spin inline-block mr-2\">⟳</span> Loading...';
+                button.disabled = true;
+                
+                // For Turbo, we can just reload the current page
+                Turbo.visit(window.location.pathname, { action: 'replace' });
+            }
+        };
 
-@endsection
+        const init = () => {
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    switchTab(button.dataset.tab);
+                });
+            });
+            
+            // Initialize filters for all games on load
+            document.querySelectorAll('select[onchange^=\"window.filterLeaderboard\"]').forEach(select => {
+                const onchangeAttr = select.getAttribute('onchange');
+                const match = onchangeAttr.match(/'([^']+)'/);
+                if (match) {
+                    const gameType = match[1];
+                    select.value = 'all';
+                    window.filterLeaderboard(select, gameType);
+                }
+            });
+        };
+
+        document.addEventListener('turbo:load', init);
+        init();
+    })();
+</script>
+@endpush

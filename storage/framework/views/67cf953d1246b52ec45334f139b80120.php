@@ -1,5 +1,4 @@
-<!-- Page Transition Overlay -->
-<div id="page-transition-overlay" class="fixed inset-0 bg-slate-900 z-[10000] transition-opacity duration-500 pointer-events-none" style="opacity: 0;"></div>
+<!-- Navigation and Modals -->
 
 <style>
     nav, nav *,
@@ -61,9 +60,70 @@
             font-size: 0.95rem !important;
         }
     }
+
+    /* Page Loading Overlay */
+    #page-loader {
+        position: fixed;
+        top: 5rem; /* Height of the navigation (h-20 = 5rem) */
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 9998;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.3s ease;
+    }
+
+    #page-loader.active {
+        display: flex;
+        animation: loaderFadeIn 0.2s ease-out;
+    }
+
+    @keyframes loaderFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .loader-content {
+        text-align: center;
+    }
+
+    .loader-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(20, 184, 166, 0.1);
+        border-left-color: #14b8a6;
+        border-radius: 50%;
+        animation: loaderSpin 1s linear infinite;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 0 20px rgba(20, 184, 166, 0.2);
+    }
+
+    .loader-text {
+        font-family: 'Cinzel', serif !important;
+        color: #14b8a6;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        animation: loaderPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes loaderSpin {
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes loaderPulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+    }
 </style>
 
-<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20" data-turbo="false">
+
+<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
@@ -84,7 +144,7 @@
                 <?php if(!auth()->check() || auth()->user()->role !== 'admin'): ?>
                 <!-- Home with Dropdown -->
                 <div class="relative group">
-                    <a href="<?php echo e(url('/')); ?>" class="flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 <?php echo e(request()->is('/') ? 'bg-ocean-600/30' : ''); ?>">
+                    <a href="<?php echo e(url('/')); ?>" onclick="if(window.location.pathname === '/' || window.location.pathname === '') { event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'}); return false; }" class="flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 <?php echo e(request()->is('/') ? 'bg-ocean-600/30' : ''); ?>">
                         <span class="text-base">🏠</span>
                         <span class="text-sm font-semibold uppercase">Home</span>
                         <svg class="w-3.5 h-3.5 mt-0.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,13 +155,13 @@
                     <!-- Dropdown Menu -->
                     <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                         <div class="p-4 space-y-2">
-                            <a href="<?php echo e(url('/#vision')); ?>" data-scroll-target="vision" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                <span class="text-xl">🌟</span>
-                                <span class="text-sm font-semibold uppercase">Vision & Mission</span>
-                            </a>
                             <a href="<?php echo e(url('/#video-showcase')); ?>" data-scroll-target="video-showcase" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-xl">🎬</span>
                                 <span class="text-sm font-semibold uppercase">Conservation Video</span>
+                            </a>
+                            <a href="<?php echo e(url('/#vision')); ?>" data-scroll-target="vision" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <span class="text-xl">🌟</span>
+                                <span class="text-sm font-semibold uppercase">Vision & Mission</span>
                             </a>
                             <a href="<?php echo e(url('/#lifecycle')); ?>" data-scroll-target="lifecycle" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-xl">🌊</span>
@@ -288,13 +348,13 @@
                 
                 <!-- Home Sub-items -->
                 <div class="ml-8 space-y-1">
-                    <a href="<?php echo e(url('/#vision')); ?>" data-scroll-target="vision" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                        <span class="text-lg">🌟</span>
-                        <span class="text-sm font-semibold uppercase">Vision & Mission</span>
-                    </a>
                     <a href="<?php echo e(url('/#video-showcase')); ?>" data-scroll-target="video-showcase" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">🎬</span>
                         <span class="text-sm font-semibold uppercase">Conservation Video</span>
+                    </a>
+                    <a href="<?php echo e(url('/#vision')); ?>" data-scroll-target="vision" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <span class="text-lg">🌟</span>
+                        <span class="text-sm font-semibold uppercase">Vision & Mission</span>
                     </a>
                     <a href="<?php echo e(url('/#lifecycle')); ?>" data-scroll-target="lifecycle" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">🌊</span>
@@ -520,58 +580,61 @@
 
 <?php echo $__env->make('auth.modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
+<!-- Page Loader -->
+<div id="page-loader">
+    <div class="loader-content">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Diving In...</div>
+    </div>
+</div>
+
 <script>
-    function fadeOutOverlay() {
-        const overlay = document.getElementById('page-transition-overlay');
-        if(overlay) {
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-            }, 50);
-        }
-    }
-
-    // Try multiple events to ensure it fades out
-    document.addEventListener('turbo:load', fadeOutOverlay);
-    document.addEventListener('DOMContentLoaded', fadeOutOverlay);
-    // Fallback safety
-    setTimeout(fadeOutOverlay, 300);
-
-    document.addEventListener('turbo:load', () => {
-        // Handle Mobile Menu
-        const menuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
+    (function() {
+        // Prevent multiple initializations if navigation is re-loaded by Turbo
+        if (window.loaderInitialized) return;
         
-        // Mobile Menu Logic (re-init for Turbo)
-        if (menuButton && mobileMenu) {
-            menuButton.onclick = function(e) {
-                e.preventDefault(); 
-                e.stopPropagation();
-                mobileMenu.classList.toggle('hidden');
-                const isHidden = mobileMenu.classList.contains('hidden');
-                this.querySelector('svg').innerHTML = isHidden 
-                    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />'
-                    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
-            };
-        }
-    });
+        document.addEventListener("turbo:before-visit", function() {
+            const loader = document.getElementById("page-loader");
+            if (loader) loader.classList.add("active");
+        });
 
-    // Show overlay on click
-    document.addEventListener('turbo:click', (e) => {
-        const overlay = document.getElementById('page-transition-overlay');
-        // Check if it's a same-page anchor link
-        const href = e.detail.url; // URL string
-        if (href.includes('#') && href.split('#')[0] === window.location.href.split('#')[0]) {
-             return;
-        }
+        document.addEventListener("turbo:submit-start", function() {
+            const loader = document.getElementById("page-loader");
+            if (loader) loader.classList.add("active");
+        });
 
-        if(overlay) {
-             overlay.style.opacity = '1';
-        }
-    });
-    
-    // Safety timeout
-    document.addEventListener('turbo:visit', () => {
-         // ensuring...
-    });
+        // Global function to trigger loader manually
+        window.showPageLoader = function() {
+            const loader = document.getElementById("page-loader");
+            if (loader) loader.classList.add("active");
+        };
+
+        document.addEventListener("turbo:load", function() {
+            const loader = document.getElementById("page-loader");
+            if (loader) {
+                // Add a small delay for smoother transition
+                setTimeout(() => {
+                    loader.classList.remove("active");
+                }, 300);
+            }
+            
+            // Re-initialize Mobile Menu for Turbo
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (menuButton && mobileMenu) {
+                menuButton.onclick = function(e) {
+                    e.preventDefault(); 
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('hidden');
+                    const isHidden = mobileMenu.classList.contains('hidden');
+                    this.querySelector('svg').innerHTML = isHidden 
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />'
+                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+                };
+            }
+        });
+
+        window.loaderInitialized = true;
+    })();
 </script>
 <?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/navigation.blade.php ENDPATH**/ ?>

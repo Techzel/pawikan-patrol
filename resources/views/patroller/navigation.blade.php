@@ -1,7 +1,7 @@
 <style>
     nav, nav *,
     #mobile-menu, #mobile-menu * {
-        font-family: 'Cinzel', serif !important;
+        font-family: 'Poppins', sans-serif !important;
     }
     
     nav .text-sm.font-medium,
@@ -12,7 +12,7 @@
     }
 </style>
 
-<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20" data-turbo="false">
+<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
@@ -20,7 +20,7 @@
                 <a href="{{ auth()->check() && auth()->user()->role === 'admin' ? route('admin.dashboard') : (auth()->check() && auth()->user()->role === 'patroller' ? route('patroller.dashboard') : '/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <img src="{{ asset('img/lg.png') }}" alt="Pawikan Patrol Logo" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full">
                     <div class="ml-2 sm:ml-0">
-                        <span class="text-lg sm:text-xl font-bold text-white">
+                        <span class="text-lg sm:text-xl font-bold text-white" style="font-family: 'Cinzel', serif !important;">
                             Dahican Pawikan Patrol
                         </span>
                         <div class="text-[10px] sm:text-xs text-gray-300 mt-0.5">City of Mati – Dahican, est. 2004</div>

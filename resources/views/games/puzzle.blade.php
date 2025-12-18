@@ -1,99 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pawikan Puzzle - Educational Games</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/lg.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/lg.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('img/lg.png') }}">
-    <link rel="shortcut icon" href="{{ asset('img/lg.png') }}">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'ocean': {
-                            300: '#67e8f9',
-                            400: '#22d3ee',
-                            500: '#06b6d4',
-                            600: '#0891b2',
-                            700: '#0e7490',
-                            800: '#155e75',
-                            900: '#164e63'
-                        },
-                        'deep': {
-                            800: '#1e293b',
-                            900: '#0f172a'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .turbo-progress-bar { visibility: hidden !important; display: none !important; }
-        /* Global font family */
-        * {
-            font-family: 'Cinzel', sans-serif;
-        }
+@extends('layouts.app')
 
-        /* Apply Poppins to main content only */
-        main, main * {
-            font-family: 'Poppins', sans-serif;
-        }
+@section('title', 'Pawikan Puzzle - Educational Games')
 
-        /* ONLY Page Title uses Cinzel */
-        main h1 {
-            font-family: 'Cinzel', serif !important;
-        }
-        
-        .cinzel-heading { font-weight: 700; letter-spacing: 0.05em; }
-        .cinzel-subheading { font-weight: 600; letter-spacing: 0.03em; }
-        .cinzel-body { font-weight: 400; letter-spacing: 0.01em; line-height: 1.6; }
-        .font-poppins { font-family: 'Poppins', sans-serif; }
-        
-        .glass { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.1); }
-        
-        .puzzle-tile {
-            transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s, filter 0.2s;
-            cursor: pointer;
-            background-size: 100% 100%;
-            border-radius: 4px;
-            box-shadow: inset 0 0 2px rgba(255,255,255,0.2), 0 4px 6px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
-        
-        .puzzle-tile:hover {
-            filter: brightness(1.15) contrast(1.1);
-            transform: scale(1.02);
-            z-index: 20;
-            box-shadow: 0 0 15px rgba(34, 211, 238, 0.6);
-            border-color: rgba(34, 211, 238, 0.8);
-        }
-        
-        .shuffling .puzzle-tile {
-            transition: none !important;
-        }
-
-        .empty-tile {
-            background: rgba(15, 23, 42, 0.5);
-            border: 2px dashed rgba(34, 211, 238, 0.3);
-        }
-    </style>
-</head>
-<body class="bg-black min-h-screen text-white overflow-x-hidden selection:bg-ocean-500 selection:text-white relative">
+@push('styles')
+<style>
+    .puzzle-tile {
+        transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s, filter 0.2s;
+        cursor: pointer;
+        background-size: 100% 100%;
+        border-radius: 4px;
+        box-shadow: inset 0 0 2px rgba(255,255,255,0.2), 0 4px 6px rgba(0,0,0,0.3);
+        z-index: 10;
+    }
     
+    .puzzle-tile:hover {
+        filter: brightness(1.15) contrast(1.1);
+        transform: scale(1.02);
+        z-index: 20;
+        box-shadow: 0 0 15px rgba(34, 211, 238, 0.6);
+        border-color: rgba(34, 211, 238, 0.8);
+    }
+    
+    .shuffling .puzzle-tile {
+        transition: none !important;
+    }
+
+    .empty-tile {
+        background: rgba(15, 23, 42, 0.5);
+        border: 2px dashed rgba(34, 211, 238, 0.3);
+    }
+
+    /* GLOBAL font family override for game */
+    #puzzle-game-container {
+        font-family: 'Cinzel', sans-serif;
+    }
+
+    #puzzle-game-container main, #puzzle-game-container main * {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    #puzzle-game-container main h1 {
+        font-family: 'Cinzel', serif !important;
+    }
+</style>
+@endpush
+
+@section('content')
+<div id="puzzle-game-container" class="min-h-screen text-white overflow-x-hidden selection:bg-ocean-500 selection:text-white relative">
     <!-- Background Image -->
     <div class="fixed inset-0 z-0">
         <img src="{{ asset('img/under-sea.gif') }}" alt="Background" class="w-full h-full object-cover opacity-90">
@@ -102,28 +55,42 @@
     
     <!-- Game Activity Script -->
     <script src="{{ asset('js/game-activity.js') }}"></script>
-    
-    @include('navigation')
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50">
-        <a href="{{ route('games.index') }}" data-turbo="false" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
+        <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
         </a>
     </div>
 
+    <!-- Game Audio Elements -->
+    <audio id="bg-music" loop>
+        <source src="{{ asset('audio/puzzle-loop.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="move-sound">
+        <source src="{{ asset('audio/puzzle-move.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="click-sound">
+        <source src="{{ asset('audio/click sa puzzle ug matching.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="wrong-sound">
+        <source src="{{ asset('audio/wrong.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="congratulations-sound">
+        <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
+    </audio>
+
     @if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller')))
     <!-- Warning Audio -->
-    <!-- Warning Audio - Autoplay enabled -->
-    <audio id="warning-audio" autoplay>
+    <audio id="warning-audio">
         <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
     </audio>
     
     <div id="guest-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-0 transition-all duration-700 ease-out">
         <div class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out" id="guest-modal-content">
-            <button onclick="window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+            <button onclick="window.showPageLoader(); window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -171,7 +138,6 @@
                     guestModalContent.classList.add('scale-100', 'opacity-100');
                     
                     // Play warning music after modal starts appearing (300ms delay)
-                    /* Warning audio handled by HTML autoplay
                     // Play warning music after modal starts appearing (300ms delay)
                     if (warningAudio) {
                         setTimeout(() => {
@@ -184,12 +150,11 @@
                             }
                         }, 300);
                     }
-                    */
                 }, 100);
             }
         });
         
-        function closeGuestModal() {
+        window.closeGuestModal = function() {
             const warningAudio = document.getElementById('warning-audio');
             const guestModal = document.getElementById('guest-modal');
             const guestModalContent = document.getElementById('guest-modal-content');
@@ -227,7 +192,7 @@
                     guestModal.remove();
                 }, 700);
             }
-        }
+        };
     </script>
     @endif
 
@@ -489,21 +454,25 @@
                         <button onclick="shufflePuzzle(); document.getElementById('game-over-modal').classList.add('hidden');" class="bg-ocean-600 hover:bg-ocean-500 text-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
                             Play Again
                         </button>
-                        <a href="/games" data-turbo="false" class="bg-transparent border border-ocean-600 text-ocean-300 hover:bg-ocean-900/30 font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
+                        <a href="/games" onclick="window.showPageLoader()" class="bg-transparent border border-ocean-600 text-ocean-300 hover:bg-ocean-900/30 font-bold py-3 px-6 rounded-xl transition-colors font-poppins">
                             Exit
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+</div>
+@endsection
 
-    <script>
-    {
+@push('scripts')
+<script>
+    (function() {
         // Game State
         const isLoggedIn = @auth true @else false @endauth;
         const userStoragePrefix = @auth '{{ Auth::id() }}_' @else '' @endauth;
-        let size = 3; // Default 3x3
+        
+        let size = 3; 
+        // ... (rest of the game code remains inside the IIFE)
         let currentDifficulty = 'easy';
         
         // Time limits in seconds
@@ -637,7 +606,7 @@
             });
         }
 
-        function setDifficulty(level) {
+        window.setDifficulty = function(level) {
             const levels = {'easy': 1, 'medium': 2, 'hard': 3};
             const requestedLevel = levels[level];
             
@@ -648,17 +617,17 @@
             
             currentDifficulty = level;
             updateLevelButtons();
-
+            
             // Set size
             if (level === 'easy') size = 3;
             if (level === 'medium') size = 4;
             if (level === 'hard') size = 5;
-
+            
             createTiles();
             shufflePuzzle();
-        }
+        };
 
-        function setPuzzleImage(index) {
+        window.setPuzzleImage = function(index) {
             if (index < 0 || index >= puzzleImages.length) return;
             currentImageIndex = index;
             
@@ -680,7 +649,7 @@
             updateLevelButtons();
             createTiles();
             shufflePuzzle();
-        }
+        };
 
         function createTiles() {
             board.innerHTML = '';
@@ -731,12 +700,7 @@
             if (isAdjacent(currentIdx, emptyIndex)) {
                 
                 // Play move sound
-                const moveSound = document.getElementById('move-sound');
-                if (moveSound) {
-                    moveSound.volume = 0.4;
-                    moveSound.currentTime = 0;
-                    moveSound.play().catch(e => {});
-                }
+                playMoveSound();
 
                 // Auto-start game on first move if not started
                 if (!gameStarted) {
@@ -786,7 +750,7 @@
             return (Math.abs(row1 - row2) + Math.abs(col1 - col2)) === 1;
         }
 
-        function shufflePuzzle() {
+        window.shufflePuzzle = function() {
             const isPlaying = gameStarted;
 
             if (!isPlaying) {
@@ -885,7 +849,7 @@
             return neighbors;
         }
 
-        function goToNextLevel() {
+        window.goToNextLevel = function() {
             const modal = document.getElementById('game-over-modal');
             modal.classList.add('hidden');
             
@@ -901,7 +865,7 @@
             } else if (currentDifficulty === 'medium') {
                 setDifficulty('hard');
             }
-        }
+        };
 
         function startTimer() {
             clearInterval(timerInterval);
@@ -973,17 +937,10 @@
             if (saveStatus) saveStatus.style.display = 'none';
             
             // Stop background music
-            const bgMusic = document.getElementById('bg-music');
-            if (bgMusic) {
-                bgMusic.pause();
-            }
+            // Music continues through success/fail screens
             
             // Play time's up sound
-            const wrongSound = document.getElementById('wrong-sound');
-            if (wrongSound) {
-                wrongSound.currentTime = 0;
-                wrongSound.play().catch(e => console.log('Times up sound failed:', e));
-            }
+            playWrongSound();
             
             modal.classList.remove('hidden');
         }
@@ -1057,17 +1014,9 @@
                     document.getElementById('final-difficulty').textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1);
                     
                     // Play congratulations sound
-                    const congratsSound = document.getElementById('congratulations-sound');
-                    if (congratsSound) {
-                        congratsSound.currentTime = 0;
-                        congratsSound.play().catch(e => console.log('Congrats sound failed:', e));
-                    }
+                    playCongratsSound();
                     
-                    // Stop background music
-                    const bgMusic = document.getElementById('bg-music');
-                    if (bgMusic) {
-                        bgMusic.pause();
-                    }
+                    // Music continues through success screen
                     
                     document.getElementById('game-over-modal').classList.remove('hidden');
                     
@@ -1124,10 +1073,10 @@
             }
         }
 
-        function togglePreview() {
+        window.togglePreview = function() {
             const overlay = document.getElementById('preview-overlay');
             overlay.classList.toggle('hidden');
-        }
+        };
 
         document.addEventListener('turbo:load', () => {
             initGame();
@@ -1201,16 +1150,60 @@
                             isMusicPlaying = true;
                         }).catch(e => {
                             console.log('Audio playback failed:', e);
-                            if(e.name === 'NotSupportedError' || e.name === 'NotAllowedError') {
-                                 alert('Audio playback issue: ' + e.message);
-                            } else {
-                                 alert('Please ensure "puzzle.mp3" is in "public/audio/" folder.');
-                            }
                         });
                     }
                 }
             });
+
+            // Precision Loop to hide MP3 gaps (User request: "continues looping effect")
+            bgMusic.addEventListener('timeupdate', function() {
+                const buffer = 0.2; 
+                if (this.currentTime > this.duration - buffer && this.loop) {
+                    this.currentTime = 0;
+                    this.play().catch(e => {});
+                }
+            });
         }
+
+        // Sound Effect Helpers
+        function playClickSound() {
+            const sound = document.getElementById('click-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 0.6;
+                sound.play().catch(e => console.log('Click sound failed:', e));
+            }
+        }
+
+        function playMoveSound() {
+            const sound = document.getElementById('move-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 0.4;
+                sound.play().catch(e => console.log('Move sound failed:', e));
+            }
+        }
+
+        function playWrongSound() {
+            const sound = document.getElementById('wrong-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 1.0;
+                sound.play().catch(e => console.log('Wrong sound failed:', e));
+            }
+        }
+
+        function playCongratsSound() {
+            const sound = document.getElementById('congratulations-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 1.0;
+                sound.play().catch(e => console.log('Congrats sound failed:', e));
+            }
+        }
+        
+        // Expose to global for HTML onclick handlers
+        window.playClickSound = playClickSound;
 
         // Stop music when navigating away via Turbo
         const stopMusic = () => {
@@ -1226,7 +1219,6 @@
         document.addEventListener('turbo:before-visit', stopMusic);
         document.addEventListener('turbo:before-render', stopMusic);
         window.addEventListener('beforeunload', stopMusic);
-    }
-    </script>
-</body>
-</html>
+    })();
+</script>
+@endpush

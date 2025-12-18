@@ -20,6 +20,19 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com/3.4.1"></script>
     
+    <!-- Hotwire Turbo -->
+    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
+
+    <!-- External Asset CDNs (Persistent for Turbo) -->
+    <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
+    <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
+
     <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
@@ -133,11 +146,77 @@
             position: fixed !important;
             z-index: 9999 !important;
         }
+
+        /* Hide Turbo Progress Bar */
+        .turbo-progress-bar {
+            visibility: hidden !important;
+            display: none !important;
+        }
+
+        /* Page Loading Overlay */
+        #page-loader {
+            position: fixed;
+            top: 5rem; /* Height of the navigation (h-20 = 5rem) */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9998;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        #page-loader.active {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(74, 222, 128, 0.1);
+            border-left-color: #4ade80;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.2);
+        }
+
+        .loader-text {
+            font-family: 'Cinzel', serif;
+            color: #4ade80;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
     </style>
 
     @stack('styles')
 </head>
-<body class="bg-gray-900 min-h-screen font-['Cinzel']">
+<body class="bg-gray-900 min-h-screen font-['Poppins']">
     <!-- Navigation -->
     @include('patroller.navigation')
 
@@ -148,6 +227,40 @@
         </div>
     </div>
 
+    <!-- Page Loader -->
+    <div id="page-loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Loading Patrol...</div>
+        </div>
+    </div>
+
     @stack('scripts')
+
+    <script>
+        document.addEventListener("turbo:before-visit", function() {
+            document.getElementById("page-loader").classList.add("active");
+        });
+
+        document.addEventListener("turbo:submit-start", function() {
+            document.getElementById("page-loader").classList.add("active");
+        });
+
+        document.addEventListener("turbo:load", function() {
+            // Add a small delay for smoother transition
+            setTimeout(() => {
+                document.getElementById("page-loader").classList.remove("active");
+            }, 300);
+        });
+
+        // Handle case where user clicks back button or navigation is cancelled
+        document.addEventListener("turbo:render", function() {
+            // Keep loader active if it's already there, load will hide it
+        });
+        
+        document.addEventListener("turbo:request-end", function() {
+            // In case of error, still remove loader
+        });
+    </script>
 </body>
 </html>
