@@ -105,13 +105,13 @@
                 <span class="text-3xl animate-bounce">🏆</span>
             </div>
             <h1 class="text-5xl md:text-6xl font-bold text-green-400 mb-4 drop-shadow-lg" style="font-family: 'Poppins', sans-serif;">Leaderboards</h1>
-            <p class="text-xl text-gray-300 max-w-2xl mx-auto cinzel-body text-center">Compete with the best players and climb your way to the top of the rankings</p>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto font-poppins text-center">Compete with the best players and climb your way to the top of the rankings</p>
         </div>  
 
         @if(!auth()->check() || (auth()->user()->role !== 'admin' && auth()->user()->role !== 'patroller'))
         <!-- Your Rankings Summary with Social Sharing -->
         <div class="mb-12">
-            <h2 class="text-3xl font-bold text-green-400 mb-8 text-center drop-shadow-lg cinzel-subheading">Your Current Rankings</h2>
+            <h2 class="text-3xl font-bold text-green-400 mb-8 text-center drop-shadow-lg font-poppins">Your Current Rankings</h2>
             
             @auth
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -87,11 +87,11 @@
             existingAccuracyMsg.remove();
         }
 
-        // HIGH ACCURACY GPS OPTIONS - Critical for precise marker placement
+        // HIGH ACCURACY GPS OPTIONS - Optimized for speed and precision
         const options = {
-            enableHighAccuracy: true,  // ✅ FORCE GPS usage (not WiFi/cell tower triangulation)
-            timeout: 15000,            // Wait up to 15 seconds for GPS lock
-            maximumAge: 0              // Don't use cached position - get fresh GPS data
+            enableHighAccuracy: true,  // Use GPS hardware for high precision
+            timeout: 10000,            // 10 seconds timeout is usually enough
+            maximumAge: 5000           // Allow 5 second old cached position for faster response
         };
 
         console.log('🛰️ Requesting high-accuracy GPS position...');
@@ -220,64 +220,44 @@
         );
     }
 
-    // Add button to get current location and toggle egg count field
-    document.addEventListener('DOMContentLoaded', function() {
-        const latitudeInput = document.getElementById('latitude');
-        
-        // Create GPS button
-        const locationButton = document.createElement('button');
-        locationButton.type = 'button';
-        locationButton.id = 'gps-location-btn';
-        locationButton.className = 'mt-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm rounded-lg cinzel-text transition-all duration-200 flex items-center gap-2';
-        locationButton.innerHTML = '<i class="fas fa-satellite-dish"></i><span>Get GPS Coordinates</span>';
-        locationButton.addEventListener('click', getCurrentLocation);
-        
-        // Add GPS info tip
-        const gpsInfo = document.createElement('div');
-        gpsInfo.className = 'mt-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded-lg text-xs text-blue-300 cinzel-text';
-        gpsInfo.innerHTML = `
-            <div class="flex items-start gap-2">
-                <i class="fas fa-info-circle mt-0.5"></i>
-                <div>
-                    <strong>GPS Tips for Best Accuracy:</strong>
-                    <ul class="mt-1 space-y-0.5 ml-4 list-disc">
-                        <li>Enable GPS/Location Services on your device</li>
-                        <li>Move to an outdoor location with clear sky view</li>
-                        <li>Wait 5-10 seconds for GPS to acquire satellites</li>
-                        <li>Avoid tall buildings, dense forests, or indoor areas</li>
-                    </ul>
-                </div>
-            </div>
-        `;
-        
-        latitudeInput.parentNode.appendChild(locationButton);
-        latitudeInput.parentNode.appendChild(gpsInfo);
+    // Initialize dynamic behaviors
+    function initGPSUI() {
+        const locationButton = document.getElementById('gps-location-btn');
+        if (locationButton) {
+            locationButton.onclick = getCurrentLocation;
+        }
 
+        const reportTypeSelect = document.getElementById('report_type');
+        if (reportTypeSelect) {
+            reportTypeSelect.onchange = toggleEggCountField;
+            toggleEggCountField();
+        }
+    }
+
+    // Toggle egg count field based on report type
+    function toggleEggCountField() {
         const reportTypeSelect = document.getElementById('report_type');
         const eggCountWrapper = document.getElementById('egg-count-wrapper');
         const eggCountInput = document.getElementById('egg_count');
 
-        function toggleEggCountField() {
-            if (!reportTypeSelect || !eggCountWrapper) {
-                return;
-            }
-
-            const isNesting = reportTypeSelect.value === 'nesting';
-            eggCountWrapper.classList.toggle('hidden', !isNesting);
-
-            if (eggCountInput) {
-                eggCountInput.disabled = !isNesting;
-                if (!isNesting) {
-                    eggCountInput.value = '';
-                }
-            }
+        if (!reportTypeSelect || !eggCountWrapper) {
+            return;
         }
 
-        if (reportTypeSelect) {
-            reportTypeSelect.addEventListener('change', toggleEggCountField);
-            toggleEggCountField();
+        const isNesting = reportTypeSelect.value === 'nesting';
+        eggCountWrapper.classList.toggle('hidden', !isNesting);
+
+        if (eggCountInput) {
+            eggCountInput.disabled = !isNesting;
+            if (!isNesting) {
+                eggCountInput.value = '';
+            }
         }
-    });
+    }
+
+    // Attach listeners on both standard and Turbo loads
+    document.addEventListener('DOMContentLoaded', initGPSUI);
+    document.addEventListener('turbo:load', initGPSUI);
 </script>
 @endpush
 
@@ -377,9 +357,30 @@
                         <!-- Coordinates -->
                         <div>
                             <label for="latitude" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Latitude</label>
-                            <input type="number" id="latitude" name="latitude" value="{{ old('latitude', $report->latitude) }}" 
+                             <input type="number" id="latitude" name="latitude" value="{{ old('latitude', $report->latitude) }}" 
                                    step="0.000001" class="form-input w-full px-3 py-2 rounded-md " style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="e.g., 6.9363">
+
+                             <!-- GPS Interaction UI - Server Rendered to avoid delay -->
+                             <button type="button" id="gps-location-btn" class="mt-3 px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white text-xs rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-green-500/20 active:scale-95 uppercase tracking-widest font-bold" style="font-family: 'Cinzel', serif !important;">
+                                <i class="fas fa-satellite-dish"></i>
+                                <span>Get GPS Coordinates</span>
+                            </button>
+
+                            <div class="mt-3 p-3 bg-blue-500/5 border border-blue-500/20 rounded-xl text-[11px] text-blue-300 leading-relaxed" style="font-family: 'Poppins', sans-serif !important;">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-info-circle mt-0.5 text-blue-400"></i>
+                                    <div>
+                                        <strong class="uppercase tracking-wider text-blue-200">GPS Tips for Best Accuracy:</strong>
+                                        <ul class="mt-1.5 space-y-1 ml-4 list-disc opacity-80">
+                                            <li>Enable GPS/Location Services on your device</li>
+                                            <li>Move to an outdoor location with clear sky view</li>
+                                            <li>Wait 5-10 seconds for GPS to acquire satellites</li>
+                                            <li>Avoid tall buildings, dense forests, or indoor areas</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div>
@@ -543,238 +544,50 @@
     </div>
 </div>
 
-<script>
-// Get Current Location functionality
-document.getElementById('getCurrentLocation').addEventListener('click', function() {
-    const button = this;
-    const originalText = button.innerHTML;
-    
-    // Show loading state
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Getting location...';
-    
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
-            document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+// Character counters
+function initCharCounters() {
+    const descriptionField = document.getElementById('description');
+    if (descriptionField) {
+        const descriptionLabel = descriptionField.previousElementSibling;
+        
+        const updateDescCounter = function() {
+            const length = this.value.length;
+            const minLength = 10;
+            const existingCounter = descriptionLabel.querySelector('.char-counter');
+            if (existingCounter) existingCounter.remove();
             
-            // Show success feedback
-            button.innerHTML = '<i class="fas fa-check mr-2"></i>Location obtained!';
-            button.classList.add('bg-green-600');
-            
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                button.classList.remove('bg-green-600');
-            }, 2000);
-        }, function(error) {
-            let errorMessage = 'Error getting location';
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    errorMessage = 'Location permission denied. Please enable location access.';
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    errorMessage = 'Location information unavailable.';
-                    break;
-                case error.TIMEOUT:
-                    errorMessage = 'Location request timed out.';
-                    break;
-            }
-            alert(errorMessage);
-            button.innerHTML = originalText;
-            button.disabled = false;
-        });
-    } else {
-        alert('Geolocation is not supported by this browser.');
-        button.innerHTML = originalText;
-        button.disabled = false;
-    }
-});
-
-// Toggle egg count field based on report type
-const reportTypeSelect = document.getElementById('report_type');
-const eggCountWrapper = document.getElementById('egg-count-wrapper');
-const eggCountInput = document.getElementById('egg_count');
-
-function toggleEggCountField() {
-    if (!reportTypeSelect || !eggCountWrapper) {
-        return;
+            const counter = document.createElement('span');
+            counter.className = 'char-counter text-xs ml-2';
+            counter.style.color = length < minLength ? '#ef4444' : '#10b981';
+            counter.textContent = `(${length} characters${length < minLength ? ', minimum ' + minLength : ''})`;
+            descriptionLabel.appendChild(counter);
+        };
+        descriptionField.addEventListener('input', updateDescCounter);
+        updateDescCounter.call(descriptionField);
     }
 
-    const isNesting = reportTypeSelect.value === 'nesting';
-    eggCountWrapper.classList.toggle('hidden', !isNesting);
-
-    if (eggCountInput) {
-        eggCountInput.disabled = !isNesting;
-        if (!isNesting) {
-            eggCountInput.value = '';
-        }
+    const titleField = document.getElementById('title');
+    if (titleField) {
+        const titleLabel = titleField.previousElementSibling;
+        
+        const updateTitleCounter = function() {
+            const length = this.value.length;
+            const maxLength = 255;
+            const existingCounter = titleLabel.querySelector('.char-counter');
+            if (existingCounter) existingCounter.remove();
+            
+            const counter = document.createElement('span');
+            counter.className = 'char-counter text-xs ml-2';
+            counter.style.color = length > maxLength ? '#ef4444' : '#94a3b8';
+            counter.textContent = `(${length}/${maxLength})`;
+            titleLabel.appendChild(counter);
+        };
+        titleField.addEventListener('input', updateTitleCounter);
+        updateTitleCounter.call(titleField);
     }
 }
 
-if (reportTypeSelect) {
-    reportTypeSelect.addEventListener('change', toggleEggCountField);
-    // Run on page load to set initial state
-    toggleEggCountField();
-}
-
-// Form validation
-const form = document.querySelector('form');
-form.addEventListener('submit', function(e) {
-    let isValid = true;
-    let errorMessages = [];
-    
-    // Validate required fields
-    const reportType = document.getElementById('report_type').value;
-    const priority = document.getElementById('priority').value;
-    const title = document.getElementById('title').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const location = document.getElementById('location').value.trim();
-    
-    if (!reportType) {
-        errorMessages.push('Please select a report type');
-        isValid = false;
-    }
-    
-    if (!priority) {
-        errorMessages.push('Please select a priority level');
-        isValid = false;
-    }
-    
-    if (!title) {
-        errorMessages.push('Please enter a report title');
-        isValid = false;
-    } else if (title.length > 255) {
-        errorMessages.push('Report title must not exceed 255 characters');
-        isValid = false;
-    }
-    
-    if (!description) {
-        errorMessages.push('Please enter a description');
-        isValid = false;
-    } else if (description.length < 10) {
-        errorMessages.push('Description must be at least 10 characters long');
-        isValid = false;
-    }
-    
-    if (!location) {
-        errorMessages.push('Please enter a location');
-        isValid = false;
-    }
-    
-    // Validate coordinates if provided
-    const latitude = document.getElementById('latitude').value;
-    const longitude = document.getElementById('longitude').value;
-    
-    if (latitude && (parseFloat(latitude) < -90 || parseFloat(latitude) > 90)) {
-        errorMessages.push('Latitude must be between -90 and 90');
-        isValid = false;
-    }
-    
-    if (longitude && (parseFloat(longitude) < -180 || parseFloat(longitude) > 180)) {
-        errorMessages.push('Longitude must be between -180 and 180');
-        isValid = false;
-    }
-    
-    // Validate turtle count if provided
-    const turtleCount = document.getElementById('turtle_count').value;
-    if (turtleCount && parseInt(turtleCount) < 0) {
-        errorMessages.push('Turtle count cannot be negative');
-        isValid = false;
-    }
-    
-    // Validate egg count if provided and report type is nesting
-    if (reportType === 'nesting' && eggCountInput) {
-        const eggCount = eggCountInput.value;
-        if (eggCount && parseInt(eggCount) < 0) {
-            errorMessages.push('Egg count cannot be negative');
-            isValid = false;
-        }
-    }
-    
-    // Validate incident datetime if provided
-    const incidentDatetime = document.getElementById('incident_datetime').value;
-    if (incidentDatetime) {
-        const selectedDate = new Date(incidentDatetime);
-        const now = new Date();
-        if (selectedDate > now) {
-            errorMessages.push('Incident date/time cannot be in the future');
-            isValid = false;
-        }
-    }
-    
-    // Validate images if provided
-    const imagesInput = document.getElementById('images');
-    if (imagesInput.files.length > 0) {
-        const maxSize = 2 * 1024 * 1024; // 2MB
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-        
-        for (let i = 0; i < imagesInput.files.length; i++) {
-            const file = imagesInput.files[i];
-            
-            if (!allowedTypes.includes(file.type)) {
-                errorMessages.push(`Image ${i + 1}: Only JPEG, PNG, JPG, and GIF files are allowed`);
-                isValid = false;
-            }
-            
-            if (file.size > maxSize) {
-                errorMessages.push(`Image ${i + 1}: File size must not exceed 2MB`);
-                isValid = false;
-            }
-        }
-    }
-    
-    if (!isValid) {
-        e.preventDefault();
-        alert('Please correct the following errors:\n\n' + errorMessages.join('\n'));
-        
-        // Scroll to top to show error messages
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-});
-
-// Real-time character count for description
-const descriptionField = document.getElementById('description');
-const descriptionLabel = descriptionField.previousElementSibling;
-
-descriptionField.addEventListener('input', function() {
-    const length = this.value.length;
-    const minLength = 10;
-    
-    // Remove existing counter if any
-    const existingCounter = descriptionLabel.querySelector('.char-counter');
-    if (existingCounter) {
-        existingCounter.remove();
-    }
-    
-    // Add character counter
-    const counter = document.createElement('span');
-    counter.className = 'char-counter text-xs ml-2';
-    counter.style.color = length < minLength ? '#ef4444' : '#10b981';
-    counter.textContent = `(${length} characters${length < minLength ? ', minimum ' + minLength : ''})`;
-    descriptionLabel.appendChild(counter);
-});
-
-// Real-time character count for title
-const titleField = document.getElementById('title');
-const titleLabel = titleField.previousElementSibling;
-
-titleField.addEventListener('input', function() {
-    const length = this.value.length;
-    const maxLength = 255;
-    
-    // Remove existing counter if any
-    const existingCounter = titleLabel.querySelector('.char-counter');
-    if (existingCounter) {
-        existingCounter.remove();
-    }
-    
-    // Add character counter
-    const counter = document.createElement('span');
-    counter.className = 'char-counter text-xs ml-2';
-    counter.style.color = length > maxLength ? '#ef4444' : '#94a3b8';
-    counter.textContent = `(${length}/${maxLength})`;
-    titleLabel.appendChild(counter);
-});
+document.addEventListener('DOMContentLoaded', initCharCounters);
+document.addEventListener('turbo:load', initCharCounters);
 </script>
 @endsection

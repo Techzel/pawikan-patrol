@@ -1,9 +1,7 @@
-@extends('layouts.patroller')
+<?php $__env->startSection('title', 'Submit New Report'); ?>
+<?php $__env->startSection('container-class', 'max-w-4xl'); ?>
 
-@section('title', 'Submit New Report')
-@section('container-class', 'max-w-4xl')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     /* Base form input styling - only for dropdowns */
     select.form-input {
@@ -160,9 +158,9 @@
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -424,13 +422,13 @@
     document.addEventListener('DOMContentLoaded', initGPSUI);
     document.addEventListener('turbo:load', initGPSUI);
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
             <!-- Header -->
             <div class="mb-8">
                 <div class="flex items-center mb-4">
-                    <a href="{{ route('patroller.dashboard') }}" class="text-green-400 hover:text-green-300 mr-4">
+                    <a href="<?php echo e(route('patroller.dashboard')); ?>" class="text-green-400 hover:text-green-300 mr-4">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
@@ -445,7 +443,7 @@
             </div>
 
             <!-- Error Messages -->
-            @if($errors->any())
+            <?php if($errors->any()): ?>
                 <div class="mb-6 glass-morphism border-l-4 border-red-500 p-4 rounded">
                     <div class="flex">
                         <div class="flex-shrink-0">
@@ -456,17 +454,17 @@
                         <div class="ml-3">
                             <h3 class="text-red-100 font-medium" style="font-family: 'Poppins', sans-serif;">Please correct the following errors:</h3>
                             <ul class="mt-2 text-red-200 text-sm list-disc list-inside" style="font-family: 'Poppins', sans-serif;">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
                         </div>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <!-- Report Form -->
-            @php(
+            <?php (
                 $reportTypeOptions = collect(\App\Models\PatrolReport::getReportTypeOptions())
                     ->except(['hatchling', 'hazard'])
                     ->map(function ($label, $value) {
@@ -475,9 +473,9 @@
                             : $label;
                     })
                     ->toArray()
-            )
-            <form action="{{ route('patroller.reports.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                @csrf
+            ); ?>
+            <form action="<?php echo e(route('patroller.reports.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <?php echo csrf_field(); ?>
                 
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6" style="font-family: 'Poppins', sans-serif;">
@@ -492,9 +490,9 @@
                             <label for="report_type" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Report Type *</label>
                             <select id="report_type" name="report_type" required class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;">
                                 <option value="">Select report type</option>
-                                @foreach($reportTypeOptions as $value => $label)
-                                    <option value="{{ $value }}" {{ old('report_type') == $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $reportTypeOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($value); ?>" <?php echo e(old('report_type') == $value ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
@@ -503,17 +501,17 @@
                             <label for="priority" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Priority Level *</label>
                             <select id="priority" name="priority" required class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;">
                                 <option value="">Select priority</option>
-                                <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low</option>
-                                <option value="medium" {{ old('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
-                                <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>High</option>
-                                <option value="critical" {{ old('priority') == 'critical' ? 'selected' : '' }}>Critical</option>
+                                <option value="low" <?php echo e(old('priority') == 'low' ? 'selected' : ''); ?>>Low</option>
+                                <option value="medium" <?php echo e(old('priority') == 'medium' ? 'selected' : ''); ?>>Medium</option>
+                                <option value="high" <?php echo e(old('priority') == 'high' ? 'selected' : ''); ?>>High</option>
+                                <option value="critical" <?php echo e(old('priority') == 'critical' ? 'selected' : ''); ?>>Critical</option>
                             </select>
                         </div>
 
                         <!-- Title -->
                         <div class="md:col-span-2">
                             <label for="title" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Report Title *</label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" required 
+                            <input type="text" id="title" name="title" value="<?php echo e(old('title')); ?>" required 
                                    class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="Brief description of the report">
                         </div>
@@ -521,7 +519,7 @@
                         <!-- Location -->
                         <div class="md:col-span-2">
                             <label for="location" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Location *</label>
-                            <input type="text" id="location" name="location" value="{{ old('location') }}" required 
+                            <input type="text" id="location" name="location" value="<?php echo e(old('location')); ?>" required 
                                    class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="Specific location or area">
                         </div>
@@ -529,7 +527,7 @@
                         <!-- Coordinates -->
                         <div>
                             <label for="latitude" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Latitude</label>
-                            <input type="number" id="latitude" name="latitude" value="{{ old('latitude') }}" 
+                            <input type="number" id="latitude" name="latitude" value="<?php echo e(old('latitude')); ?>" 
                                    step="0.000001" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="e.g., 6.9363">
                             
@@ -557,7 +555,7 @@
 
                         <div>
                             <label for="longitude" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Longitude</label>
-                            <input type="number" id="longitude" name="longitude" value="{{ old('longitude') }}" 
+                            <input type="number" id="longitude" name="longitude" value="<?php echo e(old('longitude')); ?>" 
                                    step="0.000001" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="e.g., 126.2742">
                         </div>
@@ -566,7 +564,7 @@
                         <div class="md:col-span-2">
                             <label for="incident_datetime" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Incident Date & Time</label>
                             <input type="datetime-local" id="incident_datetime" name="incident_datetime" 
-                                   value="{{ old('incident_datetime') }}" 
+                                   value="<?php echo e(old('incident_datetime')); ?>" 
                                    class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;">
                         </div>
                     </div>
@@ -584,15 +582,15 @@
                         <!-- Turtle Count -->
                         <div>
                             <label for="turtle_count" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Number of Turtles</label>
-                            <input type="number" id="turtle_count" name="turtle_count" value="{{ old('turtle_count') }}" 
+                            <input type="number" id="turtle_count" name="turtle_count" value="<?php echo e(old('turtle_count')); ?>" 
                                    min="0" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="0">
                         </div>
 
                         <!-- Nesting Egg Count (Nesting Only) -->
-                        <div id="egg-count-wrapper" class="col-span-1 {{ old('report_type') === 'nesting' ? '' : 'hidden' }}">
+                        <div id="egg-count-wrapper" class="col-span-1 <?php echo e(old('report_type') === 'nesting' ? '' : 'hidden'); ?>">
                             <label for="egg_count" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Egg Count (Nesting Only)</label>
-                            <input type="number" id="egg_count" name="egg_count" value="{{ old('egg_count') }}"
+                            <input type="number" id="egg_count" name="egg_count" value="<?php echo e(old('egg_count')); ?>"
                                    min="0" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;"
                                    placeholder="Approx. number of eggs">
                             <p class="text-xs text-gray-400 mt-1" style="font-family: 'Poppins', sans-serif;">Visible only for nesting reports.</p>
@@ -603,11 +601,11 @@
                             <label for="turtle_species" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Species</label>
                             <select id="turtle_species" name="turtle_species" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;">
                                 <option value="">Select species</option>
-                                <option value="olive_ridley" {{ old('turtle_species') == 'olive_ridley' ? 'selected' : '' }}>Olive Ridley</option>
-                                <option value="green_sea_turtle" {{ old('turtle_species') == 'green_sea_turtle' ? 'selected' : '' }}>Green Sea Turtle</option>
-                                <option value="hawksbill" {{ old('turtle_species') == 'hawksbill' ? 'selected' : '' }}>Hawksbill</option>
-                                <option value="leatherback" {{ old('turtle_species') == 'leatherback' ? 'selected' : '' }}>Leatherback</option>
-                                <option value="loggerhead" {{ old('turtle_species') == 'loggerhead' ? 'selected' : '' }}>Loggerhead</option>
+                                <option value="olive_ridley" <?php echo e(old('turtle_species') == 'olive_ridley' ? 'selected' : ''); ?>>Olive Ridley</option>
+                                <option value="green_sea_turtle" <?php echo e(old('turtle_species') == 'green_sea_turtle' ? 'selected' : ''); ?>>Green Sea Turtle</option>
+                                <option value="hawksbill" <?php echo e(old('turtle_species') == 'hawksbill' ? 'selected' : ''); ?>>Hawksbill</option>
+                                <option value="leatherback" <?php echo e(old('turtle_species') == 'leatherback' ? 'selected' : ''); ?>>Leatherback</option>
+                                <option value="loggerhead" <?php echo e(old('turtle_species') == 'loggerhead' ? 'selected' : ''); ?>>Loggerhead</option>
                             </select>
                         </div>
 
@@ -615,10 +613,10 @@
                         <div>
                             <label for="gender" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Turtle Gender</label>
                             <select id="gender" name="gender" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;">
-                                <option value="" {{ old('gender') == '' ? 'selected' : '' }}>Select gender</option>
-                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
-                                <option value="unknown" {{ old('gender') == 'unknown' ? 'selected' : '' }}>Unknown</option>
+                                <option value="" <?php echo e(old('gender') == '' ? 'selected' : ''); ?>>Select gender</option>
+                                <option value="male" <?php echo e(old('gender') == 'male' ? 'selected' : ''); ?>>Male</option>
+                                <option value="female" <?php echo e(old('gender') == 'female' ? 'selected' : ''); ?>>Female</option>
+                                <option value="unknown" <?php echo e(old('gender') == 'unknown' ? 'selected' : ''); ?>>Unknown</option>
                             </select>
                         </div>
 
@@ -627,10 +625,10 @@
                             <label for="turtle_condition" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Condition</label>
                             <select id="turtle_condition" name="turtle_condition" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;">
                                 <option value="">Select condition</option>
-                                <option value="healthy" {{ old('turtle_condition') == 'healthy' ? 'selected' : '' }}>Healthy</option>
-                                <option value="injured" {{ old('turtle_condition') == 'injured' ? 'selected' : '' }}>Injured</option>
-                                <option value="dead" {{ old('turtle_condition') == 'dead' ? 'selected' : '' }}>Dead</option>
-                                <option value="unknown" {{ old('turtle_condition') == 'unknown' ? 'selected' : '' }}>Unknown</option>
+                                <option value="healthy" <?php echo e(old('turtle_condition') == 'healthy' ? 'selected' : ''); ?>>Healthy</option>
+                                <option value="injured" <?php echo e(old('turtle_condition') == 'injured' ? 'selected' : ''); ?>>Injured</option>
+                                <option value="dead" <?php echo e(old('turtle_condition') == 'dead' ? 'selected' : ''); ?>>Dead</option>
+                                <option value="unknown" <?php echo e(old('turtle_condition') == 'unknown' ? 'selected' : ''); ?>>Unknown</option>
                             </select>
                         </div>
                     </div>
@@ -650,24 +648,24 @@
                             <label for="description" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Detailed Description *</label>
                             <textarea id="description" name="description" rows="4" required 
                                       class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
-                                      placeholder="Provide a detailed description of what you observed or the incident that occurred">{{ old('description') }}</textarea>
+                                      placeholder="Provide a detailed description of what you observed or the incident that occurred"><?php echo e(old('description')); ?></textarea>
                         </div>
 
                         <!-- Weather Conditions -->
                         <div>
                             <label for="weather_conditions" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Weather Conditions</label>
                             <select id="weather_conditions" name="weather_conditions" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;">
-                                <option value="" {{ old('weather_conditions') == '' ? 'selected' : '' }}>Select weather condition</option>
-                                <option value="Sunny" {{ old('weather_conditions') == 'Sunny' ? 'selected' : '' }}>☀️ Sunny</option>
-                                <option value="Partly Cloudy" {{ old('weather_conditions') == 'Partly Cloudy' ? 'selected' : '' }}>⛅ Partly Cloudy</option>
-                                <option value="Cloudy" {{ old('weather_conditions') == 'Cloudy' ? 'selected' : '' }}>☁️ Cloudy</option>
-                                <option value="Rainy" {{ old('weather_conditions') == 'Rainy' ? 'selected' : '' }}>🌧️ Rainy</option>
-                                <option value="Stormy" {{ old('weather_conditions') == 'Stormy' ? 'selected' : '' }}>⛈️ Stormy</option>
-                                <option value="Windy" {{ old('weather_conditions') == 'Windy' ? 'selected' : '' }}>💨 Windy</option>
-                                <option value="Foggy" {{ old('weather_conditions') == 'Foggy' ? 'selected' : '' }}>🌫️ Foggy</option>
-                                <option value="Hazy" {{ old('weather_conditions') == 'Hazy' ? 'selected' : '' }}>😶‍🌫️ Hazy</option>
-                                <option value="Clear Night" {{ old('weather_conditions') == 'Clear Night' ? 'selected' : '' }}>🌙 Clear Night</option>
-                                <option value="Other" {{ old('weather_conditions') == 'Other' ? 'selected' : '' }}>Other (specify in notes)</option>
+                                <option value="" <?php echo e(old('weather_conditions') == '' ? 'selected' : ''); ?>>Select weather condition</option>
+                                <option value="Sunny" <?php echo e(old('weather_conditions') == 'Sunny' ? 'selected' : ''); ?>>☀️ Sunny</option>
+                                <option value="Partly Cloudy" <?php echo e(old('weather_conditions') == 'Partly Cloudy' ? 'selected' : ''); ?>>⛅ Partly Cloudy</option>
+                                <option value="Cloudy" <?php echo e(old('weather_conditions') == 'Cloudy' ? 'selected' : ''); ?>>☁️ Cloudy</option>
+                                <option value="Rainy" <?php echo e(old('weather_conditions') == 'Rainy' ? 'selected' : ''); ?>>🌧️ Rainy</option>
+                                <option value="Stormy" <?php echo e(old('weather_conditions') == 'Stormy' ? 'selected' : ''); ?>>⛈️ Stormy</option>
+                                <option value="Windy" <?php echo e(old('weather_conditions') == 'Windy' ? 'selected' : ''); ?>>💨 Windy</option>
+                                <option value="Foggy" <?php echo e(old('weather_conditions') == 'Foggy' ? 'selected' : ''); ?>>🌫️ Foggy</option>
+                                <option value="Hazy" <?php echo e(old('weather_conditions') == 'Hazy' ? 'selected' : ''); ?>>😶‍🌫️ Hazy</option>
+                                <option value="Clear Night" <?php echo e(old('weather_conditions') == 'Clear Night' ? 'selected' : ''); ?>>🌙 Clear Night</option>
+                                <option value="Other" <?php echo e(old('weather_conditions') == 'Other' ? 'selected' : ''); ?>>Other (specify in notes)</option>
                             </select>
                         </div>
 
@@ -694,7 +692,7 @@
 
                 <!-- Submit Buttons -->
                 <div class="flex justify-end space-x-4">
-                    <a href="{{ route('patroller.dashboard') }}" 
+                    <a href="<?php echo e(route('patroller.dashboard')); ?>" 
                        class="px-6 py-3 border border-gray-300 rounded-md text-gray-300 hover:text-white hover:border-white transition duration-300" style="font-family: 'Poppins', sans-serif;">
                         Cancel
                     </a>
@@ -733,4 +731,6 @@
                     </div>
                 </div>
             </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.patroller', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/patroller/reports/create.blade.php ENDPATH**/ ?>

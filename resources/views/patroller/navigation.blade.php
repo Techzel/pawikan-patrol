@@ -12,7 +12,7 @@
     }
 </style>
 
-<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
+<nav class="fixed top-0 left-0 right-0 z-[99999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
@@ -20,7 +20,7 @@
                 <a href="{{ auth()->check() && auth()->user()->role === 'admin' ? route('admin.dashboard') : (auth()->check() && auth()->user()->role === 'patroller' ? route('patroller.dashboard') : '/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <img src="{{ asset('img/lg.png') }}" alt="Pawikan Patrol Logo" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full">
                     <div class="ml-2 sm:ml-0">
-                        <span class="text-lg sm:text-xl font-bold text-white" style="font-family: 'Cinzel', serif !important;">
+                        <span class="text-lg sm:text-xl font-bold text-white tracking-widest uppercase" style="font-family: 'Cinzel', serif !important;">
                             Dahican Pawikan Patrol
                         </span>
                         <div class="text-[10px] sm:text-xs text-gray-300 mt-0.5">City of Mati – Dahican, est. 2004</div>
@@ -34,7 +34,7 @@
                 <div class="relative group">
                     <a href="/patrol-map" class="flex items-center gap-1.5 text-white hover:text-ocean-300 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 {{ request()->is('patrol-map*') ? 'bg-ocean-600/30' : '' }}">
                         <span class="text-base">🗺️</span>
-                        <span class="text-sm font-medium">Patrol Map</span>
+                        <span class="text-sm font-medium uppercase tracking-wider">PATROL MAP</span>
                         <svg class="w-3.5 h-3.5 mt-0.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -63,7 +63,7 @@
                         @else
                             <span class="text-lg">👤</span>
                         @endif
-                        <span class="text-sm font-medium">{{ Auth::user()->name }}</span>
+                        <span class="text-sm font-medium uppercase tracking-wider">{{ Auth::user()->name }}</span>
                         <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -143,7 +143,7 @@
             <div class="space-y-1">
                 <a href="/patrol-map" class="mobile-nav-link flex items-center gap-3 hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left {{ request()->is('patrol-map*') ? '!bg-ocean-600/30 !text-ocean-300' : 'text-white' }}" style="{{ request()->is('patrol-map*') ? 'background-color: rgba(20, 184, 166, 0.3) !important; color: #5eead4 !important;' : '' }}">
                     <span class="text-lg">🗺️</span>
-                    <span class="text-sm font-medium">Patrol Map</span>
+                    <span class="text-sm font-medium uppercase tracking-wider">PATROL MAP</span>
                 </a>
                 
                 <!-- Patrol Map Sub-items -->
@@ -160,7 +160,7 @@
             <div class="space-y-1">
                 <button class="mobile-account-toggle flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left {{ request()->is('patroller*') ? 'bg-ocean-600/30' : '' }}">
                     <span class="text-lg">👤</span>
-                    <span class="text-sm font-medium">{{ Auth::user()->name }}</span>
+                    <span class="text-sm font-medium uppercase tracking-wider">{{ Auth::user()->name }}</span>
                     <svg class="w-4 h-4 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
@@ -197,7 +197,7 @@
             <div class="space-y-1">
                 <button class="mobile-account-toggle flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                     <span class="text-lg">👤</span>
-                    <span class="text-sm font-medium">Account</span>
+                    <span class="text-sm font-medium uppercase tracking-wider">ACCOUNT</span>
                     <svg class="w-4 h-4 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>

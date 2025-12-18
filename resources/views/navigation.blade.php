@@ -18,7 +18,9 @@
     nav .logo-title {
         font-family: 'Cinzel', serif !important;
         font-size: 0.95rem !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.1em !important;
+        text-transform: uppercase !important;
     }
     
     @media (min-width: 640px) {
@@ -248,7 +250,7 @@
                     <div class="relative group">
                         <button class="flex items-center gap-2 text-white hover:text-ocean-400 transition-colors px-3 py-2 rounded-lg hover:bg-ocean-600/20 {{ request()->is('auth*') ? 'bg-ocean-600/30' : '' }}">
                             <span class="text-lg">👤</span>
-                            <span class="text-sm font-semibold uppercase">Account</span>
+                            <span class="text-sm font-semibold uppercase tracking-wider">Account</span>
                             <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
@@ -279,7 +281,7 @@
                             @else
                                 <span class="text-lg">👤</span>
                             @endif
-                            <span class="text-sm font-semibold">
+                            <span class="text-sm font-semibold uppercase tracking-wider">
                                 @if(Auth::user()->role === 'admin')
                                     ADMIN
                                 @else
@@ -445,7 +447,7 @@
                 <div class="space-y-1">
                     <button class="mobile-account-toggle flex items-center gap-3 text-white hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left {{ request()->is('profile*') || request()->is('admin/dashboard*') || request()->is('patroller/dashboard*') ? 'bg-ocean-600/30' : '' }}">
                         <!-- <span class="text-lg">👤</span> -->
-                        <span class="text-sm font-semibold">
+                        <span class="text-sm font-semibold uppercase tracking-wider">
                             @if(Auth::user()->role === 'admin')
                                 ADMIN
                             @else
@@ -613,7 +615,7 @@
                 // Add a small delay for smoother transition
                 setTimeout(() => {
                     loader.classList.remove("active");
-                }, 300);
+                }, 100);
             }
             
             // Re-initialize Mobile Menu for Turbo

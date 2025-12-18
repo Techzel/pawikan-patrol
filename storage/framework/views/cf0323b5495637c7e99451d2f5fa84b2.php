@@ -1,6 +1,4 @@
-@extends(auth()->check() && in_array(auth()->user()->role, ['patroller', 'admin']) ? 'layouts.patroller' : 'layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -591,11 +589,11 @@
     }
 </style>
 
-@php
+<?php
     $isPatrollerOrAdmin = auth()->check() && in_array(auth()->user()->role, ['patroller', 'admin']);
-@endphp
+?>
 
-<div class="gallery-wrapper {{ $isPatrollerOrAdmin ? 'pt-20' : 'pt-24' }}">
+<div class="gallery-wrapper <?php echo e($isPatrollerOrAdmin ? 'pt-20' : 'pt-24'); ?>">
     <!-- Header -->
     <div class="gallery-header">
         <h1 class="gallery-title">Patrol Report Gallery</h1>
@@ -606,54 +604,55 @@
 
     <!-- Cards Stack Container -->
     <div class="cards-stack">
-        @forelse($reports as $index => $report)
-            <div class="report-card {{ $index === 0 ? 'active' : ($index === 1 ? 'next' : '') }}" 
-                 id="card-{{ $index }}" 
-                 data-index="{{ $index }}">
+        <?php $__empty_1 = true; $__currentLoopData = $reports; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $report): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <div class="report-card <?php echo e($index === 0 ? 'active' : ($index === 1 ? 'next' : '')); ?>" 
+                 id="card-<?php echo e($index); ?>" 
+                 data-index="<?php echo e($index); ?>">
                 
                 <div class="card-grid">
                     <!-- Image Gallery Section -->
                     <div class="image-gallery">
                         <!-- Main Image Container -->
-                        <div class="main-image-container" onclick="openLightbox('{{ count($report['images']) > 0 ? (Str::startsWith($report['images'][0], 'data:') ? $report['images'][0] : asset('storage/' . $report['images'][0])) : '' }}')">
-                            @if(count($report['images']) > 0)
-                                <img src="{{ Str::startsWith($report['images'][0], 'data:') ? $report['images'][0] : asset('storage/' . $report['images'][0]) }}" 
-                                     alt="{{ $report['title'] }}" 
+                        <div class="main-image-container" onclick="openLightbox('<?php echo e(count($report['images']) > 0 ? (Str::startsWith($report['images'][0], 'data:') ? $report['images'][0] : asset('storage/' . $report['images'][0])) : ''); ?>')">
+                            <?php if(count($report['images']) > 0): ?>
+                                <img src="<?php echo e(Str::startsWith($report['images'][0], 'data:') ? $report['images'][0] : asset('storage/' . $report['images'][0])); ?>" 
+                                     alt="<?php echo e($report['title']); ?>" 
                                      class="main-image" 
-                                     id="main-image-{{ $index }}">
+                                     id="main-image-<?php echo e($index); ?>">
                                 <div class="image-overlay"></div>
-                                <div class="image-badge badge-{{ strtolower($report['report_type']) }}">
-                                    <span>{{ ucfirst($report['report_type']) }}</span>
+                                <div class="image-badge badge-<?php echo e(strtolower($report['report_type'])); ?>">
+                                    <span><?php echo e(ucfirst($report['report_type'])); ?></span>
                                 </div>
                                 <div class="image-counter">
-                                    <span id="image-counter-{{ $index }}">1</span> / {{ count($report['images']) }}
+                                    <span id="image-counter-<?php echo e($index); ?>">1</span> / <?php echo e(count($report['images'])); ?>
+
                                 </div>
-                            @else
+                            <?php else: ?>
                                 <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: rgba(0,0,0,0.5);">
                                     <span style="color: #64748b; font-size: 1.125rem;">No Image Available</span>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
 
                         <!-- Thumbnail Strip -->
-                        @if(count($report['images']) > 1)
+                        <?php if(count($report['images']) > 1): ?>
                             <div class="thumbnail-strip">
-                                @foreach($report['images'] as $imgIndex => $image)
-                                    <img src="{{ Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image) }}" 
-                                         alt="Thumbnail {{ $imgIndex + 1 }}" 
-                                         class="thumbnail {{ $imgIndex === 0 ? 'active' : '' }}"
-                                         onclick="changeMainImage({{ $index }}, {{ $imgIndex }}, '{{ Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image) }}')">
-                                @endforeach
+                                <?php $__currentLoopData = $report['images']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imgIndex => $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <img src="<?php echo e(Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image)); ?>" 
+                                         alt="Thumbnail <?php echo e($imgIndex + 1); ?>" 
+                                         class="thumbnail <?php echo e($imgIndex === 0 ? 'active' : ''); ?>"
+                                         onclick="changeMainImage(<?php echo e($index); ?>, <?php echo e($imgIndex); ?>, '<?php echo e(Str::startsWith($image, 'data:') ? $image : asset('storage/' . $image)); ?>')">
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Details Section -->
                     <div class="details-section">
                         <!-- Report Header -->
                         <div class="report-header">
-                            <h2>{{ $report['title'] }}</h2>
-                            <p class="report-description">{{ $report['description'] }}</p>
+                            <h2><?php echo e($report['title']); ?></h2>
+                            <p class="report-description"><?php echo e($report['description']); ?></p>
                         </div>
 
                         <!-- Basic Information Block -->
@@ -664,117 +663,117 @@
                             
                             <div class="info-row">
                                 <span class="info-label">📍 Location</span>
-                                <span class="info-value">{{ $report['location'] }}</span>
+                                <span class="info-value"><?php echo e($report['location']); ?></span>
                             </div>
                             
                             <div class="info-row">
                                 <span class="info-label">📅 Report Date</span>
-                                <span class="info-value">{{ $report['reported_at'] }}</span>
+                                <span class="info-value"><?php echo e($report['reported_at']); ?></span>
                             </div>
                             
-                            @if($report['incident_datetime'])
+                            <?php if($report['incident_datetime']): ?>
                                 <div class="info-row">
                                     <span class="info-label">🕐 Incident Time</span>
-                                    <span class="info-value">{{ $report['incident_datetime'] }}</span>
+                                    <span class="info-value"><?php echo e($report['incident_datetime']); ?></span>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                             
                             <div class="info-row">
                                 <span class="info-label">👤 Reported By</span>
-                                <span class="info-value">{{ $report['reported_by'] }}</span>
+                                <span class="info-value"><?php echo e($report['reported_by']); ?></span>
                             </div>
                             
-                            @if($report['weather_conditions'])
+                            <?php if($report['weather_conditions']): ?>
                                 <div class="info-row">
                                     <span class="info-label">🌤️ Weather</span>
-                                    <span class="info-value">{{ $report['weather_conditions'] }}</span>
+                                    <span class="info-value"><?php echo e($report['weather_conditions']); ?></span>
                                 </div>
-                            @endif
+                            <?php endif; ?>
 
-                            @if($report['priority'])
+                            <?php if($report['priority']): ?>
                                 <div class="info-row">
                                     <span class="info-label">⚡ Priority</span>
-                                    <span class="info-value">{{ ucfirst($report['priority']) }}</span>
+                                    <span class="info-value"><?php echo e(ucfirst($report['priority'])); ?></span>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
 
                         <!-- Turtle Details Block -->
-                        @if($report['turtle_species'] || $report['turtle_gender'] || $report['turtle_count'] || $report['egg_count'] || $report['turtle_condition'])
+                        <?php if($report['turtle_species'] || $report['turtle_gender'] || $report['turtle_count'] || $report['egg_count'] || $report['turtle_condition']): ?>
                             <div class="info-block">
                                 <div class="info-block-title">
                                     <span>🐢</span> Turtle Details
                                 </div>
                                 
-                                @if($report['turtle_species'])
+                                <?php if($report['turtle_species']): ?>
                                     <div class="info-row">
                                         <span class="info-label">Species</span>
-                                        <span class="info-value">{{ $report['turtle_species'] }}</span>
+                                        <span class="info-value"><?php echo e($report['turtle_species']); ?></span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 
-                                @if($report['turtle_gender'])
+                                <?php if($report['turtle_gender']): ?>
                                     <div class="info-row">
                                         <span class="info-label">Gender</span>
-                                        <span class="info-value">{{ ucfirst($report['turtle_gender']) }}</span>
+                                        <span class="info-value"><?php echo e(ucfirst($report['turtle_gender'])); ?></span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 
-                                @if($report['turtle_count'])
+                                <?php if($report['turtle_count']): ?>
                                     <div class="info-row">
                                         <span class="info-label">Count</span>
-                                        <span class="info-value">{{ $report['turtle_count'] }}</span>
+                                        <span class="info-value"><?php echo e($report['turtle_count']); ?></span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 
-                                @if($report['egg_count'])
+                                <?php if($report['egg_count']): ?>
                                     <div class="info-row">
                                         <span class="info-label">🥚 Egg Count</span>
-                                        <span class="info-value">{{ $report['egg_count'] }}</span>
+                                        <span class="info-value"><?php echo e($report['egg_count']); ?></span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 
-                                @if($report['turtle_condition'])
+                                <?php if($report['turtle_condition']): ?>
                                     <div class="info-row">
                                         <span class="info-label">❤️ Condition</span>
-                                        <span class="info-value">{{ ucfirst($report['turtle_condition']) }}</span>
+                                        <span class="info-value"><?php echo e(ucfirst($report['turtle_condition'])); ?></span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
-                        @endif
+                        <?php endif; ?>
 
                         <!-- Location Coordinates Block -->
-                        @if($report['latitude'] && $report['longitude'])
+                        <?php if($report['latitude'] && $report['longitude']): ?>
                             <div class="info-block">
                                 <div class="info-block-title">
                                     <span>🗺️</span> Coordinates
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Latitude</span>
-                                    <span class="info-value" style="font-family: 'Courier New', monospace;">{{ $report['latitude'] }}</span>
+                                    <span class="info-value" style="font-family: 'Courier New', monospace;"><?php echo e($report['latitude']); ?></span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Longitude</span>
-                                    <span class="info-value" style="font-family: 'Courier New', monospace;">{{ $report['longitude'] }}</span>
+                                    <span class="info-value" style="font-family: 'Courier New', monospace;"><?php echo e($report['longitude']); ?></span>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?>
 
                         <!-- Additional Notes Block -->
 
                     </div>
                 </div>
             </div>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">📸</div>
                 <h3>No reports available yet</h3>
                 <p>Check back soon for patrol reports with images</p>
             </div>
-        @endforelse
+        <?php endif; ?>
 
         <!-- Navigation Buttons -->
-        @if(count($reports) > 1)
+        <?php if(count($reports) > 1): ?>
             <button class="nav-button prev" onclick="previousSlide()" aria-label="Previous slide">‹</button>
             <button class="nav-button next" onclick="nextSlide()" aria-label="Next slide">›</button>
             
@@ -782,27 +781,28 @@
             <div class="swipe-hint">
                 <span>←</span> Swipe <span>→</span>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 
     <!-- Progress Indicators -->
-    @if(count($reports) > 0)
+    <?php if(count($reports) > 0): ?>
         <div class="progress-container">
             <div class="progress-counter" id="progress-counter">
-                1 / {{ count($reports) }}
+                1 / <?php echo e(count($reports)); ?>
+
             </div>
             
-            @if(count($reports) > 1)
+            <?php if(count($reports) > 1): ?>
                 <div class="progress-dots" id="progress-dots">
-                    @foreach($reports as $index => $report)
-                        <div class="progress-dot {{ $index === 0 ? 'active' : '' }}" 
-                             onclick="showSlide({{ $index }})"
-                             data-index="{{ $index }}"></div>
-                    @endforeach
+                    <?php $__currentLoopData = $reports; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $report): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="progress-dot <?php echo e($index === 0 ? 'active' : ''); ?>" 
+                             onclick="showSlide(<?php echo e($index); ?>)"
+                             data-index="<?php echo e($index); ?>"></div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Lightbox -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
@@ -1089,4 +1089,6 @@
         }
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make(auth()->check() && in_array(auth()->user()->role, ['patroller', 'admin']) ? 'layouts.patroller' : 'layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/patrol-map-gallery.blade.php ENDPATH**/ ?>

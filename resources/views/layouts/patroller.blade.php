@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -144,7 +145,7 @@
         /* Navigation styles */
         nav.fixed {
             position: fixed !important;
-            z-index: 9999 !important;
+            z-index: 99999 !important;
         }
 
         /* Hide Turbo Progress Bar */
@@ -160,9 +161,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(8px);
-            z-index: 9998;
+            z-index: 9000;
             display: none;
             justify-content: center;
             align-items: center;
@@ -221,7 +222,7 @@
     @include('patroller.navigation')
 
     <!-- Main Content -->
-    <div class="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+    <div class="relative z-0 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
         <div class="@yield('container-class', 'max-w-7xl') mx-auto">
             @yield('content')
         </div>
@@ -250,7 +251,7 @@
             // Add a small delay for smoother transition
             setTimeout(() => {
                 document.getElementById("page-loader").classList.remove("active");
-            }, 300);
+            }, 100);
         });
 
         // Handle case where user clicks back button or navigation is cancelled

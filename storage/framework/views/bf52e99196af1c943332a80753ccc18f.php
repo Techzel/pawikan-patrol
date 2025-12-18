@@ -25,10 +25,10 @@
             <div id="map" style="height: <?php echo e($mapHeight); ?>; width: 100%;"></div>
             
             <!-- Loading Overlay -->
-            <div id="loading" class="absolute inset-0 bg-black/50 flex items-center justify-center" style="z-index: 1000;">
-                <div class="bg-white rounded-lg p-6 text-center">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p class="text-gray-700">Loading patrol map...</p>
+            <div id="loading" class="absolute inset-0 bg-slate-900/95 backdrop-blur-md flex items-center justify-center transition-opacity duration-500" style="z-index: 1000;">
+                <div class="text-center">
+                    <div class="animate-spin rounded-full h-16 w-16 border-4 border-green-500 border-t-transparent mx-auto mb-4"></div>
+                    <p class="text-green-400 font-bold uppercase tracking-widest text-sm" style="font-family: 'Cinzel', serif;">Locating Patrol Reports...</p>
                 </div>
             </div>
         </div>
@@ -204,7 +204,12 @@
 
         function hideLoading() {
             const loading = document.getElementById('loading');
-            if (loading) loading.style.display = 'none';
+            if (loading) {
+                loading.style.opacity = '0';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                }, 500);
+            }
         }
 
         function createIcon() {
@@ -350,6 +355,9 @@
                     maxBounds: [[6.893881, 126.250941], [6.953881, 126.310941]]
                 });
 
+                // Hide loading overlay as map is now initialized
+                hideLoading();
+
                 if (window.L.MarkerClusterGroup) {
                     const markerCluster = L.markerClusterGroup();
                     validatedReports.forEach(report => {
@@ -365,7 +373,6 @@
                     }
                 }
 
-                hideLoading();
                 const closeBtn = document.getElementById('close-sidebar');
                 if (closeBtn) closeBtn.onclick = window.closeSidebar;
 
@@ -375,7 +382,7 @@
                 }
 
                 // Force resize check
-                setTimeout(() => mapInstance.invalidateSize(), 250);
+                setTimeout(() => mapInstance.invalidateSize(), 50);
 
             } catch (error) {
                 console.error('Leaflet Init Error:', error);
@@ -385,7 +392,8 @@
 
         document.addEventListener('turbo:load', function() {
             if (document.getElementById('map')) {
-                setTimeout(initializeMap, 300);
+                // Initialize map immediately for better performance
+                initializeMap();
             }
         });
         
