@@ -294,6 +294,13 @@
             </div>
         </div>
     </main>
+    
+    <!-- Status Update Form -->
+    <form id="statusForm" action="{{ route('admin.patrol-reports.update-status', $patrolReport) }}" method="POST" style="display: none;">
+        @csrf
+        @method('PATCH')
+        <input type="hidden" name="status" id="status">
+    </form>
 </div>
 
 <!-- Image Modal -->
@@ -407,10 +414,13 @@ function showToast(message, type = 'success') {
 }
 
 // Close modal on background click
-document.getElementById('imageModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeImageModal();
-    }
-});
+const imageModal = document.getElementById('imageModal');
+if (imageModal) {
+    imageModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeImageModal();
+        }
+    });
+}
 </script>
 @endsection

@@ -9,7 +9,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-white mb-2 " style="font-family: 'Poppins', sans-serif;">
-                            <i class="fas fa-file-alt mr-3 text-green-400"></i>Report Details
+                            <i class="fas fa-file-alt mr-3 text-ocean-400"></i>Report Details
                         </h1>
                         <p class="text-gray-300 " style="font-family: 'Poppins', sans-serif;">Report #{{ $report->id }} - {{ $report->title }}</p>
                     </div>
@@ -58,9 +58,9 @@
                 <!-- Main Content -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Basic Information -->
-                    <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                    <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                         <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                            <i class="fas fa-info-circle mr-2 text-green-400"></i>Basic Information
+                            <i class="fas fa-info-circle mr-2 text-ocean-400"></i>Basic Information
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -69,7 +69,7 @@
                                     @if($report->report_type == 'emergency') bg-red-500/20 text-red-300
                                     @elseif($report->report_type == 'incident') bg-orange-500/20 text-orange-300
                                     @elseif($report->report_type == 'maintenance') bg-blue-500/20 text-blue-300
-                                    @else bg-green-500/20 text-green-300 @endif" style="font-family: 'Poppins', sans-serif;">
+                                    @else bg-ocean-500/20 text-ocean-300 @endif" style="font-family: 'Poppins', sans-serif;">
                                     {{ ucfirst($report->report_type) }}
                                 </span>
                             </div>
@@ -103,17 +103,17 @@
                     </div>
 
                     <!-- Description -->
-                    <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                    <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                         <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                            <i class="fas fa-align-left mr-2 text-green-400"></i>Description
+                            <i class="fas fa-align-left mr-2 text-ocean-400"></i>Description
                         </h3>
                         <p class="text-gray-300 leading-relaxed " style="font-family: 'Poppins', sans-serif;">{{ $report->description }}</p>
                     </div>
 
                     <!-- Location Information -->
-                    <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                    <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                         <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                            <i class="fas fa-map-marker-alt mr-2 text-green-400"></i>Location Information
+                            <i class="fas fa-map-marker-alt mr-2 text-ocean-400"></i>Location Information
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -131,9 +131,9 @@
 
                     <!-- Turtle Information -->
                     @if($report->turtle_count || $report->turtle_species || $report->turtle_condition || $report->gender || $report->egg_count)
-                        <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                        <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                             <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                                <i class="fas fa-turtle mr-2 text-green-400"></i>Turtle Information
+                                <i class="fas fa-turtle mr-2 text-ocean-400"></i>Turtle Information
                             </h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 @if($report->turtle_count)
@@ -178,9 +178,9 @@
 
                     <!-- Additional Information -->
                     @if($report->weather_conditions || $report->immediate_actions || $report->recommendations)
-                        <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                        <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                             <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                                <i class="fas fa-clipboard-list mr-2 text-green-400"></i>Additional Information
+                                <i class="fas fa-clipboard-list mr-2 text-ocean-400"></i>Additional Information
                             </h3>
                             @if($report->weather_conditions)
                                 <div class="mb-4">
@@ -205,9 +205,9 @@
 
                     <!-- Images -->
                     @if($report->images && count($report->images) > 0)
-                        <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                        <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                             <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                                <i class="fas fa-images mr-2 text-green-400"></i>Images
+                                <i class="fas fa-images mr-2 text-ocean-400"></i>Images
                             </h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($report->images as $image)
@@ -228,9 +228,9 @@
                 <!-- Sidebar -->
                 <div class="space-y-6">
                     <!-- Report Status -->
-                    <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                    <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                         <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                            <i class="fas fa-chart-line mr-2 text-green-400"></i>Report Status
+                            <i class="fas fa-chart-line mr-2 text-ocean-400"></i>Report Status
                         </h3>
                         <div class="space-y-3">
                             <div class="flex items-center justify-between">
@@ -262,9 +262,9 @@
 
                     <!-- Admin Notes -->
                     @if($report->admin_notes)
-                        <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                        <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                             <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                                <i class="fas fa-sticky-note mr-2 text-green-400"></i>Admin Notes
+                                <i class="fas fa-sticky-note mr-2 text-ocean-400"></i>Admin Notes
                             </h3>
                             <p class="text-gray-300 " style="font-family: 'Poppins', sans-serif;">{{ $report->admin_notes }}</p>
                         </div>
@@ -272,9 +272,9 @@
 
                     <!-- Actions -->
                     @if(in_array($report->status, ['submitted', 'rejected', 'needs_correction']))
-                        <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                        <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                             <h3 class="text-lg font-semibold text-white mb-4 " style="font-family: 'Poppins', sans-serif;">
-                                <i class="fas fa-cogs mr-2 text-green-400"></i>Actions
+                                <i class="fas fa-cogs mr-2 text-ocean-400"></i>Actions
                             </h3>
                             <div class="space-y-3">
                                 <a href="{{ route('patroller.reports.edit', $report) }}" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-center block " style="font-family: 'Poppins', sans-serif;">
@@ -301,7 +301,7 @@
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeConfirmModal()"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-green-500/30">
+        <div class="inline-block align-bottom bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-ocean-500/30">
             <div class="px-6 pt-6 pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12">

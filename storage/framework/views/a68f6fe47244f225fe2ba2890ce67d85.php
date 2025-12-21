@@ -22,6 +22,7 @@
     <script src="https://cdn.tailwindcss.com/3.4.1"></script>
     <!-- Hotwire Turbo -->
     <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
+    <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
     
     <!-- External Asset CDNs (Persistent for Turbo) -->
     <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
@@ -77,12 +78,6 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-        }
-        
-        /* Hide Turbo Progress Bar */
-        .turbo-progress-bar {
-            visibility: hidden !important;
-            display: none !important;
         }
         
         /* Optional: Use Poppins for specific elements if needed */
@@ -172,24 +167,11 @@
             background-color: rgba(20, 184, 166, 0.4) !important;
         }
 
-        /* Ocean-themed background animation */
-        .ocean-bg {
-            background: linear-gradient(45deg, #0f4c75, #1b6ec2, #2e8b57, #4682b4);
-            background-size: 400% 400%;
-            animation: oceanWave 15s ease-in-out infinite;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
+        /* Ocean-themed background removed */
 
-        /* Enhanced body background */
+        /* Standardized body background */
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
-            background-size: 400% 400%;
-            animation: oceanWave 20s ease-in-out infinite;
+            background-color: #111827; /* bg-gray-900 */
             min-height: 100vh;
         }
 
@@ -332,9 +314,8 @@
     
     <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
-<body class="text-white overflow-x-hidden scroll-smooth <?php echo $__env->yieldContent('bodyClass'); ?>">
-    <!-- Ocean Background Layer -->
-    <div class="ocean-bg"></div>
+<body class="text-white overflow-x-hidden scroll-smooth <?php echo $__env->yieldContent('bodyClass'); ?>" style="background-color: #111827;">
+    <!-- Ocean Background Layer Removed -->
     
     <!-- Floating Particles Layer -->
     <div id="particles" class="fixed inset-0 pointer-events-none" style="z-index: 1;"></div>
@@ -446,19 +427,69 @@
             }
         }
 
-        // GLOBAL AUDIO CLEANUP: Install Global Listener (Once)
-        if (!window.audioCleanupInstalled) {
-            const cleanupAudio = () => {
-                if (window.currentGameAudio) {
-                    window.currentGameAudio.pause();
-                    window.currentGameAudio.currentTime = 0;
-                    window.currentGameAudio = null;
+        /**
+         * GLOBAL AUDIO CLEANUP SYSTEM (Revised)
+         * Ensures background music stops reliably when navigating away,
+         * but does not interfere with playback on the current page.
+         */
+        (function() {
+            // Track media elements globally to ensure they can be paused even if detached
+            const activeMedia = new Set();
+            const originalPlay = HTMLMediaElement.prototype.play;
+
+            // TRACKER & OVERRIDE
+            HTMLMediaElement.prototype.play = function() {
+                // If this is a background music element and something else is already playing,
+                // we might want to stop the other thing. But for now, just track it.
+                activeMedia.add(this);
+                
+                // Idempotency: If this element is already playing perfectly fine, just return.
+                // This helps prevent "scrambled" sound if turbo:load fires too many times.
+                if (!this.paused && this.currentTime > 0) {
+                    return Promise.resolve();
                 }
+
+                return originalPlay.apply(this, arguments);
             };
-            document.addEventListener('turbo:before-render', cleanupAudio);
-            document.addEventListener('turbo:before-visit', cleanupAudio);
-            window.audioCleanupInstalled = true;
-        }
+
+            const stopAllAudio = () => {
+                // Stop everything we know about
+                activeMedia.forEach(media => {
+                    try {
+                        media.pause();
+                        media.currentTime = 0;
+                    } catch (e) {}
+                });
+                activeMedia.clear();
+
+                // Stop everything in DOM
+                document.querySelectorAll('audio, video').forEach(media => {
+                    try {
+                        media.pause();
+                        media.currentTime = 0;
+                    } catch (e) {}
+                });
+
+                if (window.currentGameAudio) {
+                    try {
+                        window.currentGameAudio.pause();
+                        window.currentGameAudio.currentTime = 0;
+                    } catch (e) {}
+                }
+                
+                if (typeof isMusicPlaying !== 'undefined') window.isMusicPlaying = false;
+            };
+
+            // Basic navigation hooks
+            document.addEventListener('turbo:before-visit', stopAllAudio);
+            document.addEventListener('turbo:before-cache', stopAllAudio);
+            // document.addEventListener('turbo:render', stopAllAudio); // Removed to prevent stopping music on valid page loads
+            window.addEventListener('popstate', stopAllAudio);
+            window.addEventListener('beforeunload', stopAllAudio);
+            
+            window.forceStopAllAudio = stopAllAudio;
+            window.audioCleanupSystemInstalled = true;
+        })();
 
         // Initialize everything when DOM is loaded or Turbo navigates
         document.addEventListener('turbo:load', function() {
@@ -540,13 +571,7 @@
             });
         });
 
-        // Global Audio Cleanup for Turbo transitions
-        document.addEventListener('turbo:before-visit', function() {
-            document.querySelectorAll('audio').forEach(audio => {
-                audio.pause();
-                audio.currentTime = 0;
-            });
-        });
+
 
         // Handle window resize for particles
         window.addEventListener('resize', function() {
@@ -562,6 +587,7 @@
     </script>
     
     <?php echo $__env->yieldPushContent('scripts'); ?>
+    <?php echo $__env->make('auth.modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 </body>
 </html>
 <?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/layouts/app.blade.php ENDPATH**/ ?>

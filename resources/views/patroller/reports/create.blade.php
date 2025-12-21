@@ -116,40 +116,42 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.8);
-        z-index: 9999;
+        z-index: 100000;
         backdrop-filter: blur(5px);
     }
 
     #gps-map-modal.active {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
+        padding-top: 6rem;
     }
 
     .map-modal-content {
         background: #1f2937;
         border-radius: 16px;
         padding: 24px;
-        max-width: 800px;
+        max-width: 600px;
         width: 90%;
         max-height: 90vh;
         overflow: auto;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(16, 185, 129, 0.3);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(20, 184, 166, 0.3);
     }
 
     #gps-map {
         width: 100%;
-        height: 400px;
+        height: 300px;
         border-radius: 12px;
         margin-top: 16px;
-        border: 2px solid rgba(16, 185, 129, 0.3);
+        border: 2px solid rgba(20, 184, 166, 0.3);
     }
 
     .leaflet-popup-content-wrapper {
         background: #1f2937;
         color: #f3f4f6;
-        border: 1px solid rgba(16, 185, 129, 0.5);
+        border: 1px solid rgba(20, 184, 166, 0.5);
     }
 
     .leaflet-popup-tip {
@@ -209,7 +211,7 @@
             // Add popup with coordinates
             gpsMarker.bindPopup(`
                 <div style="font-family: 'Poppins', sans-serif; padding: 8px;">
-                    <strong style="color: #10b981; font-size: 14px;">📍 GPS Location Acquired</strong><br>
+                    <strong style="color: #14b8a6; font-size: 14px;">📍 GPS Location Acquired</strong><br>
                     <div style="margin-top: 8px; font-size: 12px;">
                         <strong>Latitude:</strong> ${lat}°<br>
                         <strong>Longitude:</strong> ${lng}°<br>
@@ -220,14 +222,17 @@
             
             // Add accuracy circle
             L.circle([lat, lng], {
-                color: '#10b981',
-                fillColor: '#10b981',
+                color: '#14b8a6',
+                fillColor: '#14b8a6',
                 fillOpacity: 0.1,
                 radius: accuracy
             }).addTo(gpsMap);
             
             // Invalidate size to fix display issues
-            setTimeout(() => gpsMap.invalidateSize(), 100);
+            setTimeout(() => {
+                gpsMap.invalidateSize();
+                gpsMap.panTo([lat, lng]);
+            }, 100);
         }, 100);
     }
 
@@ -292,11 +297,11 @@
                 locationButton.disabled = false;
                 locationButton.classList.remove('opacity-75');
                 locationButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>GPS Lock Acquired!';
-                locationButton.classList.add('bg-green-600');
+                locationButton.classList.add('bg-ocean-600');
                 
                 setTimeout(() => {
                     locationButton.innerHTML = originalButtonHTML;
-                    locationButton.classList.remove('bg-green-600');
+                    locationButton.classList.remove('bg-ocean-600');
                 }, 3000);
                 
                 // Show detailed accuracy information
@@ -311,7 +316,7 @@
                 
                 if (accuracy <= 5) {
                     accuracyLevel = 'Excellent';
-                    accuracyClass = 'bg-green-50 border-green-300 text-green-800';
+                    accuracyClass = 'bg-ocean-50 border-ocean-300 text-ocean-800';
                     accuracyIcon = '🎯';
                     accuracyAdvice = 'Sub-5m accuracy! Perfect for precise mapping.';
                 } else if (accuracy <= 10) {
@@ -371,13 +376,16 @@
                         errorMessage = "❌ GPS Position Unavailable\n\nCannot determine your location. Please ensure:\n\n• You are outdoors or near a window\n• GPS is enabled on your device\n• Location services are allowed for this website\n• Your device has GPS capability";
                         break;
                     case error.TIMEOUT:
-                        errorMessage = "⏱️ GPS Timeout\n\nGPS signal acquisition took too long.\n\nTips for better GPS signal:\n• Move to an area with clear sky view\n• Ensure GPS/Location is enabled on your device\n• Wait a moment for GPS to initialize, then try again\n• If indoors, move closer to a window";
+                        console.warn("GPS Timeout - Alert suppressed");
+                        // errorMessage = "⏱️ GPS Timeout\n\nGPS signal acquisition took too long.\n\nTips for better GPS signal:\n• Move to an area with clear sky view\n• Ensure GPS/Location is enabled on your device\n• Wait a moment for GPS to initialize, then try again\n• If indoors, move closer to a window";
                         break;
                     default:
                         errorMessage = "❌ GPS Error\n\nAn unknown error occurred while getting your location.\n\nPlease try again or enter coordinates manually.";
                 }
                 
-                alert(errorMessage);
+                if (errorMessage) {
+                    alert(errorMessage);
+                }
                 console.error('GPS Error:', error);
             },
             options
@@ -430,13 +438,13 @@
             <!-- Header -->
             <div class="mb-8">
                 <div class="flex items-center mb-4">
-                    <a href="{{ route('patroller.dashboard') }}" class="text-green-400 hover:text-green-300 mr-4">
+                    <a href="{{ route('patroller.dashboard') }}" class="text-ocean-400 hover:text-ocean-300 mr-4">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
                     </a>
                     <h1 class="text-3xl font-bold text-white" style="font-family: 'Poppins', sans-serif;">
-                        <svg class="w-8 h-8 inline-block mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 inline-block mr-3 text-ocean-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>Submit New Report
                     </h1>
@@ -481,7 +489,7 @@
                 
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6" style="font-family: 'Poppins', sans-serif;">
-                        <svg class="w-5 h-5 inline-block mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 inline-block mr-2 text-ocean-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                         </svg>Basic Information
                     </h3>
@@ -534,7 +542,7 @@
                                    placeholder="e.g., 6.9363">
                             
                             <!-- GPS Interaction UI - Server Rendered to avoid delay -->
-                            <button type="button" id="gps-location-btn" class="mt-3 px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white text-xs rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-green-500/20 active:scale-95 uppercase tracking-widest font-bold" style="font-family: 'Cinzel', serif !important;">
+                            <button type="button" id="gps-location-btn" class="mt-3 px-6 py-2.5 bg-ocean-500 hover:bg-ocean-600 text-white text-xs rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-ocean-500/20 active:scale-95 uppercase tracking-widest font-bold" style="font-family: 'Cinzel', serif !important;">
                                 <i class="fas fa-satellite-dish"></i>
                                 <span>Get GPS Coordinates</span>
                             </button>
@@ -575,7 +583,7 @@
                 <!-- Turtle Information (if applicable) -->
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6" style="font-family: 'Poppins', sans-serif;">
-                        <svg class="w-5 h-5 inline-block mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 inline-block mr-2 text-ocean-400" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
                         </svg>Turtle Information
                     </h3>
@@ -639,7 +647,7 @@
                 <!-- Detailed Description -->
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6" style="font-family: 'Poppins', sans-serif;">
-                        <svg class="w-5 h-5 inline-block mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 inline-block mr-2 text-ocean-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
                         </svg>Detailed Information
                     </h3>
@@ -679,7 +687,7 @@
                 <!-- Images -->
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6" style="font-family: 'Poppins', sans-serif;">
-                        <svg class="w-5 h-5 inline-block mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 inline-block mr-2 text-ocean-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                         </svg>Evidence Photos
                     </h3>
@@ -699,7 +707,7 @@
                         Cancel
                     </a>
                     <button type="submit" 
-                            class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-md transition duration-300" style="font-family: 'Poppins', sans-serif;">
+                            class="px-6 py-3 bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white font-bold rounded-md transition duration-300" style="font-family: 'Poppins', sans-serif;">
                         <svg class="w-5 h-5 inline-block mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
                         </svg>Submit Report
@@ -712,7 +720,7 @@
                 <div class="map-modal-content">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xl font-bold text-white flex items-center gap-2" style="font-family: 'Poppins', sans-serif;">
-                            <i class="fas fa-map-marked-alt text-green-400"></i>
+                            <i class="fas fa-map-marked-alt text-ocean-400"></i>
                             GPS Location Preview
                         </h3>
                         <button onclick="closeMapModal()" class="text-gray-400 hover:text-white transition-colors">
@@ -727,7 +735,7 @@
                     </p>
                     <div id="gps-map"></div>
                     <div class="mt-4 flex justify-end">
-                        <button onclick="closeMapModal()" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif;">
+                        <button onclick="closeMapModal()" class="px-6 py-2 bg-ocean-600 hover:bg-ocean-700 text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif;">
                             <i class="fas fa-check mr-2"></i>Confirm Location
                         </button>
                     </div>

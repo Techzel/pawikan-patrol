@@ -34,7 +34,7 @@
     <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
     
     <!-- Audio Elements -->
-    <audio id="bg-music" loop>
+    <audio id="bg-music">
         <source src="<?php echo e(asset('audio/ocean-bg.mp3')); ?>" type="audio/mpeg">
     </audio>
     <audio id="click-sound">
@@ -217,7 +217,7 @@
 
         <!-- Guest Mode Modal (Animated) --> 
         <?php if(auth()->guard()->guest()): ?>
-        <div id="guest-modal" class="absolute inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-700 ease-out hidden pointer-events-auto cursor-default"> <!-- Start with background effect -->
+        <div id="guest-modal" class="absolute inset-0 z-[100] flex items-center justify-center bg-transparent backdrop-blur-0 transition-all duration-700 ease-out hidden pointer-events-auto cursor-default"> <!-- Start with background effect -->
             <div id="guest-modal-content" class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out">
                 <button onclick="window.showPageLoader(); window.location.href = '<?php echo e(route('games.index')); ?>'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -243,8 +243,7 @@
         </div>
         <?php endif; ?>
 
-    <!-- Game Activity Script -->
-    <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
+
 
     <!-- Scripts -->
 </div>
@@ -258,65 +257,197 @@
         const ctx = canvas.getContext('2d');
         // ... (rest of the game code remains inside the IIFE)
         
-        // UI Refs
-        const mainStartContainer = document.getElementById('mainStartContainer');
-        const gameOverScreen = document.getElementById('gameOverScreen');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        const levelDisplay = document.getElementById('levelDisplay');
-        const healthDisplay = document.getElementById('healthDisplay');
-        const finalScore = document.getElementById('finalScore');
-        const saveStatus = document.getElementById('saveStatus');
-        const difficultyLabel = document.getElementById('difficultyLabel');
-        const timerDisplay = document.getElementById('timerDisplay');
+        // UI Refs (Queried dynamically to handle Turbo DOM replacement)
+        let mainStartContainer, gameOverScreen, scoreDisplay, levelDisplay, healthDisplay, finalScore, saveStatus, difficultyLabel, timerDisplay;
 
         // Music Controls
-        const musicToggle = document.getElementById('music-toggle');
-        const musicIcon = document.getElementById('music-icon');
-        const volumeSlider = document.getElementById('volume-slider');
-        const volumePercent = document.getElementById('volume-percent');
-        const bgMusic = document.getElementById('bg-music');
-        if (bgMusic) window.currentGameAudio = bgMusic;
+        let musicToggle, musicIcon, volumeSlider, volumePercent, bgMusic;
         let isMusicPlaying = false;
+        let isGameInitialized = false;
 
-        // Initialize Audio
-        if (bgMusic) {
-            bgMusic.volume = 0.7;
-        }
+        const refreshUIElements = () => {
+            musicToggle = document.getElementById('music-toggle');
+            musicIcon = document.getElementById('music-icon');
+            volumeSlider = document.getElementById('volume-slider');
+            volumePercent = document.getElementById('volume-percent');
+            bgMusic = document.getElementById('bg-music');
+            if (bgMusic) window.currentGameAudio = bgMusic;
+            
+            mainStartContainer = document.getElementById('mainStartContainer');
+            gameOverScreen = document.getElementById('gameOverScreen');
+            scoreDisplay = document.getElementById('scoreDisplay');
+            levelDisplay = document.getElementById('levelDisplay');
+            healthDisplay = document.getElementById('healthDisplay');
+            finalScore = document.getElementById('finalScore');
+            saveStatus = document.getElementById('saveStatus');
+            difficultyLabel = document.getElementById('difficultyLabel');
+            timerDisplay = document.getElementById('timerDisplay');
+        };
+
+        // Expose function to start music from outside
+        window.startPawikanMusic = function() {
+            refreshUIElements();
+            if (!bgMusic) return;
+            bgMusic.muted = false;
+            bgMusic.volume = volumeSlider ? volumeSlider.value / 100 : 0.7;
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                updateMusicIcon();
+            }).catch(e => console.log('Manual music start failed:', e));
+        };
+
+        // Expose closeGuestModal globally but from inside this closure
+        window.closeGuestModal = function() {
+            const warningAudio = document.getElementById('warning-audio');
+            const guestModal = document.getElementById('guest-modal');
+            const guestModalContent = document.getElementById('guest-modal-content');
+            
+            if (warningAudio) {
+                warningAudio.pause();
+                warningAudio.currentTime = 0;
+            }
+            if (guestModalContent) {
+                guestModalContent.classList.remove('scale-100', 'opacity-100');
+                guestModalContent.classList.add('scale-75', 'opacity-0');
+            }
+            
+            window.startPawikanMusic();
+
+            if (guestModal) {
+                guestModal.classList.remove('bg-black/90', 'backdrop-blur-md');
+                guestModal.classList.add('bg-black/0', 'backdrop-blur-0');
+                setTimeout(() => guestModal.remove(), 700);
+            }
+        };
 
         // Music Event Listeners
-        if (musicToggle && bgMusic) {
-            musicToggle.addEventListener('click', () => {
-                if (bgMusic.paused) {
+        // Initialize Event Listeners
+        const setupEventListeners = () => {
+            if (musicToggle && bgMusic && !musicToggle.getAttribute('data-has-listener')) {
+                musicToggle.addEventListener('click', () => {
+                    if (bgMusic.paused) {
+                        bgMusic.play().then(() => {
+                            isMusicPlaying = true;
+                            updateMusicIcon();
+                        }).catch(e => console.log('Audio playback failed:', e));
+                    } else {
+                        bgMusic.pause();
+                        isMusicPlaying = false;
+                        updateMusicIcon();
+                    }
+                });
+                musicToggle.setAttribute('data-has-listener', 'true');
+            }
+
+            if (volumeSlider && bgMusic && !volumeSlider.getAttribute('data-has-listener')) {
+                volumeSlider.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    bgMusic.volume = value / 100;
+                    if (volumePercent) volumePercent.textContent = value + '%';
+                    updateMusicIcon();
+                });
+                volumeSlider.setAttribute('data-has-listener', 'true');
+            }
+            
+            // Precision Loop to hide MP3 gaps (User request: "continues looping effect")
+            if (bgMusic && !bgMusic.getAttribute('data-has-loop-listener')) {
+                bgMusic.addEventListener('timeupdate', function() {
+                    const buffer = 0.2; // 200ms
+                    if (this.currentTime > this.duration - buffer && !this.paused) {
+                        this.currentTime = 0;
+                        this.play().catch(e => {});
+                    }
+                });
+                bgMusic.setAttribute('data-has-loop-listener', 'true');
+            }
+        };
+
+        // Initialize Audio
+        const initPawikanAudio = () => {
+            // Refresh all DOM references
+            refreshUIElements();
+            setupEventListeners();
+            
+            // Element Lookup
+            if (!document.getElementById('pawikan-game-container')) return;
+
+            if (!bgMusic) return;
+            
+            // Prevent double-initialization
+            if (isGameInitialized) return;
+            isGameInitialized = true;
+
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+            bgMusic.volume = 0.7;
+            bgMusic.muted = false;
+            bgMusic.loop = true;
+            
+            // Handle Modal Animation & Warning Audio
+            const warningAudio = document.getElementById('warning-audio');
+            const guestModal = document.getElementById('guest-modal');
+            const guestModalContent = document.getElementById('guest-modal-content');
+            
+            if (guestModal && guestModalContent) {
+                guestModal.classList.remove('hidden');
+                setTimeout(() => {
+                    guestModal.classList.remove('bg-transparent', 'backdrop-blur-0');
+                    guestModal.classList.add('bg-black/90', 'backdrop-blur-md');
+                    guestModalContent.classList.remove('scale-75', 'opacity-0');
+                    guestModalContent.classList.add('scale-100', 'opacity-100');
+                    
+                    if (warningAudio) {
+                        setTimeout(() => {
+                            warningAudio.play().catch(e => console.log('Warning audio blocked'));
+                        }, 300);
+                    }
+                }, 100);
+            }
+
+            // Only autoplay if we are actually on the game page AND NO MODAL is showing
+            if (document.getElementById('pawikan-game-container')) {
+                if (guestModal && !guestModal.classList.contains('hidden')) {
+                    isMusicPlaying = false;
+                    updateMusicIcon();
+                    return;
+                }
+
+                // Wait for audio readiness instead of arbitrary timeout
+                if (window.pawikanAutoplayTimer) clearTimeout(window.pawikanAutoplayTimer);
+                
+                const attemptAutoplay = () => {
+                     // Double check context
+                    if (!document.getElementById('pawikan-game-container')) return;
+                    
                     bgMusic.play().then(() => {
                         isMusicPlaying = true;
                         updateMusicIcon();
-                    }).catch(e => console.log('Audio playback failed:', e));
+                    }).catch(e => {
+                        console.log('Autoplay prevented:', e);
+                        isMusicPlaying = false;
+                        updateMusicIcon();
+                        
+                        // Fallback: Start on first click
+                        document.addEventListener('click', function startMusicOnClick() {
+                            bgMusic.play().then(() => {
+                                isMusicPlaying = true;
+                                updateMusicIcon();
+                            });
+                            document.removeEventListener('click', startMusicOnClick);
+                        }, { once: true });
+                    });
+                };
+
+                if (bgMusic.readyState >= 2) {
+                    attemptAutoplay();
                 } else {
-                    bgMusic.pause();
-                    isMusicPlaying = false;
-                    updateMusicIcon();
+                    bgMusic.addEventListener('canplay', () => attemptAutoplay(), { once: true });
                 }
-            });
+            }
+        };
 
-            // Precision Loop to hide MP3 gaps (User request: "continues looping effect")
-            bgMusic.addEventListener('timeupdate', function() {
-                // Return to start slightly before the technical end to hide silent trailing padding
-                const buffer = 0.2; // 200ms
-                if (this.currentTime > this.duration - buffer && this.loop) {
-                    this.currentTime = 0;
-                    this.play().catch(e => {});
-                }
-            });
-        }
-
-        if (volumeSlider && bgMusic) {
-            volumeSlider.addEventListener('input', (e) => {
-                const value = e.target.value;
-                bgMusic.volume = value / 100;
-                if (volumePercent) volumePercent.textContent = value + '%';
-                updateMusicIcon();
-            });
-        }
+        // Standard Turbo Init - Executed immediately as script is at end of body
+        initPawikanAudio();
 
         function updateMusicIcon() {
             if (!bgMusic || bgMusic.paused) {
@@ -1007,71 +1138,47 @@
 
 
         // Stop music when navigating away via Turbo
+        // Robust Stop Music Function
+        // Stop music when navigating away via Turbo
+        // Robust Stop Music Function
         const stopMusic = () => {
+             if (window.pawikanAutoplayTimer) clearTimeout(window.pawikanAutoplayTimer);
+             
+             // KILL GAME LOOP & TIMERS
+             gameActive = false;
+             if (animationId) cancelAnimationFrame(animationId);
+             if (timerInterval) clearInterval(timerInterval);
+
             if (bgMusic) {
                 bgMusic.pause();
-                isMusicPlaying = false;
+                bgMusic.currentTime = 0;
             }
+            if (typeof isMusicPlaying !== 'undefined') isMusicPlaying = false;
+            isGameInitialized = false;
+
+            // Broad cleanup for any other audio elements
+            document.querySelectorAll('audio').forEach(el => {
+                try {
+                    el.pause();
+                    el.currentTime = 0;
+                } catch(e) {}
+            });
+
+            // Clean up listeners
             document.removeEventListener('turbo:before-visit', stopMusic);
-            document.removeEventListener('turbo:before-render', stopMusic);
+            document.removeEventListener('turbo:before-cache', stopMusic);
             window.removeEventListener('beforeunload', stopMusic);
+            window.removeEventListener('popstate', stopMusic);
         };
 
         document.addEventListener('turbo:before-visit', stopMusic);
-        document.addEventListener('turbo:before-render', stopMusic);
+        document.addEventListener('turbo:before-cache', stopMusic);
         window.addEventListener('beforeunload', stopMusic);
+        window.addEventListener('popstate', stopMusic);
 
         // Guest Modal Animation & Sound
-        <?php if(auth()->guard()->guest()): ?>
-        document.addEventListener('turbo:load', function() {
-            const guestModal = document.getElementById('guest-modal');
-            const guestModalContent = document.getElementById('guest-modal-content');
-            const warningAudio = document.getElementById('warning-audio');
-            
-            if (guestModal && guestModalContent) {
-                guestModal.classList.remove('hidden'); // Make sure it's displayable first
-                
-                setTimeout(() => {
-                    // Animate the content
-                    guestModalContent.classList.remove('scale-75', 'opacity-0');
-                    guestModalContent.classList.add('scale-100', 'opacity-100');
-                    
-                    // Play warning sound (matching Memory Match)
-                    if (warningAudio) {
-                        setTimeout(() => {
-                            warningAudio.currentTime = 0;
-                            warningAudio.play().catch(e => console.log('Warning audio autoplay prevented:', e));
-                        }, 300);
-                    }
-                }, 100);
-            }
-        });
-
-        window.closeGuestModal = function() {
-            const guestModal = document.getElementById('guest-modal');
-            const guestModalContent = document.getElementById('guest-modal-content');
-            const warningAudio = document.getElementById('warning-audio');
-            
-            if (warningAudio) {
-                warningAudio.pause();
-                warningAudio.currentTime = 0;
-            }
-            
-            if (guestModalContent) {
-                guestModalContent.classList.remove('scale-100', 'opacity-100');
-                guestModalContent.classList.add('scale-75', 'opacity-0');
-            }
-            
-            if (guestModal) {
-                guestModal.classList.remove('bg-black/90', 'backdrop-blur-md');
-                guestModal.classList.add('bg-black/0', 'backdrop-blur-0');
-                
-                setTimeout(() => {
-                    guestModal.remove();
-                }, 700);
-            }
-        }
-        <?php endif; ?>
+        // Modal and Audio logic consolidated into main game script closure to prevent audio collisions
+        // Modal and Audio logic consolidated into main game script closure to prevent audio collisions
     })();
 </script>
 <?php $__env->stopPush(); ?>

@@ -368,7 +368,7 @@
                 <iframe id="green-turtle-iframe" title="Green Sea Turtle" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true"
                         allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport
                         execution-while-not-rendered web-share
-                        src="https://sketchfab.com/models/422f77a6fba64e7e8969984e552f111a/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0">
+                        src="https://sketchfab.com/models/422f77a6fba64e7e8969984e552f111a/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&origin=<?php echo e(request()->getSchemeAndHttpHost()); ?>">
                 </iframe>
             </div>
             
@@ -420,7 +420,7 @@
                 <iframe id="hawksbill-turtle-iframe" title="Hawksbill Turtle" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true"
                         allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport
                         execution-while-not-rendered web-share
-                        src="https://sketchfab.com/models/0c0316cbed524374ab219f6d94b105c9/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0">
+                        src="https://sketchfab.com/models/0c0316cbed524374ab219f6d94b105c9/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&origin=<?php echo e(request()->getSchemeAndHttpHost()); ?>">
                 </iframe>
             </div>
             
@@ -472,7 +472,7 @@
                 <iframe id="olive-ridley-iframe" title="Olive Ridley" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" 
                         allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport 
                         execution-while-not-rendered web-share 
-                        src="https://sketchfab.com/models/acbe292c128246ed8e532bfd9e646a03/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0">
+                        src="https://sketchfab.com/models/acbe292c128246ed8e532bfd9e646a03/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&origin=<?php echo e(request()->getSchemeAndHttpHost()); ?>">
                 </iframe>
             </div>
             
@@ -545,79 +545,71 @@
             'Flipper': 'Compact, paddle-shaped flippers with typically one or two claws enable both powerful swimming for long migrations and precise digging during arribadas when thousands nest simultaneously on Dahican beaches.'
         };
 
+        const explorers = [
+            { id: 'green-turtle-iframe', model: '422f77a6fba64e7e8969984e552f111a', callback: api => greenTurtleApi = api },
+            { id: 'hawksbill-turtle-iframe', model: '0c0316cbed524374ab219f6d94b105c9', callback: api => hawksbillTurtleApi = api },
+            { id: 'olive-ridley-iframe', model: 'acbe292c128246ed8e532bfd9e646a03', callback: api => oliveRidleyApi = api }
+        ];
+
         function initExplorers() {
-            const greenIframe = document.getElementById('green-turtle-iframe');
-            if (greenIframe && window.Sketchfab) {
-                const client = new Sketchfab(greenIframe);
-                client.init('422f77a6fba64e7e8969984e552f111a', {
-                    success: function(api) { greenTurtleApi = api; api.start(); },
-                    error: function() { console.error('Sketchfab Error'); },
-                    autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, ui_watermark: 0
-                });
-            }
-
-            const hawksbillIframe = document.getElementById('hawksbill-turtle-iframe');
-            if (hawksbillIframe && window.Sketchfab) {
-                const client = new Sketchfab(hawksbillIframe);
-                client.init('0c0316cbed524374ab219f6d94b105c9', {
-                    success: function(api) { hawksbillTurtleApi = api; api.start(); },
-                    error: function() { console.error('Hawksbill Error'); },
-                    autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, ui_watermark: 0
-                });
-            }
-
-            const oliveIframe = document.getElementById('olive-ridley-iframe');
-            if (oliveIframe && window.Sketchfab) {
-                const client = new Sketchfab(oliveIframe);
-                client.init('acbe292c128246ed8e532bfd9e646a03', {
-                    success: function(api) { oliveRidleyApi = api; api.start(); },
-                    error: function() { console.error('Olive Ridley Error'); },
-                    autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, ui_watermark: 0
-                });
-            }
+            if (!window.Sketchfab) return;
+            
+            explorers.forEach(config => {
+                const el = document.getElementById(config.id);
+                if (el) {
+                    const client = new Sketchfab(el);
+                    client.init(config.model, {
+                        success: config.callback,
+                        error: () => console.error(config.id + ' Error'),
+                        autostart: 1, preload: 1, ui_controls: 1, ui_infos: 0, ui_watermark: 0
+                    });
+                }
+            });
         }
 
         window.activatePart = function(partName, element) {
             if (greenTurtleApi && cameraCoordinatesGreen[partName]) {
-                const coords = cameraCoordinatesGreen[partName];
-                greenTurtleApi.setCameraLookAt(coords.position, coords.target, 2.0);
+                greenTurtleApi.setCameraLookAt(cameraCoordinatesGreen[partName].position, cameraCoordinatesGreen[partName].target, 2.0);
             }
             document.querySelectorAll('.anatomy-menu-item').forEach(item => item.classList.remove('active'));
             if (element) element.classList.add('active');
-            const descriptionText = document.getElementById('description-text');
-            if (descriptionText && partDescriptions[partName]) descriptionText.textContent = partDescriptions[partName];
+            const desc = document.getElementById('description-text');
+            if (desc) desc.textContent = partDescriptions[partName];
         };
 
         window.activatePartHawksbill = function(partName, element) {
             if (hawksbillTurtleApi && cameraCoordinatesHawksbill[partName]) {
-                const coords = cameraCoordinatesHawksbill[partName];
-                hawksbillTurtleApi.setCameraLookAt(coords.position, coords.target, 2.0);
+                hawksbillTurtleApi.setCameraLookAt(cameraCoordinatesHawksbill[partName].position, cameraCoordinatesHawksbill[partName].target, 2.0);
             }
-            const menuItems = element.closest('.anatomy-menu').querySelectorAll('.anatomy-menu-item');
-            menuItems.forEach(item => item.classList.remove('active'));
+            const items = element.closest('.anatomy-menu').querySelectorAll('.anatomy-menu-item');
+            items.forEach(item => item.classList.remove('active'));
             if (element) element.classList.add('active');
-            const descriptionText = document.getElementById('description-text-hawksbill');
-            if (descriptionText && partDescriptionsHawksbill[partName]) descriptionText.textContent = partDescriptionsHawksbill[partName];
+            const desc = document.getElementById('description-text-hawksbill');
+            if (desc) desc.textContent = partDescriptionsHawksbill[partName];
         };
 
         window.activatePartOlive = function(partName, element) {
             if (oliveRidleyApi && cameraCoordinatesOlive[partName]) {
-                const coords = cameraCoordinatesOlive[partName];
-                oliveRidleyApi.setCameraLookAt(coords.position, coords.target, 2.0);
+                oliveRidleyApi.setCameraLookAt(cameraCoordinatesOlive[partName].position, cameraCoordinatesOlive[partName].target, 2.0);
             }
-            const menuItems = element.closest('.anatomy-menu').querySelectorAll('.anatomy-menu-item');
-            menuItems.forEach(item => item.classList.remove('active'));
+            const items = element.closest('.anatomy-menu').querySelectorAll('.anatomy-menu-item');
+            items.forEach(item => item.classList.remove('active'));
             if (element) element.classList.add('active');
-            const descriptionText = document.getElementById('description-text-olive');
-            if (descriptionText && partDescriptionsOlive[partName]) descriptionText.textContent = partDescriptionsOlive[partName];
+            const desc = document.getElementById('description-text-olive');
+            if (desc) desc.textContent = partDescriptionsOlive[partName];
         };
 
-        // Turbo Load Listener
-        document.addEventListener('turbo:load', function() {
-            if (document.getElementById('green-turtle-iframe')) {
-                initExplorers();
-            }
+        function cleanup() {
+            greenTurtleApi = null;
+            hawksbillTurtleApi = null;
+            oliveRidleyApi = null;
+        }
+
+        document.addEventListener('turbo:load', () => {
+            if (document.getElementById('green-turtle-iframe')) initExplorers();
         });
+
+        document.addEventListener('turbo:before-visit', cleanup, { once: true });
     })();
 </script>
 

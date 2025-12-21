@@ -484,7 +484,7 @@
                             <iframe 
                                 id="amihan-video"
                                 class="absolute top-0 left-0 w-full h-full rounded-xl" 
-                                src="https://www.youtube.com/embed/nzKU4c66uP8?enablejsapi=1" 
+                                src="https://www.youtube.com/embed/nzKU4c66uP8?enablejsapi=1&origin={{ request()->getSchemeAndHttpHost() }}" 
                                 title="Quest for Love: Amihan sa Dahican" 
                                 frameborder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -570,48 +570,64 @@
         
         <!-- YouTube IFrame API Script -->
         <script>
-            // Load YouTube IFrame API
-            var tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
-            var firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-            
-            // Create YouTube player when API is ready
-            var player;
-            function onYouTubeIframeAPIReady() {
-                player = new YT.Player('amihan-video', {
-                    events: {
-                        'onStateChange': onPlayerStateChange
-                    }
-                });
-            }
-            
-            // Monitor video playback and pause at 1:38 (98 seconds)
-            var pauseTime = 98; // 1 minute 38 seconds
-            var hasPaused = false;
-            
-            function onPlayerStateChange(event) {
-                if (event.data == YT.PlayerState.PLAYING && !hasPaused) {
-                    // Check current time every 100ms while playing
-                    var checkTime = setInterval(function() {
-                        if (player && player.getCurrentTime) {
-                            var currentTime = player.getCurrentTime();
-                            
-                            // Pause when reaching 1:38
-                            if (currentTime >= pauseTime && !hasPaused) {
-                                player.pauseVideo();
-                                hasPaused = true;
-                                clearInterval(checkTime);
-                            }
-                            
-                            // Stop checking if video is paused or ended
-                            if (player.getPlayerState() != YT.PlayerState.PLAYING) {
-                                clearInterval(checkTime);
-                            }
+            (function() {
+                var player;
+                var checkTime;
+                var pauseTime = 98;
+                var hasPaused = false;
+
+                window.onYouTubeIframeAPIReady = function() {
+                    if (player) return;
+                    player = new YT.Player('amihan-video', {
+                        events: {
+                            'onStateChange': onPlayerStateChange
                         }
-                    }, 100);
+                    });
+                };
+
+                function onPlayerStateChange(event) {
+                    if (event.data == YT.PlayerState.PLAYING && !hasPaused) {
+                        if (checkTime) clearInterval(checkTime);
+                        checkTime = setInterval(function() {
+                            if (player && typeof player.getCurrentTime === 'function') {
+                                try {
+                                    var currentTime = player.getCurrentTime();
+                                    if (currentTime >= pauseTime && !hasPaused) {
+                                        player.pauseVideo();
+                                        hasPaused = true;
+                                        clearInterval(checkTime);
+                                    }
+                                } catch (e) {
+                                    clearInterval(checkTime);
+                                }
+                            } else {
+                                clearInterval(checkTime);
+                            }
+                        }, 500); // Increased interval to reduce noise
+                    } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
+                        if (checkTime) clearInterval(checkTime);
+                    }
                 }
-            }
+
+                // Cleanup on navigation
+                document.addEventListener('turbo:before-visit', function() {
+                    if (checkTime) clearInterval(checkTime);
+                    if (player && typeof player.destroy === 'function') {
+                        player.destroy();
+                    }
+                    player = null;
+                }, { once: true });
+                
+                // Ensure API is loaded
+                if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+                    var tag = document.createElement('script');
+                    tag.src = "https://www.youtube.com/iframe_api";
+                    var firstScriptTag = document.getElementsByTagName('script')[0];
+                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                } else {
+                    onYouTubeIframeAPIReady();
+                }
+            })();
         </script>
     </section>
 

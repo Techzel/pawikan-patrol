@@ -133,8 +133,7 @@
         <div class="absolute inset-0 bg-black/70"></div>
     </div>
     
-    <!-- Game Activity Script -->
-    <script src="<?php echo e(asset('js/game-activity.js')); ?>"></script>
+
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50">
@@ -162,14 +161,13 @@
         <source src="<?php echo e(asset('audio/click sa puzzle ug matching.mp3')); ?>" type="audio/mpeg">
     </audio>
 
-    <?php if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller'))): ?>
+    <?php if(auth()->guard()->guest()): ?>
     <!-- Warning Audio -->
-    <!-- Warning Audio - Autoplay enabled for mobile compatibility -->
     <audio id="warning-audio">
         <source src="<?php echo e(asset('audio/warning.mp3')); ?>" type="audio/mpeg">
     </audio>
     
-    <div id="guest-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-0 transition-all duration-700 ease-out">
+    <div id="guest-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-transparent backdrop-blur-0 transition-all duration-700 ease-out hidden">
         <div class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out" id="guest-modal-content">
             <button onclick="window.showPageLoader(); window.location.href = '<?php echo e(route('games.index')); ?>'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -181,11 +179,7 @@
                 <?php if(auth()->guard()->check()): ?> Warning <?php else: ?> Guest Mode <?php endif; ?>
             </h2>
             <p class="text-gray-300 mb-8 font-poppins">
-                <?php if(auth()->guard()->check()): ?>
-                    Game recording is disabled for <?php echo e(ucfirst(Auth::user()->role)); ?> accounts.
-                <?php else: ?>
-                    If you do not login, the game will not be recorded.
-                <?php endif; ?>
+                If you do not login, the game will not be recorded.
             </p>
             <div class="flex flex-col gap-3">
                 <?php if(auth()->guard()->guest()): ?>
@@ -194,11 +188,12 @@
                 </a>
                 <?php endif; ?>
                 <button onclick="closeGuestModal()" class="bg-transparent border border-gray-600 text-gray-400 hover:text-white hover:border-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins w-full">
-                    <?php if(auth()->guard()->check()): ?> Play without saving <?php else: ?> Play as Guest <?php endif; ?>
+                    Play as Guest
                 </button>
             </div>
         </div>
     </div>
+
     
     <script>
         // Animate modal and play warning music when page loads
@@ -208,8 +203,9 @@
             const guestModalContent = document.getElementById('guest-modal-content');
             
             if (guestModal && guestModalContent) {
+                guestModal.classList.remove('hidden');
                 setTimeout(() => {
-                    guestModal.classList.remove('bg-black/0', 'backdrop-blur-0');
+                    guestModal.classList.remove('bg-transparent', 'backdrop-blur-0');
                     guestModal.classList.add('bg-black/90', 'backdrop-blur-md');
                     
                     guestModalContent.classList.remove('scale-75', 'opacity-0');
@@ -245,11 +241,12 @@
                 guestModalContent.classList.add('scale-75', 'opacity-0');
             }
             
-            // Start game music immediately and audibly
-            if (window.currentGameAudio) {
-                window.currentGameAudio.volume = 0.5; // Set to audible level immediately
-                window.currentGameAudio.play().catch(e => console.log('Audio start failed:', e));
-                // Update state variables if they exist in scope or UI
+            // Start game music immediately and audibly via global helper
+            if (typeof window.startMemoryMusic === 'function') {
+                window.startMemoryMusic();
+            } else if (window.currentGameAudio) {
+                window.currentGameAudio.volume = 0.5;
+                window.currentGameAudio.play().catch(e => console.log('Fallback audio start failed:', e));
                 const icon = document.getElementById('music-icon');
                 if (icon) icon.textContent = '🔊';
             }
@@ -519,7 +516,6 @@
                     <p id="modal-message" class="text-gray-300 mb-2 font-poppins">You've matched all the pairs!</p>
                     
                     <?php if(auth()->guard()->check()): ?>
-                        <?php if(Auth::user()->role === 'player' || Auth::user()->role === 'user'): ?>
                         <div id="save-status" class="mb-6">
                             <p class="text-yellow-400 text-sm font-poppins flex items-center justify-center gap-2">
                                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -529,9 +525,6 @@
                                 Saving game...
                             </p>
                         </div>
-                        <?php else: ?>
-                        <p class="text-gray-400 mb-6 font-poppins">&nbsp;</p>
-                        <?php endif; ?>
                     <?php else: ?>
                         <p class="text-gray-400 mb-6 font-poppins">&nbsp;</p>
                     <?php endif; ?>
@@ -1035,11 +1028,10 @@
                 }
                 
                 modal.classList.remove('hidden');
-            }, 500);
+            }, 200);
             
             // Record game activity for logged-in players
             <?php if(auth()->guard()->check()): ?>
-            <?php if(Auth::user()->role === 'player' || Auth::user()->role === 'user'): ?>
             console.log('Checking gameActivity...', window.gameActivity);
             if (window.gameActivity) {
                 try {
@@ -1109,7 +1101,6 @@
                 }
             }
             <?php endif; ?>
-            <?php endif; ?>
         }
 
         // Click sound function - Card Flip Style
@@ -1150,6 +1141,61 @@
         const volumeSlider = document.getElementById('volume-slider');
         const volumePercent = document.getElementById('volume-percent');
         let isMusicPlaying = false;
+
+        // Expose a function to start music from outside (e.g., from the guest modal)
+        window.startMemoryMusic = function() {
+            if (!bgMusic) return;
+            
+            // Force reset state
+            bgMusic.muted = false;
+            // Only reset time if we are essentially at the start or end
+            if (bgMusic.currentTime > bgMusic.duration - 1 || bgMusic.paused) {
+                 bgMusic.currentTime = 0;
+            }
+            
+            // Robust volume calculation
+            let vol = 0.5;
+            if (volumeSlider && volumeSlider.value) {
+                vol = parseInt(volumeSlider.value) / 100;
+            }
+            bgMusic.volume = isNaN(vol) ? 0.5 : vol;
+
+            const attemptPlay = () => {
+                const playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        isMusicPlaying = true;
+                        if (musicIcon) {
+                            const v = volumeSlider ? parseInt(volumeSlider.value) : 50;
+                            if (v === 0) musicIcon.textContent = '🔇';
+                            else if (v < 50) musicIcon.textContent = '🔉';
+                            else musicIcon.textContent = '🔊';
+                        }
+                    }).catch(e => {
+                        console.error('Manual music start failed:', e);
+                        isMusicPlaying = false;
+                        if (musicIcon) musicIcon.textContent = '🔇';
+                        
+                         // Fallback: waiting for user interaction
+                        const onInteract = () => {
+                             bgMusic.play().then(() => {
+                                 isMusicPlaying = true;
+                                 if(musicIcon) musicIcon.textContent = '🔊';
+                             }).catch(() => {});
+                             document.removeEventListener('click', onInteract);
+                        };
+                        document.addEventListener('click', onInteract, { once: true });
+                    });
+                }
+            };
+
+            // Check if audio is ready
+            if (bgMusic.readyState >= 2) {
+                attemptPlay();
+            } else {
+                bgMusic.addEventListener('canplay', () => attemptPlay(), { once: true });
+            }
+        };
 
         // Set initial volume
         if (bgMusic && volumeSlider) {
@@ -1220,15 +1266,27 @@
                 bgMusic.currentTime = 0;
                 isMusicPlaying = false;
             }
+            // Broad cleanup for any other audio elements
+            document.querySelectorAll('audio').forEach(el => {
+                try {
+                    el.pause();
+                    el.currentTime = 0;
+                } catch(e) {}
+            });
+            
             document.removeEventListener('turbo:before-visit', stopMusic);
             document.removeEventListener('turbo:before-render', stopMusic);
+            document.removeEventListener('turbo:before-cache', stopMusic);
             window.removeEventListener('beforeunload', stopMusic);
         };
 
         document.addEventListener('turbo:before-visit', stopMusic);
         document.addEventListener('turbo:before-render', stopMusic);
+        document.addEventListener('turbo:before-cache', stopMusic);
         window.addEventListener('beforeunload', stopMusic);
-        document.addEventListener('turbo:load', () => {
+        // Initialize Everything Immediately
+        // Since this script is at the bottom of the body, it runs after content is swapped
+        const runInitialization = () => {
             // Reset progress for guest users
             <?php if(auth()->guard()->guest()): ?>
             localStorage.removeItem('memoryMatch_easy_completed');
@@ -1279,16 +1337,33 @@
             <?php endif; ?>
             
             initGame();
-
-            // Auto-play music
-            // Ensure music is paused on load (User Request: Mute first before modal)
-            if (bgMusic) {
-                bgMusic.pause();
-                bgMusic.currentTime = 0;
-                isMusicPlaying = false;
-                if (musicIcon) musicIcon.textContent = '🔊'; // Reset icon (will update on play)
+            
+            // Auto-play music if no guest modal is present (Logged in user)
+            const guestModal = document.getElementById('guest-modal');
+            if (!guestModal) {
+                // User is likely logged in and authorized, start music automatically
+                window.startMemoryMusic();
+                
+                // Fallback: If autoplay is blocked, start on first interaction
+                const startOnInteraction = () => {
+                    if (!isMusicPlaying) {
+                        window.startMemoryMusic();
+                    }
+                    document.removeEventListener('click', startOnInteraction);
+                    document.removeEventListener('keydown', startOnInteraction);
+                };
+                document.addEventListener('click', startOnInteraction, { once: true });
+                document.addEventListener('keydown', startOnInteraction, { once: true });
+            } else {
+                // Guest modal exists - ensure music is paused until they close it
+                if (bgMusic) {
+                    bgMusic.pause();
+                    bgMusic.currentTime = 0;
+                    isMusicPlaying = false;
+                }
             }
-        });
+        };
+
 
         // Function to go to next level
         window.goToNextLevel = function() {
@@ -1313,9 +1388,10 @@
             // Set difficulty and start new game
             setDifficulty(nextLevel);
         };
+
+        // Run immediately since script is at end of body
+        runInitialization();
     })();
 </script>
 <?php $__env->stopPush(); ?>
-
-
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/games/memory-match.blade.php ENDPATH**/ ?>

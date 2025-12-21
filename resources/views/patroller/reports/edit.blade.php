@@ -118,11 +118,11 @@
                 locationButton.disabled = false;
                 locationButton.classList.remove('opacity-75');
                 locationButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>GPS Lock Acquired!';
-                locationButton.classList.add('bg-green-600');
+                locationButton.classList.add('bg-ocean-600');
                 
                 setTimeout(() => {
                     locationButton.innerHTML = originalButtonHTML;
-                    locationButton.classList.remove('bg-green-600');
+                    locationButton.classList.remove('bg-ocean-600');
                 }, 3000);
                 
                 // Show detailed accuracy information
@@ -138,12 +138,12 @@
                 if (accuracy <= 5) {
                     accuracyLevel = 'EXCELLENT';
                     accuracyIcon = 'fa-check-double';
-                    accuracyColor = 'bg-green-500/20 border-green-500/50 text-green-300';
+                    accuracyColor = 'bg-ocean-500/20 border-ocean-500/50 text-ocean-300';
                     accuracyAdvice = 'Perfect for precise mapping!';
                 } else if (accuracy <= 10) {
                     accuracyLevel = 'VERY GOOD';
                     accuracyIcon = 'fa-check-circle';
-                    accuracyColor = 'bg-green-500/20 border-green-500/50 text-green-300';
+                    accuracyColor = 'bg-ocean-500/20 border-ocean-500/50 text-ocean-300';
                     accuracyAdvice = 'Great GPS signal quality.';
                 } else if (accuracy <= 20) {
                     accuracyLevel = 'GOOD';
@@ -204,9 +204,10 @@
                         errorAdvice = '\n\n🛰️ Try:\n• Move to an outdoor location\n• Ensure GPS is enabled on your device\n• Check if location services are turned on';
                         break;
                     case error.TIMEOUT:
-                        errorTitle = '⏱️ GPS Timeout';
-                        errorMessage = 'GPS signal acquisition took too long (15 seconds).';
-                        errorAdvice = '\n\n🔄 Solutions:\n• Move to an area with clear sky view\n• Wait a moment and try again\n• Ensure GPS is enabled on your device';
+                        console.warn("GPS Timeout - Alert suppressed");
+                        // errorTitle = '⏱️ GPS Timeout';
+                        // errorMessage = 'GPS signal acquisition took too long (15 seconds).';
+                        // errorAdvice = '\n\n🔄 Solutions:\n• Move to an area with clear sky view\n• Wait a moment and try again\n• Ensure GPS is enabled on your device';
                         break;
                     default:
                         errorTitle = '❌ Unknown GPS Error';
@@ -214,7 +215,9 @@
                         errorAdvice = '\n\nPlease enter coordinates manually.';
                 }
                 
-                alert(errorTitle + '\n\n' + errorMessage + errorAdvice);
+                if (errorTitle) {
+                    alert(errorTitle + '\n\n' + errorMessage + errorAdvice);
+                }
             },
             options
         );
@@ -265,11 +268,11 @@
             <!-- Header -->
             <div class="mb-8">
                 <div class="flex items-center mb-4">
-                    <a href="{{ route('patroller.reports.show', $report) }}" class="text-green-400 hover:text-green-300 mr-4">
+                    <a href="{{ route('patroller.reports.show', $report) }}" class="text-ocean-400 hover:text-ocean-300 mr-4">
                         <i class="fas fa-arrow-left"></i>
                     </a>
                     <h1 class="text-3xl font-bold text-white " style="font-family: 'Poppins', sans-serif;">
-                        <i class="fas fa-edit mr-3 text-green-400"></i>Edit Report
+                        <i class="fas fa-edit mr-3 text-ocean-400"></i>Edit Report
                     </h1>
                 </div>
                 <p class="text-gray-300 " style="font-family: 'Poppins', sans-serif;">Update your patrol report details.</p>
@@ -311,7 +314,7 @@
                 
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6 " style="font-family: 'Poppins', sans-serif;">
-                        <i class="fas fa-info-circle mr-2 text-green-400"></i>Basic Information
+                        <i class="fas fa-info-circle mr-2 text-ocean-400"></i>Basic Information
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -362,7 +365,7 @@
                                    placeholder="e.g., 6.9363">
 
                              <!-- GPS Interaction UI - Server Rendered to avoid delay -->
-                             <button type="button" id="gps-location-btn" class="mt-3 px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white text-xs rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-green-500/20 active:scale-95 uppercase tracking-widest font-bold" style="font-family: 'Cinzel', serif !important;">
+                             <button type="button" id="gps-location-btn" class="mt-3 px-6 py-2.5 bg-ocean-500 hover:bg-ocean-600 text-white text-xs rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-ocean-500/20 active:scale-95 uppercase tracking-widest font-bold" style="font-family: 'Cinzel', serif !important;">
                                 <i class="fas fa-satellite-dish"></i>
                                 <span>Get GPS Coordinates</span>
                             </button>
@@ -403,7 +406,7 @@
                 <!-- Turtle Information (if applicable) -->
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6 " style="font-family: 'Poppins', sans-serif;">
-                        <i class="fas fa-turtle mr-2 text-green-400"></i>Turtle Information
+                        <i class="fas fa-turtle mr-2 text-ocean-400"></i>Turtle Information
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -465,7 +468,7 @@
                 <!-- Detailed Description -->
                 <div class="glass-morphism rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-6 " style="font-family: 'Poppins', sans-serif;">
-                        <i class="fas fa-file-text mr-2 text-green-400"></i>Detailed Information
+                        <i class="fas fa-file-text mr-2 text-ocean-400"></i>Detailed Information
                     </h3>
                     
                     <div class="space-y-6">
@@ -498,9 +501,9 @@
                 </div>
 
                 <!-- Images -->
-                <div class="glass-dark rounded-xl p-6 border border-green-500/20">
+                <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
                     <h3 class="text-lg font-semibold text-white mb-6 " style="font-family: 'Poppins', sans-serif;">
-                        <i class="fas fa-images mr-2 text-green-400"></i>Images
+                        <i class="fas fa-images mr-2 text-ocean-400"></i>Images
                     </h3>
                     
                     <!-- Current Images -->
@@ -525,7 +528,7 @@
                     <!-- Add New Images -->
                     <div>
                         <label for="images" class="block text-sm font-medium text-gray-300 mb-2 " style="font-family: 'Poppins', sans-serif;">Add New Images</label>
-                        <input type="file" name="images[]" id="images" multiple accept="image/*" class="w-full bg-white/10 border border-green-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-green-400 focus:border-transparent " style="font-family: 'Poppins', sans-serif;">
+                        <input type="file" name="images[]" id="images" multiple accept="image/*" class="w-full bg-white/10 border border-ocean-500/30 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-ocean-400 focus:border-transparent " style="font-family: 'Poppins', sans-serif;">
                         <p class="mt-1 text-sm text-gray-400 " style="font-family: 'Poppins', sans-serif;">You can select multiple images. Max 2MB per image.</p>
                     </div>
                 </div>
@@ -535,7 +538,7 @@
                     <a href="{{ route('patroller.reports.show', $report) }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors " style="font-family: 'Poppins', sans-serif;">
                         Cancel
                     </a>
-                    <button type="submit" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg " style="font-family: 'Poppins', sans-serif;">
+                    <button type="submit" class="bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg " style="font-family: 'Poppins', sans-serif;">
                         <i class="fas fa-save mr-2"></i>Update Report
                     </button>
                 </div>
@@ -558,7 +561,7 @@ function initCharCounters() {
             
             const counter = document.createElement('span');
             counter.className = 'char-counter text-xs ml-2';
-            counter.style.color = length < minLength ? '#ef4444' : '#10b981';
+            counter.style.color = length < minLength ? '#ef4444' : '#14b8a6';
             counter.textContent = `(${length} characters${length < minLength ? ', minimum ' + minLength : ''})`;
             descriptionLabel.appendChild(counter);
         };

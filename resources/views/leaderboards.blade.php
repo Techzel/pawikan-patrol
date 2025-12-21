@@ -78,25 +78,8 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-gray-900 py-8 relative overflow-hidden">
-    <!-- Animated Background Elements -->
-    <div class="absolute inset-0 overflow-hidden">
-        <!-- Floating particles -->
-        <div class="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full animate-float opacity-20"></div>
-        <div class="absolute top-40 right-20 w-3 h-3 bg-teal-400 rounded-full animate-float animation-delay-2000 opacity-30"></div>
-        <div class="absolute bottom-40 left-1/4 w-2 h-2 bg-cyan-400 rounded-full animate-float animation-delay-4000 opacity-25"></div>
-        <div class="absolute bottom-60 right-1/3 w-4 h-4 bg-emerald-400 rounded-full animate-float animation-delay-6000 opacity-20"></div>
-        <div class="absolute top-1/3 left-3/4 w-2 h-2 bg-sky-400 rounded-full animate-float animation-delay-8000 opacity-30"></div>
-        
-        <!-- Gradient overlays -->
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-teal-900/20 to-cyan-900/20 animate-pulse-slow"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/10 via-teal-900/5 to-transparent"></div>
-        
-        <!-- Animated grid pattern -->
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute inset-0" style="background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 50px 50px;"></div>
-        </div>
-    </div>
+<div class="min-h-screen bg-gray-900 py-8 relative overflow-hidden" style="background-color: #111827;">
+<div class="min-h-screen bg-gray-900 py-8 relative overflow-hidden" style="background-color: #111827;">
     
     <div class="container mx-auto px-4 max-w-6xl relative z-10">
         <!-- Header with Live Indicator -->
@@ -463,7 +446,6 @@
     </div>
 </div>
 
-@include('auth.modal')
 @endsection
 
 @push('scripts')

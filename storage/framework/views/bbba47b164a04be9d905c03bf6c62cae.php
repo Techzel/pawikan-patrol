@@ -86,7 +86,7 @@
 </style>
 
 <!-- Auth Modal -->
-<div id="authModal" class="fixed top-20 inset-x-0 bottom-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 p-4">
+<div id="authModal" class="fixed inset-0 z-[100000] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 p-4">
     <div class="relative w-full max-w-lg font-poppins" onclick="event.stopPropagation()">
         <div class="auth-card">
             <div class="glass-dark rounded-3xl p-8 shadow-2xl border border-ocean-500/30 max-h-[90vh] overflow-y-auto relative">
@@ -98,10 +98,10 @@
                 </button>
                 <!-- Simple Tab Navigation -->
                 <div class="flex mb-8 tab-container gap-8 px-2">
-                    <button id="loginTab" class="tab-button text-lg font-medium active">
+                    <button id="loginTab" class="tab-button text-lg font-medium active" onclick="window.showLogin()">
                         Login
                     </button>
-                    <button id="registerTab" class="tab-button text-lg font-medium">
+                    <button id="registerTab" class="tab-button text-lg font-medium" onclick="window.showRegister()">
                         Register
                     </button>
                 </div>
@@ -430,14 +430,12 @@ unset($__errorArgs, $__bag); ?>
 <script>
     // Modal Handling Logic
     (function() {
-        const authModal = document.getElementById('authModal');
-        const loginTab = document.getElementById('loginTab');
-        const registerTab = document.getElementById('registerTab');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
+        const getEl = (id) => document.getElementById(id);
         
         window.openAuthModal = function(view = 'login') {
+            const authModal = getEl('authModal');
             if (!authModal) return;
+            
             authModal.classList.remove('hidden');
             // Small timeout to allow display:block to apply before opacity transition
             setTimeout(() => {
@@ -452,6 +450,7 @@ unset($__errorArgs, $__bag); ?>
         }
 
         window.closeAuthModal = function() {
+            const authModal = getEl('authModal');
             if (!authModal) return;
             authModal.classList.add('opacity-0');
             setTimeout(() => {
@@ -459,178 +458,183 @@ unset($__errorArgs, $__bag); ?>
             }, 300);
         }
 
-        function showLogin() {
+        // Make these global so they can be re-accessed correctly
+        window.showLogin = function() {
+            const loginForm = getEl('loginForm');
+            const registerForm = getEl('registerForm');
+            const loginTab = getEl('loginTab');
+            const registerTab = getEl('registerTab');
+            
             if (!loginForm || !registerForm) return;
-            // Hide register, show login using CSS classes
             registerForm.classList.add('hidden');
             registerForm.classList.remove('active');
             loginForm.classList.add('active');
             loginForm.classList.remove('hidden');
             
-            // Update tab styles
             if (loginTab && registerTab) {
                 loginTab.classList.add('active');
                 registerTab.classList.remove('active');
             }
         }
         
-        function showRegister() {
+        window.showRegister = function() {
+            const loginForm = getEl('loginForm');
+            const registerForm = getEl('registerForm');
+            const loginTab = getEl('loginTab');
+            const registerTab = getEl('registerTab');
+            
             if (!loginForm || !registerForm) return;
-            // Hide login, show register
             loginForm.classList.add('hidden');
             loginForm.classList.remove('active');
             registerForm.classList.add('active');
             registerForm.classList.remove('hidden');
             
-            // Update tab styles
             if (loginTab && registerTab) {
                 registerTab.classList.add('active');
                 loginTab.classList.remove('active');
             }
         }
         
-        // Add event listeners
-        if (loginTab) loginTab.addEventListener('click', showLogin);
-        if (registerTab) registerTab.addEventListener('click', showRegister);
+        // Initial setup for the freshly loaded modal elements
+        const initModalListeners = () => {
+            const loginTab = getEl('loginTab');
+            const registerTab = getEl('registerTab');
+            if (loginTab) loginTab.onclick = () => window.showLogin();
+            if (registerTab) registerTab.onclick = () => window.showRegister();
+        };
+
+        // Run once for the current page
+        initModalListeners();
         
-        // Password strength checker
-        const registerPassword = document.getElementById('registerPassword');
-        const strengthBar = document.getElementById('strengthBar');
-        const strengthText = document.getElementById('strengthText');
+        // And on subsequent Turbo loads
+        document.addEventListener('turbo:load', initModalListeners);
         
-        if (registerPassword && strengthBar && strengthText) {
-            registerPassword.addEventListener('input', function() {
-                const password = this.value;
-                let strength = 0;
-                let strengthLabel = '';
-                let strengthColor = '';
+        // Initialize Form Listeners (Password Strength & Validation)
+        const initFormListeners = () => {
+            const registerPassword = getEl('registerPassword');
+            const registerPasswordConfirmation = getEl('registerPasswordConfirmation');
+            const strengthBar = getEl('strengthBar');
+            const strengthText = getEl('strengthText');
+            const passwordValidation = getEl('passwordValidation');
+            const passwordValidationText = getEl('passwordValidationText');
+            
+            function validatePasswordMatch() {
+                if (!registerPassword || !registerPasswordConfirmation || !passwordValidation || !passwordValidationText) return true;
+                const password = registerPassword.value;
+                const confirmPassword = registerPasswordConfirmation.value;
                 
-                // Check password strength
-                if (password.length >= 8) strength += 25;
-                if (password.length >= 12) strength += 25;
-                if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
-                if (/[0-9]/.test(password)) strength += 12.5;
-                if (/[^A-Za-z0-9]/.test(password)) strength += 12.5;
-                
-                // Determine strength level
-                if (strength <= 25) {
-                    strengthLabel = 'Weak';
-                    strengthColor = 'bg-red-500';
-                } else if (strength <= 50) {
-                    strengthLabel = 'Fair';
-                    strengthColor = 'bg-orange-500';
-                } else if (strength <= 75) {
-                    strengthLabel = 'Good';
-                    strengthColor = 'bg-yellow-500';
-                } else {
-                    strengthLabel = 'Strong';
-                    strengthColor = 'bg-green-500';
+                if (confirmPassword === '') {
+                    passwordValidation.classList.add('hidden');
+                    return true;
                 }
                 
-                // Update strength bar
-                strengthBar.style.width = Math.max(strength, 25) + '%';
-                strengthBar.className = 'password-strength-bar h-1.5 rounded-full ' + strengthColor;
-                strengthText.textContent = strengthLabel;
-                strengthText.className = 'text-[10px] font-semibold ' + strengthColor.replace('bg-', 'text-');
-            });
-        }
-        
-        // Password validation checker
-        const registerPasswordConfirmation = document.getElementById('registerPasswordConfirmation');
-        const passwordValidation = document.getElementById('passwordValidation');
-        const passwordValidationText = document.getElementById('passwordValidationText');
-        
-        function validatePasswordMatch() {
-            const password = registerPassword.value;
-            const confirmPassword = registerPasswordConfirmation.value;
-            
-            if (confirmPassword === '') {
-                passwordValidation.classList.add('hidden');
-                return true;
+                if (password !== confirmPassword) {
+                    passwordValidation.classList.remove('hidden');
+                    passwordValidation.className = 'mt-2 text-sm text-red-400';
+                    passwordValidationText.textContent = 'Passwords do not match';
+                    return false;
+                } else {
+                    passwordValidation.classList.remove('hidden');
+                    passwordValidation.className = 'mt-2 text-sm text-green-400';
+                    passwordValidationText.textContent = 'Passwords match';
+                    return true;
+                }
             }
-            
-            if (password !== confirmPassword) {
-                passwordValidation.classList.remove('hidden');
-                passwordValidation.className = 'mt-2 text-sm text-red-400';
-                passwordValidationText.textContent = 'Passwords do not match';
-                return false;
-            } else {
-                passwordValidation.classList.remove('hidden');
-                passwordValidation.className = 'mt-2 text-sm text-green-400';
-                passwordValidationText.textContent = 'Passwords match';
-                return true;
+
+            if (registerPassword && strengthBar && strengthText) {
+                registerPassword.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+                    let strengthLabel = '';
+                    let strengthColor = '';
+                    if (password.length >= 8) strength += 25;
+                    if (password.length >= 12) strength += 25;
+                    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+                    if (/[0-9]/.test(password)) strength += 12.5;
+                    if (/[^A-Za-z0-9]/.test(password)) strength += 12.5;
+                    
+                    if (strength <= 25) { strengthLabel = 'Weak'; strengthColor = 'bg-red-500'; }
+                    else if (strength <= 50) { strengthLabel = 'Fair'; strengthColor = 'bg-orange-500'; }
+                    else if (strength <= 75) { strengthLabel = 'Good'; strengthColor = 'bg-yellow-500'; }
+                    else { strengthLabel = 'Strong'; strengthColor = 'bg-green-500'; }
+                    
+                    strengthBar.style.width = Math.max(strength, 25) + '%';
+                    strengthBar.className = 'password-strength-bar h-1.5 rounded-full ' + strengthColor;
+                    strengthText.textContent = strengthLabel;
+                    strengthText.className = 'text-[10px] font-semibold ' + strengthColor.replace('bg-', 'text-');
+                });
             }
-        }
-        
-        // Add event listeners for password validation
-        if (registerPassword && registerPasswordConfirmation && passwordValidation && passwordValidationText) {
-            registerPassword.addEventListener('input', validatePasswordMatch);
-            registerPasswordConfirmation.addEventListener('input', validatePasswordMatch);
-            
-            // Prevent form submission if passwords don't match
+
+            if (registerPassword && registerPasswordConfirmation) {
+                registerPassword.addEventListener('input', validatePasswordMatch);
+                registerPasswordConfirmation.addEventListener('input', validatePasswordMatch);
+            }
+
             const registerFormEl = document.querySelector('#registerForm form');
             if (registerFormEl) {
                 registerFormEl.addEventListener('submit', function(e) {
                     if (!validatePasswordMatch()) {
                         e.preventDefault();
-                        passwordValidationText.textContent = 'Please make sure passwords match before submitting';
-                        passwordValidation.className = 'mt-2 text-sm text-red-400';
-                        passwordValidation.classList.remove('hidden');
+                        if (passwordValidationText) {
+                            passwordValidationText.textContent = 'Please make sure passwords match before submitting';
+                        }
                     }
                 });
             }
-        }
+        };
 
-        // Toggle Password Visibility
-        document.querySelectorAll('.toggle-password').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault(); // Prevent form submission or focus change issues
-                e.stopPropagation(); // Stop event bubbling
-                
-                const targetId = this.getAttribute('data-target');
-                const passwordInput = document.getElementById(targetId);
-                const svg = this.querySelector('svg');
-                
-                if (passwordInput) {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
+        initFormListeners();
+        document.addEventListener('turbo:load', initFormListeners);
+
+        // Initialize all modal components
+        const initAuthModal = () => {
+            initModalListeners();
+            initFormListeners();
+            
+            // Toggle Password Visibility
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                // Use onclick to avoid duplicate listeners on persistent elements if they existed
+                button.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const targetId = this.getAttribute('data-target');
+                    const passwordInput = document.getElementById(targetId);
+                    const svg = this.querySelector('svg');
                     
-                    // Update SVG icon
-                    if (type === 'text') {
-                        // Eye Off Icon (Slash)
-                        svg.innerHTML = `
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                        `;
-                    } else {
-                        // Eye Icon (Normal)
-                        svg.innerHTML = `
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        `;
+                    if (passwordInput) {
+                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                        passwordInput.setAttribute('type', type);
+                        svg.innerHTML = type === 'text' 
+                            ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`
+                            : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
                     }
-                }
+                };
             });
-        });
-        
-        // Check for URL hash to open modal automatically
-        if (window.location.hash === '#register') {
-            window.openAuthModal('register');
-        } else if (window.location.hash === '#login') {
-            window.openAuthModal('login');
-        }
-        
-        // Auto-open modal if there are validation errors or registration success
-        <?php if(auth()->guard()->guest()): ?>
-        <?php if($errors->any() || session('error') || session('registration_success')): ?>
-            <?php if(session('registration_success')): ?>
-                // If there's a registration success message, show login form
+
+            // Check for URL hash to open modal automatically
+            if (window.location.hash === '#register') {
+                window.openAuthModal('register');
+            } else if (window.location.hash === '#login') {
                 window.openAuthModal('login');
-            <?php else: ?>
-                // If there are errors, show the form that was submitted
-                window.openAuthModal('<?php echo e(old('_form_type') === 'register' ? 'register' : 'login'); ?>');
+            }
+            
+            // Auto-open modal if there are validation errors or registration success
+            <?php if(auth()->guard()->guest()): ?>
+            <?php if($errors->any() || session('error') || session('registration_success')): ?>
+                <?php if(session('registration_success')): ?>
+                    window.openAuthModal('login');
+                <?php else: ?>
+                    window.openAuthModal('<?php echo e(old('_form_type') === 'register' ? 'register' : 'login'); ?>');
+                <?php endif; ?>
             <?php endif; ?>
-        <?php endif; ?>
-        <?php endif; ?>
+            <?php endif; ?>
+        };
+
+        // Run on initial load
+        initAuthModal();
+        
+        // Run on every Turbo navigation
+        document.addEventListener('turbo:load', initAuthModal);
     })();
 </script>
 <?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/auth/modal.blade.php ENDPATH**/ ?>

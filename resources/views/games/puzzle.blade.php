@@ -53,8 +53,7 @@
         <div class="absolute inset-0 bg-black/70"></div>
     </div>
     
-    <!-- Game Activity Script -->
-    <script src="{{ asset('js/game-activity.js') }}"></script>
+
 
     <!-- Back Button -->
     <div class="fixed top-24 left-4 z-50">
@@ -82,13 +81,13 @@
         <source src="{{ asset('audio/ma complete ang task.mp3') }}" type="audio/mpeg">
     </audio>
 
-    @if(!Auth::check() || (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'patroller')))
+    @guest
     <!-- Warning Audio -->
     <audio id="warning-audio">
         <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
     </audio>
     
-    <div id="guest-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-0 transition-all duration-700 ease-out">
+    <div id="guest-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-transparent backdrop-blur-0 transition-all duration-700 ease-out hidden">
         <div class="bg-deep-900 border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl relative transform scale-75 opacity-0 transition-all duration-700 ease-out" id="guest-modal-content">
             <button onclick="window.showPageLoader(); window.location.href = '{{ route('games.index') }}'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,11 +99,7 @@
                 @auth Warning @else Guest Mode @endauth
             </h2>
             <p class="text-gray-300 mb-8 font-poppins">
-                @auth
-                    Game recording is disabled for {{ ucfirst(Auth::user()->role) }} accounts.
-                @else
-                    If you do not login, the game will not be recorded.
-                @endauth
+                If you do not login, the game will not be recorded.
             </p>
             <div class="flex flex-col gap-3">
                 @guest
@@ -113,11 +108,12 @@
                 </a>
                 @endguest
                 <button onclick="closeGuestModal()" class="bg-transparent border border-gray-600 text-gray-400 hover:text-white hover:border-white font-bold py-3 px-6 rounded-xl transition-colors font-poppins w-full">
-                    @auth Play without saving @else Play as Guest @endauth
+                    Play as Guest
                 </button>
             </div>
         </div>
     </div>
+
     
     <script>
         // Animate modal and play warning music when page loads
@@ -127,10 +123,11 @@
             const guestModalContent = document.getElementById('guest-modal-content');
             
             if (guestModal && guestModalContent) {
+                guestModal.classList.remove('hidden');
                 // Trigger animations after a brief delay
                 setTimeout(() => {
                     // Fade in background
-                    guestModal.classList.remove('bg-black/0', 'backdrop-blur-0');
+                    guestModal.classList.remove('bg-transparent', 'backdrop-blur-0');
                     guestModal.classList.add('bg-black/90', 'backdrop-blur-md');
                     
                     // Scale up and fade in content
@@ -171,10 +168,12 @@
                 guestModalContent.classList.add('scale-75', 'opacity-0');
             }
             
-            // Start game music immediately and audibly
-            if (window.currentGameAudio) {
+            // Start game music immediately and audibly via global helper
+            if (typeof window.startPuzzleMusic === 'function') {
+                window.startPuzzleMusic();
+            } else if (window.currentGameAudio) {
                 window.currentGameAudio.volume = 0.5;
-                window.currentGameAudio.play().catch(e => console.log('Audio start failed:', e));
+                window.currentGameAudio.play().catch(e => console.log('Fallback audio start failed:', e));
                 const icon = document.getElementById('music-icon');
                 if (icon) icon.textContent = '🔊';
             }
@@ -194,7 +193,7 @@
             }
         };
     </script>
-    @endif
+    @endguest
 
     <main class="pt-24 pb-12 relative z-10 min-h-screen flex flex-col">
         <!-- Music Control with Volume -->
@@ -430,7 +429,6 @@
                     </div>
                     
                     @auth
-                        @if(Auth::user()->role === 'player' || Auth::user()->role === 'user')
                         <div id="save-status" class="mb-6">
                             <p class="text-yellow-400 text-sm font-poppins flex items-center justify-center gap-2">
                                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -440,9 +438,6 @@
                                 Saving game...
                             </p>
                         </div>
-                        @else
-                        <p class="text-gray-400 mb-6 font-poppins">&nbsp;</p>
-                        @endif
                     @else
                         <p class="text-gray-400 mb-6 font-poppins">&nbsp;</p>
                     @endauth
@@ -751,35 +746,32 @@
         }
 
         window.shufflePuzzle = function() {
-            const isPlaying = gameStarted;
-
-            if (!isPlaying) {
-                // Force stop timer only if not playing
-                clearInterval(timerInterval);
-                
-                timerDisplay.classList.remove('text-red-500', 'animate-pulse');
-                if (timerDisplayMobile) timerDisplayMobile.classList.remove('text-red-500', 'animate-pulse');
-                
-                // Reset state
-                moves = 0;
-                movesDisplay.textContent = '0';
-                if (movesDisplayMobile) movesDisplayMobile.textContent = '0';
-                
-                // Display initial time (00:00.00)
-                const initialTime = '00:00.00';
-                timerDisplay.textContent = initialTime;
-                if (timerDisplayMobile) timerDisplayMobile.textContent = initialTime;
-                
-                // Set time limit indicator
-                const limit = timeLimits[currentDifficulty];
-                const limitMins = limit / 60;
-                const indicatorText = `/ ${limitMins}m`;
-                const indicator = document.getElementById('time-limit-indicator');
-                const indicatorMobile = document.getElementById('time-limit-indicator-mobile');
-                
-                if (indicator) indicator.textContent = indicatorText;
-                if (indicatorMobile) indicatorMobile.textContent = indicatorText;
-            }
+            // Always stop the timer and reset state on shuffle/restart to avoid timer collisions
+            clearInterval(timerInterval);
+            gameStarted = false;
+            
+            timerDisplay.classList.remove('text-red-500', 'animate-pulse');
+            if (timerDisplayMobile) timerDisplayMobile.classList.remove('text-red-500', 'animate-pulse');
+            
+            // Reset moves and HUD
+            moves = 0;
+            movesDisplay.textContent = '0';
+            if (movesDisplayMobile) movesDisplayMobile.textContent = '0';
+            
+            // Display initial time (00:00.00)
+            const initialTime = '00:00.00';
+            timerDisplay.textContent = initialTime;
+            if (timerDisplayMobile) timerDisplayMobile.textContent = initialTime;
+            
+            // Set time limit indicator based on the current difficulty
+            const limit = timeLimits[currentDifficulty];
+            const limitMins = limit / 60;
+            const indicatorText = `/ ${limitMins}m`;
+            const indicator = document.getElementById('time-limit-indicator');
+            const indicatorMobile = document.getElementById('time-limit-indicator-mobile');
+            
+            if (indicator) indicator.textContent = indicatorText;
+            if (indicatorMobile) indicatorMobile.textContent = indicatorText;
             
             // Simulate random valid moves to shuffle (ensures solvability)
             const shuffleMoves = size * 20; // More moves for larger puzzles
@@ -822,11 +814,7 @@
                 board.classList.remove('shuffling');
             }, 100);
             
-            if (!isPlaying) {
-                // Ensure timer is stopped and game not started
-                clearInterval(timerInterval);
-                gameStarted = false;
-            }
+            gameStarted = false;
         }
 
         function startGame() {
@@ -983,7 +971,6 @@
                 
                 // Record game activity for logged-in players
                 // Show modal first
-                // Show modal first
                 setTimeout(() => {
                     // Reset modal to Success
                     const modal = document.getElementById('game-over-modal');
@@ -1038,11 +1025,10 @@
                             nextLevelBtn.classList.add('hidden');
                         }
                     }
-                }, 500);
+                }, 200);
                 
                 // Record game activity
                 @auth
-                @if(Auth::user()->role === 'player' || Auth::user()->role === 'user')
                 if (window.gameActivity) {
                     (async () => {
                         try {
@@ -1077,7 +1063,6 @@
                         }
                     })();
                 }
-                @endif
                 @endauth
             }
         }
@@ -1087,17 +1072,36 @@
             overlay.classList.toggle('hidden');
         };
 
-        document.addEventListener('turbo:load', () => {
+        // Initialize Everything Immediately
+        const runInitialization = () => {
             initGame();
             
-            // Ensure music is paused on load (User Request: Mute first before modal)
-            if (bgMusic) {
-                bgMusic.pause();
-                bgMusic.currentTime = 0;
-                if(typeof isMusicPlaying !== 'undefined') isMusicPlaying = false;
+            // Auto-play music if no guest modal is present (Logged in user)
+            const guestModal = document.getElementById('guest-modal');
+            if (!guestModal) {
+                // User is likely logged in and authorized, start music automatically
+                window.startPuzzleMusic();
+                
+                // Fallback: If autoplay is blocked, start on first interaction
+                const startOnInteraction = () => {
+                    if (typeof isMusicPlaying !== 'undefined' && !isMusicPlaying) {
+                        window.startPuzzleMusic();
+                    }
+                    document.removeEventListener('click', startOnInteraction);
+                    document.removeEventListener('keydown', startOnInteraction);
+                };
+                document.addEventListener('click', startOnInteraction, { once: true });
+                document.addEventListener('keydown', startOnInteraction, { once: true });
+            } else {
+                // Guest modal exists - ensure music is paused until they close it
+                if (bgMusic) {
+                    bgMusic.pause();
+                    bgMusic.currentTime = 0;
+                    if(typeof isMusicPlaying !== 'undefined') isMusicPlaying = false;
+                }
             }
-            // Auto-play music removed (moved to guest modal close)
-        });
+        };
+
         window.addEventListener('resize', () => {
             // Simple reload to handle resize logic easily
             // In production, better resize logic would be preferred
@@ -1112,6 +1116,61 @@
         const volumeSlider = document.getElementById('volume-slider');
         const volumePercent = document.getElementById('volume-percent');
         let isMusicPlaying = false;
+
+        // Expose function to start music from outside
+        window.startPuzzleMusic = function() {
+            if (!bgMusic) return;
+            
+            // Force reset state
+            bgMusic.muted = false;
+            // Only reset time if we are essentially at the start or end to avoid skipping if paused briefly
+            if (bgMusic.currentTime > bgMusic.duration - 1 || bgMusic.paused) {
+                 bgMusic.currentTime = 0;
+            }
+            
+            // robust volume calculation
+            let vol = 0.5;
+            if (volumeSlider && volumeSlider.value) {
+                vol = parseInt(volumeSlider.value) / 100;
+            }
+            bgMusic.volume = isNaN(vol) ? 0.5 : vol;
+
+            const attemptPlay = () => {
+                const playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        isMusicPlaying = true;
+                        if (musicIcon) {
+                            const v = volumeSlider ? parseInt(volumeSlider.value) : 50;
+                            if (v === 0) musicIcon.textContent = '🔇';
+                            else if (v < 50) musicIcon.textContent = '🔉';
+                            else musicIcon.textContent = '🔊';
+                        }
+                    }).catch(e => {
+                        console.error('Manual music start failed:', e);
+                        isMusicPlaying = false;
+                        if (musicIcon) musicIcon.textContent = '🔇';
+                        
+                        // Fallback: waiting for user interaction
+                        const onInteract = () => {
+                             bgMusic.play().then(() => {
+                                 isMusicPlaying = true;
+                                 if(musicIcon) musicIcon.textContent = '🔊';
+                             }).catch(() => {});
+                             document.removeEventListener('click', onInteract);
+                        };
+                        document.addEventListener('click', onInteract, { once: true });
+                    });
+                }
+            };
+
+            // Check if audio is ready
+            if (bgMusic.readyState >= 2) {
+                attemptPlay();
+            } else {
+                bgMusic.addEventListener('canplay', () => attemptPlay(), { once: true });
+            }
+        };
 
         // Set initial volume
         if (bgMusic && volumeSlider) {
@@ -1216,18 +1275,33 @@
 
         // Stop music when navigating away via Turbo
         const stopMusic = () => {
+            // Stop background music
             if (bgMusic) {
                 bgMusic.pause();
+                bgMusic.currentTime = 0;
                 if(typeof isMusicPlaying !== 'undefined') isMusicPlaying = false;
             }
+            // Broad cleanup for any other audio elements
+            document.querySelectorAll('audio').forEach(el => {
+                try {
+                    el.pause();
+                    el.currentTime = 0;
+                } catch(e) {}
+            });
+
             document.removeEventListener('turbo:before-visit', stopMusic);
             document.removeEventListener('turbo:before-render', stopMusic);
+            document.removeEventListener('turbo:before-cache', stopMusic);
             window.removeEventListener('beforeunload', stopMusic);
         };
 
         document.addEventListener('turbo:before-visit', stopMusic);
         document.addEventListener('turbo:before-render', stopMusic);
+        document.addEventListener('turbo:before-cache', stopMusic);
         window.addEventListener('beforeunload', stopMusic);
+        
+        // Run immediately since script is at end of body
+        runInitialization();
     })();
 </script>
 @endpush

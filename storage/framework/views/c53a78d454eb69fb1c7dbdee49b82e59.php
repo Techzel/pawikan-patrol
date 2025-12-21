@@ -95,7 +95,7 @@
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
-<div id="games-index-container" class="bg-gray-800 min-h-screen text-white overflow-x-hidden relative">
+<div id="games-index-container" class="bg-gray-900 min-h-screen text-white overflow-x-hidden relative" style="background-color: #111827;">
 
     
     <?php echo $__env->make('navigation', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>

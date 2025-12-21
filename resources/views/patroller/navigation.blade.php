@@ -12,7 +12,7 @@
     }
 </style>
 
-<nav class="fixed top-0 left-0 right-0 z-[99999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
+<nav class="fixed top-0 left-0 right-0 z-[99990] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
@@ -45,7 +45,7 @@
                         <div class="p-2 space-y-1">
                             <a href="/patrol-map/gallery" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-lg">📸</span>
-                                <span class="text-sm font-medium">Gallery Report</span>
+                                <span class="text-sm font-medium uppercase">Gallery Report</span>
                             </a>
                         </div>
                     </div>
@@ -137,7 +137,7 @@
     </div>
 
     <!-- Mobile Navigation -->
-    <div id="mobile-menu" class="md:hidden hidden bg-slate-800/95 backdrop-blur-lg border-t border-ocean-500/20 max-h-[calc(100vh-5rem)] overflow-y-auto">
+    <div id="mobile-menu" class="md:hidden hidden fixed top-20 left-0 right-0 bg-slate-800/95 backdrop-blur-lg border-t border-ocean-500/20 max-h-[calc(100vh-5rem)] overflow-y-auto z-[99997]">
         <div class="px-2 pt-2 pb-3 space-y-1">
             <!-- Patrol Map Section -->
             <div class="space-y-1">
@@ -220,90 +220,61 @@
 </nav>
 
 <script>
-(function() {
-    'use strict';
-    
-    let menuOpen = false;
-    let clickJustHappened = false;
-    
-    function init() {
-        const menuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        if (!menuButton || !mobileMenu) {
-            return;
-        }
-        
-        // Toggle menu on button click
-        menuButton.onclick = function(e) {
-            e.stopPropagation();
-            clickJustHappened = true;
+    (function() {
+        // Prevent multiple initializations
+        if (window.patrollerNavInitialized) return;
+
+        function initializePatrollerMenu() {
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
             
-            menuOpen = !menuOpen;
-            
-            if (menuOpen) {
-                mobileMenu.classList.remove('hidden');
-                this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
-            } else {
-                mobileMenu.classList.add('hidden');
-                this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
-            }
-            
-            setTimeout(() => { clickJustHappened = false; }, 100);
-        };
-        
-        // Close menu when clicking nav links
-        mobileMenu.addEventListener('click', function(e) {
-            if (e.target.closest('.mobile-nav-link')) {
-                menuOpen = false;
-                mobileMenu.classList.add('hidden');
-                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
-            }
-        });
-        
-        // Account dropdown toggle
-        mobileMenu.addEventListener('click', function(e) {
-            const toggle = e.target.closest('.mobile-account-toggle');
-            if (toggle) {
+            if (!menuButton || !mobileMenu) return;
+
+            // Reset state
+            mobileMenu.classList.add('hidden');
+            menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+
+            menuButton.onclick = function(e) {
+                e.preventDefault();
                 e.stopPropagation();
-                const submenu = toggle.nextElementSibling;
-                const arrow = toggle.querySelector('svg');
                 
-                if (submenu && submenu.classList.contains('mobile-account-menu')) {
-                    submenu.classList.toggle('hidden');
-                    if (arrow) {
-                        arrow.classList.toggle('rotate-180');
-                    }
+                const isHidden = mobileMenu.classList.contains('hidden');
+                mobileMenu.classList.toggle('hidden');
+                
+                this.querySelector('svg').innerHTML = !isHidden 
+                    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />'
+                    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+            };
+
+            const accountToggle = mobileMenu.querySelector('.mobile-account-toggle');
+            if (accountToggle) {
+                accountToggle.onclick = function(e) {
+                    e.stopPropagation();
+                    const submenu = this.nextElementSibling;
+                    const arrow = this.querySelector('svg');
+                    if (submenu) submenu.classList.toggle('hidden');
+                    if (arrow) arrow.classList.toggle('rotate-180');
+                };
+            }
+
+            mobileMenu.querySelectorAll('a, button').forEach(el => {
+                if (!el.classList.contains('mobile-account-toggle')) {
+                    el.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                    });
                 }
-            }
+            });
+        }
+
+        document.addEventListener("turbo:before-visit", () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.add('hidden');
         });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!clickJustHappened && menuOpen && !mobileMenu.contains(e.target) && !menuButton.contains(e.target)) {
-                menuOpen = false;
-                mobileMenu.classList.add('hidden');
-                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
-            }
-        });
-        
-        // Close on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && menuOpen) {
-                menuOpen = false;
-                mobileMenu.classList.add('hidden');
-                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
-            }
-        });
-    }
-    
-    // Initialize when ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-})();
+
+        document.addEventListener("turbo:load", initializePatrollerMenu);
+        document.addEventListener('DOMContentLoaded', initializePatrollerMenu);
+
+        window.patrollerNavInitialized = true;
+    })();
 </script>
 
-@include('auth.modal')

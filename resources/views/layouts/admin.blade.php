@@ -93,7 +93,7 @@
     
     @stack('styles')
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-900 text-white" style="background-color: #111827;">
     <div class="flex h-screen overflow-hidden">
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden w-full">

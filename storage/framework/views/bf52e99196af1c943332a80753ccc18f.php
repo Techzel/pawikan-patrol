@@ -10,7 +10,7 @@
     $isPatrollerOrAdmin = auth()->check() && in_array(auth()->user()->role, ['patroller', 'admin']);
     $mapHeight = $isPatrollerOrAdmin ? 'calc(100vh - 160px)' : 'calc(100vh - 140px)';
 ?>
-<div class="min-h-screen bg-gray-900 <?php echo e($isPatrollerOrAdmin ? '' : 'pt-20'); ?>">
+<div class="<?php echo e($isPatrollerOrAdmin ? '' : 'pt-20'); ?>">
     <!-- Header -->
     <div class="py-4 mb-4 <?php echo e($isPatrollerOrAdmin ? '' : 'mt-4'); ?>">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -28,7 +28,7 @@
             <div id="loading" class="absolute inset-0 bg-slate-900/95 backdrop-blur-md flex items-center justify-center transition-opacity duration-500" style="z-index: 1000;">
                 <div class="text-center">
                     <div class="animate-spin rounded-full h-16 w-16 border-4 border-green-500 border-t-transparent mx-auto mb-4"></div>
-                    <p class="text-green-400 font-bold uppercase tracking-widest text-sm" style="font-family: 'Cinzel', serif;">Locating Patrol Reports...</p>
+                    <p class="text-green-400 font-bold uppercase tracking-widest text-sm" style="font-family: 'Poppins', sans-serif;">Locating Patrol Reports...</p>
                 </div>
             </div>
         </div>
@@ -53,6 +53,20 @@
 </div>
 
 <style>
+#map {
+    background: #1f2937;
+    width: 100% !important;
+    min-height: 500px;
+}
+
+#particles {
+    display: none !important;
+}
+
+.leaflet-container {
+    background: #1f2937 !important;
+}
+
 .leaflet-control-fullscreen {
     background-color: white;
     border: 2px solid rgba(0,0,0,0.2);
@@ -334,32 +348,44 @@
             const mapContainer = document.getElementById('map');
             if (!mapContainer || !window.L) return;
 
-            // Cleanup existing instance
+            // Cleanup existing instance if any
             if (mapInstance) {
                 mapInstance.remove();
                 mapInstance = null;
             }
 
             try {
+                // Initialize map with a default view first
+                mapInstance = L.map('map', {
+                    center: HATCHERY_COORDS,
+                    zoom: 14,
+                    zoomControl: true,
+                    // Prevent tile repeating strip issue
+                    worldCopyJump: true,
+                    maxBounds: [[6.893881, 126.250941], [6.953881, 126.310941]]
+                });
+
                 const googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
                     maxZoom: 20,
                     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
                     attribution: '© Google Maps'
-                });
+                }).addTo(mapInstance);
 
-                mapInstance = L.map('map', {
-                    center: HATCHERY_COORDS,
-                    zoom: 14,
-                    layers: [googleHybrid],
-                    zoomControl: true,
-                    maxBounds: [[6.893881, 126.250941], [6.953881, 126.310941]]
-                });
+                // Add Fullscreen control if plugin exists
+                if (L.Control.Fullscreen) {
+                    new L.Control.Fullscreen({ position: 'topleft' }).addTo(mapInstance);
+                }
 
-                // Hide loading overlay as map is now initialized
-                hideLoading();
+                // Initial size calculation
+                mapInstance.invalidateSize();
 
                 if (window.L.MarkerClusterGroup) {
-                    const markerCluster = L.markerClusterGroup();
+                    const markerCluster = L.markerClusterGroup({
+                        showCoverageOnHover: false,
+                        zoomToBoundsOnClick: true,
+                        spiderfyOnMaxZoom: true
+                    });
+                    
                     validatedReports.forEach(report => {
                         if (report.latitude && report.longitude) {
                             const marker = L.marker([report.latitude, report.longitude], { icon: createIcon() });
@@ -367,22 +393,29 @@
                             markerCluster.addLayer(marker);
                         }
                     });
+                    
                     mapInstance.addLayer(markerCluster);
-                    if (markerCluster.getLayers().length > 0) {
-                        mapInstance.fitBounds(markerCluster.getBounds().pad(0.1));
-                    }
+                    
+                    // Crucial: Only fit bounds after a short delay to ensure DOM is settled
+                    setTimeout(() => {
+                        mapInstance.invalidateSize();
+                        if (markerCluster.getLayers().length > 0) {
+                            mapInstance.fitBounds(markerCluster.getBounds().pad(0.1));
+                        } else {
+                            mapInstance.setView(HATCHERY_COORDS, 14);
+                        }
+                        hideLoading();
+                    }, 250);
+                } else {
+                    setTimeout(() => {
+                        mapInstance.invalidateSize();
+                        mapInstance.setView(HATCHERY_COORDS, 14);
+                        hideLoading();
+                    }, 250);
                 }
 
                 const closeBtn = document.getElementById('close-sidebar');
                 if (closeBtn) closeBtn.onclick = window.closeSidebar;
-
-                // Add Fullscreen control if plugin exists
-                if (L.Control.Fullscreen) {
-                    new L.Control.Fullscreen({ position: 'topleft' }).addTo(mapInstance);
-                }
-
-                // Force resize check
-                setTimeout(() => mapInstance.invalidateSize(), 50);
 
             } catch (error) {
                 console.error('Leaflet Init Error:', error);
@@ -392,8 +425,10 @@
 
         document.addEventListener('turbo:load', function() {
             if (document.getElementById('map')) {
-                // Initialize map immediately for better performance
-                initializeMap();
+                // Use requestAnimationFrame to ensure the container is rendered
+                requestAnimationFrame(() => {
+                    setTimeout(initializeMap, 100);
+                });
             }
         });
         

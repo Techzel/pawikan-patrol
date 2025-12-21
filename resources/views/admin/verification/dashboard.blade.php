@@ -415,15 +415,14 @@
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-center gap-2 action-buttons">
                                         <!-- View Button -->
-                                        <button 
-                                            onclick="openUserModal('{{ $user->id }}')"
-                                            class="action-btn bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/30 hover:border-blue-400/60"
-                                            data-user-id="{{ $user->id }}"
-                                            id="viewBtn{{ $user->id }}"
-                                            title="View User Details">
-                                            <i class="fas fa-eye text-sm" id="viewIcon{{ $user->id }}"></i>
-                                            <i class="fas fa-spinner fa-spin text-sm hidden" id="viewSpinner{{ $user->id }}"></i>
-                                        </button>
+                                            <button 
+                                                onclick="openUserModal('{{ $user->id }}')"
+                                                class="action-btn bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/30 hover:border-blue-400/60"
+                                                data-user-id="{{ $user->id }}"
+                                                id="viewBtn{{ $user->id }}"
+                                                title="View User Details">
+                                                <i class="fas fa-eye text-sm" id="viewIcon{{ $user->id }}"></i>
+                                            </button>
 
                                         @if($user->verification_status === 'pending')
                                             <!-- Approve Button -->
@@ -653,18 +652,29 @@ function updateLastUpdatedTime() {
 // Main user modal function
 async function openUserModal(userId) {
     console.log('Opening user modal for user ID:', userId);
-    setLoadingState(userId, 'view', true);
+    
+    // Show modal immediately with loading state
+    const contentDiv = document.getElementById('userDetailsContent');
+    if (contentDiv) {
+        contentDiv.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12">
+                <i class="fas fa-spinner fa-spin text-3xl text-blue-400 mb-3"></i>
+                <p class="text-gray-400 animate-pulse">Loading user details...</p>
+            </div>
+        `;
+    }
+    showUserModal();
     
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-        const response = await fetch(`/api/users/${userId}?t=${new Date().getTime()}`, {
+        const response = await fetch(`/api/users/${userId}`, {
             signal: controller.signal,
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
             }
         });
 
@@ -716,13 +726,25 @@ async function openUserModal(userId) {
                     ` : ''}
                 </div>
             `;
-            showUserModal();
         }
     } catch (error) {
         console.error('Error:', error);
+        const contentDiv = document.getElementById('userDetailsContent');
+        if (contentDiv) {
+            contentDiv.innerHTML = `
+                <div class="p-6 bg-red-500/10 rounded-xl border border-red-500/20 text-center">
+                    <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+                    </div>
+                    <h4 class="text-white font-medium mb-1">Failed to load user details</h4>
+                    <p class="text-red-300 text-sm mb-4">${escapeHtml(error.message)}</p>
+                    <button onclick="openUserModal('${userId}')" class="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg text-sm transition-colors border border-red-500/30">
+                        <i class="fas fa-redo mr-2"></i>Retry
+                    </button>
+                </div>
+            `;
+        }
         showNotification('error', `Failed to load user: ${error.message}`);
-    } finally {
-        setLoadingState(userId, 'view', false);
     }
 }
 

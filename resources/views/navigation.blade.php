@@ -70,9 +70,9 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(15, 23, 42, 0.85);
+        background: rgba(15, 23, 42, 0.95);
         backdrop-filter: blur(8px);
-        z-index: 9998;
+        z-index: 99998;
         display: none;
         justify-content: center;
         align-items: center;
@@ -109,7 +109,7 @@
         color: #14b8a6;
         font-size: 1.1rem;
         font-weight: 600;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
         animation: loaderPulse 1.5s ease-in-out infinite;
     }
@@ -125,7 +125,7 @@
 </style>
 
 
-<nav class="fixed top-0 left-0 right-0 z-[9999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
+<nav class="fixed top-0 left-0 right-0 z-[99999] bg-slate-800/95 backdrop-blur-lg shadow-lg border-b border-ocean-500/20">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
@@ -337,7 +337,7 @@
     </div>
 
     <!-- Mobile Navigation -->
-    <div id="mobile-menu" class="md:hidden hidden bg-slate-800/95 backdrop-blur-lg border-t border-ocean-500/20 max-h-[calc(100vh-5rem)] overflow-y-auto">
+    <div id="mobile-menu" class="md:hidden hidden fixed top-20 left-0 right-0 bg-slate-800/95 backdrop-blur-lg border-t border-ocean-500/20 max-h-[calc(100vh-5rem)] overflow-y-auto z-[99997]">
         <div class="px-2 pt-2 pb-3 space-y-1">
             @if(!auth()->check() || auth()->user()->role !== 'admin')
             <!-- Home Section -->
@@ -490,150 +490,104 @@
         </div>
     </div>
 </nav>
-
-<script>
-(function() {
-    'use strict';
-    
-    let menuOpen = false;
-    let clickJustHappened = false;
-    
-    function init() {
-        const menuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        if (!menuButton || !mobileMenu) {
-            return;
-        }
-        
-        // Toggle menu on button click
-        menuButton.onclick = function(e) {
-            e.stopPropagation();
-            clickJustHappened = true;
-            
-            menuOpen = !menuOpen;
-            
-            if (menuOpen) {
-                mobileMenu.classList.remove('hidden');
-                this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
-            } else {
-                mobileMenu.classList.add('hidden');
-                this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
-            }
-            
-            setTimeout(() => { clickJustHappened = false; }, 100);
-        };
-        
-        // Close menu when clicking nav links
-        mobileMenu.addEventListener('click', function(e) {
-            if (e.target.closest('.mobile-nav-link')) {
-                menuOpen = false;
-                mobileMenu.classList.add('hidden');
-                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
-            }
-        });
-        
-        // Account dropdown toggle
-        mobileMenu.addEventListener('click', function(e) {
-            const toggle = e.target.closest('.mobile-account-toggle');
-            if (toggle) {
-                e.stopPropagation();
-                const submenu = toggle.nextElementSibling;
-                const arrow = toggle.querySelector('svg');
-                
-                if (submenu && submenu.classList.contains('mobile-account-menu')) {
-                    submenu.classList.toggle('hidden');
-                    if (arrow) {
-                        arrow.classList.toggle('rotate-180');
-                    }
-                }
-            }
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!clickJustHappened && menuOpen && !mobileMenu.contains(e.target) && !menuButton.contains(e.target)) {
-                menuOpen = false;
-                mobileMenu.classList.add('hidden');
-                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
-            }
-        });
-        
-        // Close on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && menuOpen) {
-                menuOpen = false;
-                mobileMenu.classList.add('hidden');
-                menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
-            }
-        });
-    }
-    
-    // Initialize when ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-})();
-</script>
-
-@include('auth.modal')
-
-<!-- Page Loader -->
+<!-- Page Loader Overlay -->
 <div id="page-loader">
     <div class="loader-content">
         <div class="loader-spinner"></div>
-        <div class="loader-text">Diving In...</div>
+        <div class="loader-text">Loading Patrol...</div>
     </div>
 </div>
 
 <script>
     (function() {
-        // Prevent multiple initializations if navigation is re-loaded by Turbo
-        if (window.loaderInitialized) return;
-        
-        document.addEventListener("turbo:before-visit", function() {
-            const loader = document.getElementById("page-loader");
-            if (loader) loader.classList.add("active");
-        });
+        // Prevent multiple initializations of global functions
+        if (window.navInitialized) return;
 
-        document.addEventListener("turbo:submit-start", function() {
-            const loader = document.getElementById("page-loader");
-            if (loader) loader.classList.add("active");
-        });
-
-        // Global function to trigger loader manually
-        window.showPageLoader = function() {
-            const loader = document.getElementById("page-loader");
-            if (loader) loader.classList.add("active");
-        };
-
-        document.addEventListener("turbo:load", function() {
-            const loader = document.getElementById("page-loader");
-            if (loader) {
-                // Add a small delay for smoother transition
-                setTimeout(() => {
-                    loader.classList.remove("active");
-                }, 100);
-            }
-            
-            // Re-initialize Mobile Menu for Turbo
+        /**
+         * Robust Mobile Menu Controller
+         * Works with both standard loads and Turbo transitions
+         */
+        function initializeMobileMenu() {
             const menuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
-            if (menuButton && mobileMenu) {
-                menuButton.onclick = function(e) {
-                    e.preventDefault(); 
+            
+            if (!menuButton || !mobileMenu) return;
+
+            // Reset menu state on re-initialization (useful for Turbo)
+            mobileMenu.classList.add('hidden');
+            menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+
+            // Remove and re-add click listener to avoid duplicates
+            menuButton.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const isOpen = !mobileMenu.classList.contains('hidden');
+                
+                if (isOpen) {
+                    mobileMenu.classList.add('hidden');
+                    this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                } else {
+                    mobileMenu.classList.remove('hidden');
+                    this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+                }
+            };
+
+            // Account dropdown toggle initialization
+            const accountToggle = mobileMenu.querySelector('.mobile-account-toggle');
+            if (accountToggle) {
+                accountToggle.onclick = function(e) {
                     e.stopPropagation();
-                    mobileMenu.classList.toggle('hidden');
-                    const isHidden = mobileMenu.classList.contains('hidden');
-                    this.querySelector('svg').innerHTML = isHidden 
-                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />'
-                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+                    const submenu = this.nextElementSibling;
+                    const arrow = this.querySelector('svg');
+                    if (submenu) submenu.classList.toggle('hidden');
+                    if (arrow) arrow.classList.toggle('rotate-180');
                 };
             }
-        });
 
-        window.loaderInitialized = true;
+            // Close menu if a nav link is clicked (important for same-page anchors or Turbo)
+            mobileMenu.querySelectorAll('a, button').forEach(el => {
+                if (!el.classList.contains('mobile-account-toggle')) {
+                    el.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                    });
+                }
+            });
+        }
+
+        /**
+         * Global Page Loader Logic
+         */
+        window.showPageLoader = function() {
+            const loader = document.getElementById("page-loader");
+            if (loader) {
+                loader.classList.add("active");
+                // Fail-safe: hide after 10 seconds
+                setTimeout(() => {
+                    if (loader.classList.contains('active')) {
+                        loader.classList.remove('active');
+                    }
+                }, 10000);
+            }
+        };
+
+        if (!window.navEventsBound) {
+            document.addEventListener("turbo:before-visit", () => {
+                window.showPageLoader();
+                const mm = document.getElementById('mobile-menu');
+                if (mm) mm.classList.add('hidden');
+            });
+            document.addEventListener("turbo:submit-start", window.showPageLoader);
+            document.addEventListener("turbo:load", () => {
+                const l = document.getElementById("page-loader");
+                if (l) setTimeout(() => l.classList.remove("active"), 300);
+                initializeMobileMenu();
+            });
+            window.navEventsBound = true;
+        }
+
+        initializeMobileMenu();
+        window.navInitialized = true;
     })();
 </script>
+

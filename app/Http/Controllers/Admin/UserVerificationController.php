@@ -134,6 +134,11 @@ class UserVerificationController extends Controller
     public function show($id)
     {
         $user = User::with('verifiedBy')->findOrFail($id);
+        
+        if (request()->ajax() || request()->expectsJson()) {
+            return response()->json($user);
+        }
+        
         return view('admin.verification.show', compact('user'));
     }
 

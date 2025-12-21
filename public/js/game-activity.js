@@ -6,19 +6,20 @@
 class GameActivity {
     constructor() {
         this.baseURL = '/game-activities';
-        this.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         console.log('🎯 GameActivity initialized!');
         console.log('   Base URL:', this.baseURL);
-        console.log('   CSRF Token:', this.csrfToken ? '✅ Found' : '❌ Missing');
     }
 
     /**
      * Record a new game activity
      */
     async recordActivity(activityData) {
+        // Always get fresh CSRF token from the DOM
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
         console.log('🎮 recordActivity called with:', activityData);
         console.log('📍 Base URL:', this.baseURL);
-        console.log('🔑 CSRF Token:', this.csrfToken);
+        console.log('🔑 CSRF Token:', csrfToken);
 
         try {
             const url = this.baseURL + '/record';
@@ -28,10 +29,11 @@ class GameActivity {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': this.csrfToken,
+                    'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify(activityData)
+                body: JSON.stringify(activityData),
+                keepalive: true
             });
 
             console.log('📥 Response status:', response.status);

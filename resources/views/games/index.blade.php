@@ -97,7 +97,7 @@
 @endpush
 
 @section('content')
-<div id="games-index-container" class="bg-gray-800 min-h-screen text-white overflow-x-hidden relative">
+<div id="games-index-container" class="bg-gray-900 min-h-screen text-white overflow-x-hidden relative" style="background-color: #111827;">
 
     
     @include('navigation')

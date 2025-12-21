@@ -9,10 +9,21 @@
         box-sizing: border-box;
     }
 
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Hide scrollbar for IE, Edge and Firefox */
+    html, body {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
     /* Main Container */
     .gallery-wrapper {
         min-height: 100vh;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        background: #111827;
         position: relative;
         overflow: hidden;
     }
@@ -29,10 +40,14 @@
         pointer-events: none;
     }
 
+    #particles {
+        display: none !important;
+    }
+
     /* Header */
     .gallery-header {
         text-align: center;
-        padding: 3rem 1rem 2rem;
+        padding: 8rem 1rem 2rem;
         position: relative;
         z-index: 1;
     }
@@ -102,10 +117,11 @@
     }
 
     .report-card.next {
-        opacity: 0.4;
+        opacity: 0;
         transform: translateX(105%) scale(0.9) skewY(-2deg);
         z-index: 5;
         filter: brightness(0.7);
+        pointer-events: none;
     }
 
     /* Card Grid Layout */
@@ -139,7 +155,7 @@
     }
 
     .main-image-container:hover .main-image {
-        transform: scale(1.08);
+        /* transform: scale(1.08); */
     }
 
     .image-overlay {
@@ -595,7 +611,7 @@
     $isPatrollerOrAdmin = auth()->check() && in_array(auth()->user()->role, ['patroller', 'admin']);
 @endphp
 
-<div class="gallery-wrapper {{ $isPatrollerOrAdmin ? 'pt-20' : 'pt-24' }}">
+
     <!-- Header -->
     <div class="gallery-header">
         <h1 class="gallery-title">Patrol Report Gallery</h1>
@@ -811,7 +827,7 @@
             <img id="lightbox-image" class="lightbox-image" src="" alt="Full size image" onclick="event.stopPropagation()">
         </div>
     </div>
-</div>
+
 
 <script>
     // Carousel State

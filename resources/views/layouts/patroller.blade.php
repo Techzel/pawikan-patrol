@@ -95,7 +95,7 @@
         .glass-dark {
             background: rgba(15, 76, 117, 0.95);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(74, 222, 128, 0.3);
+            border: 1px solid rgba(45, 212, 191, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
@@ -115,8 +115,8 @@
 
         .form-input:focus {
             outline: none;
-            border-color: #4ade80;
-            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+            border-color: #2dd4bf;
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
         }
 
         .form-input::placeholder {
@@ -134,12 +134,12 @@
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #4ade80, #22c55e);
+            background: linear-gradient(to bottom, #2dd4bf, #14b8a6);
             border-radius: 3px;
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(to bottom, #22c55e, #16a34a);
+            background: linear-gradient(to bottom, #14b8a6, #0d9488);
         }
 
         /* Navigation styles */
@@ -163,7 +163,7 @@
             bottom: 0;
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(8px);
-            z-index: 9000;
+            z-index: 99998;
             display: none;
             justify-content: center;
             align-items: center;
@@ -187,20 +187,20 @@
         .loader-spinner {
             width: 60px;
             height: 60px;
-            border: 4px solid rgba(74, 222, 128, 0.1);
-            border-left-color: #4ade80;
+            border: 4px solid rgba(45, 212, 191, 0.1);
+            border-left-color: #2dd4bf;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 1.5rem;
-            box-shadow: 0 0 20px rgba(74, 222, 128, 0.2);
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.2);
         }
 
         .loader-text {
-            font-family: 'Cinzel', serif;
-            color: #4ade80;
+            font-family: 'Cinzel', serif !important;
+            color: #2dd4bf;
             font-size: 1.1rem;
             font-weight: 600;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.05em;
             text-transform: uppercase;
             animation: pulse 1.5s ease-in-out infinite;
         }
@@ -217,7 +217,7 @@
 
     @stack('styles')
 </head>
-<body class="bg-gray-900 min-h-screen font-['Poppins']">
+<body class="bg-gray-900 min-h-screen font-['Poppins'] text-white" style="background-color: #111827;">
     <!-- Navigation -->
     @include('patroller.navigation')
 
@@ -251,7 +251,7 @@
             // Add a small delay for smoother transition
             setTimeout(() => {
                 document.getElementById("page-loader").classList.remove("active");
-            }, 100);
+            }, 300);
         });
 
         // Handle case where user clicks back button or navigation is cancelled
@@ -263,5 +263,6 @@
             // In case of error, still remove loader
         });
     </script>
+
 </body>
 </html>

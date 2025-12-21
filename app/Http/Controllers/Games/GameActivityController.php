@@ -98,6 +98,7 @@ class GameActivityController extends Controller
             ->selectRaw('
                 users.id as user_id, 
                 users.name, 
+                users.email,
                 users.profile_picture
             ');
 
