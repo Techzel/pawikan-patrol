@@ -20,7 +20,7 @@
                 <a href="{{ auth()->check() && auth()->user()->role === 'admin' ? route('admin.dashboard') : (auth()->check() && auth()->user()->role === 'patroller' ? route('patroller.dashboard') : '/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <img src="{{ asset('img/lg.png') }}" alt="Pawikan Patrol Logo" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full">
                     <div class="ml-2 sm:ml-0">
-                        <span class="text-lg sm:text-xl font-bold text-white tracking-widest uppercase" style="font-family: 'Cinzel', serif !important;">
+                        <span class="text-lg sm:text-xl font-bold text-white uppercase" style="font-family: 'Cinzel', serif !important;">
                             Dahican Pawikan Patrol
                         </span>
                         <div class="text-[10px] sm:text-xs text-gray-300 mt-0.5">City of Mati – Dahican, est. 2004</div>
@@ -204,11 +204,11 @@
                 </button>
 
                 <div class="ml-8 space-y-1 mobile-account-menu hidden">
-                    <a href="#" onclick="event.preventDefault(); openAuthModal('login')" class="mobile-nav-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                    <a href="#" data-auth-trigger="login" class="mobile-nav-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">🔑</span>
                         <span class="text-sm font-medium">Login</span>
                     </a>
-                    <a href="#" onclick="event.preventDefault(); openAuthModal('register')" class="mobile-nav-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                    <a href="#" data-auth-trigger="register" class="mobile-nav-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">📝</span>
                         <span class="text-sm font-medium">Register</span>
                     </a>
@@ -257,12 +257,28 @@
                 };
             }
 
+            // Handle link clicks (auto-close and auth triggers)
             mobileMenu.querySelectorAll('a, button').forEach(el => {
-                if (!el.classList.contains('mobile-account-toggle')) {
-                    el.addEventListener('click', () => {
-                        mobileMenu.classList.add('hidden');
-                    });
-                }
+                if (el.classList.contains('mobile-account-toggle')) return;
+
+                el.onclick = (e) => {
+                    const authTrigger = el.getAttribute('data-auth-trigger');
+                    
+                    if (authTrigger) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Patroller Auth trigger clicked:', authTrigger);
+                        if (window.openAuthModal) {
+                            window.openAuthModal(authTrigger);
+                        }
+                    }
+
+                    // Always close menu
+                    mobileMenu.classList.add('hidden');
+                    if (menuButton.querySelector('svg')) {
+                        menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                    }
+                };
             });
         }
 

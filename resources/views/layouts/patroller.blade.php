@@ -264,5 +264,6 @@
         });
     </script>
 
+    @include('auth.modal')
 </body>
 </html>

@@ -19,7 +19,6 @@
         font-family: 'Cinzel', serif !important;
         font-size: 0.95rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.1em !important;
         text-transform: uppercase !important;
     }
     
@@ -434,11 +433,11 @@
                     
                     <!-- Account Sub-items -->
                     <div class="ml-8 space-y-1 mobile-account-menu hidden">
-                        <a href="#" onclick="event.preventDefault(); openAuthModal('login')" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="#" data-auth-trigger="login" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">🔑</span>
                             <span class="text-sm font-semibold uppercase">Login</span>
                         </a>
-                        <a href="#" onclick="event.preventDefault(); openAuthModal('register')" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <a href="#" data-auth-trigger="register" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                             <span class="text-lg">📝</span>
                             <span class="text-sm font-semibold uppercase">Register</span>
                         </a>
@@ -546,11 +545,28 @@
                 };
             }
 
-            // Auto-close on link clicks
+            // Handle nav link clicks (including auto-close and auth triggers)
             menu.querySelectorAll('a, button').forEach(el => {
-                if (!el.classList.contains('mobile-account-toggle')) {
-                    el.onclick = () => menu.classList.add('hidden');
-                }
+                if (el.classList.contains('mobile-account-toggle')) return;
+
+                el.onclick = (e) => {
+                    const authTrigger = el.getAttribute('data-auth-trigger');
+                    
+                    if (authTrigger) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Auth trigger clicked:', authTrigger);
+                        if (window.openAuthModal) {
+                            window.openAuthModal(authTrigger);
+                        } else {
+                            console.error('openAuthModal function not found');
+                        }
+                    }
+
+                    // Always close menu on link click (except account toggle)
+                    menu.classList.add('hidden');
+                    if (icon) icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                };
             });
         }
 
