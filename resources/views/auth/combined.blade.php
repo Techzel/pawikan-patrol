@@ -306,12 +306,6 @@
             <!-- Auth Modal is now included via navigation -->
     
     <script>
-        // Default to opening login modal if visiting the auth page directly
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!window.location.hash && typeof window.openAuthModal === 'function') {
-                window.openAuthModal('login');
-            }
-        });
         // Interactive Background & Particles
         document.addEventListener('DOMContentLoaded', () => {
             const particleContainer = document.getElementById('particles');

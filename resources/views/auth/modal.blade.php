@@ -367,213 +367,184 @@
     </div>
 </div>
 
+<!-- Auth Modal Triggers (For Turbo/JS) -->
+<div id="authTrigger" class="hidden" 
+     data-has-error="{{ ($errors->any() || session('error')) ? 'true' : 'false' }}"
+     data-has-success="{{ session('registration_success') ? 'true' : 'false' }}"
+     data-form-type="{{ old('_form_type', 'login') }}">
+</div>
+
 <script>
-    // Modal Handling Logic
+    /**
+     * AUTH MODAL CONTROLLER
+     * Optimized for Laravel + Hotwire Turbo
+     * Prevents persistent popups while ensuring functional auto-open on redirects
+     */
     (function() {
         const getEl = (id) => document.getElementById(id);
         
-        window.openAuthModal = function(view = 'login') {
-            const authModal = getEl('authModal');
-            if (!authModal) return;
+        // --- GLOBAL FUNCTIONS (Only define once) ---
+        if (!window.openAuthModal) {
+            window.openAuthModal = function(view = 'login') {
+                const modal = getEl('authModal');
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                if (view === 'register') window.showRegister();
+                else window.showLogin();
+            };
+
+            window.closeAuthModal = function() {
+                const modal = getEl('authModal');
+                if (!modal) return;
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            };
+
+            window.showLogin = function() {
+                const loginForm = getEl('loginForm'), regForm = getEl('registerForm');
+                const loginTab = getEl('loginTab'), regTab = getEl('registerTab');
+                if (loginForm) { loginForm.classList.add('active'); loginForm.classList.remove('hidden'); }
+                if (regForm) { regForm.classList.add('hidden'); regForm.classList.remove('active'); }
+                if (loginTab) loginTab.classList.add('active');
+                if (regTab) regTab.classList.remove('active');
+            };
             
-            authModal.classList.remove('hidden');
-            // Small timeout to allow display:block to apply before opacity transition
-            setTimeout(() => {
-                authModal.classList.remove('opacity-0');
-            }, 10);
-            
-            if (view === 'register') {
-                showRegister();
-            } else {
-                showLogin();
-            }
+            window.showRegister = function() {
+                const loginForm = getEl('loginForm'), regForm = getEl('registerForm');
+                const loginTab = getEl('loginTab'), regTab = getEl('registerTab');
+                if (regForm) { regForm.classList.add('active'); regForm.classList.remove('hidden'); }
+                if (loginForm) { loginForm.classList.add('hidden'); loginForm.classList.remove('active'); }
+                if (regTab) regTab.classList.add('active');
+                if (loginTab) loginTab.classList.remove('active');
+            };
         }
 
-        window.closeAuthModal = function() {
-            const authModal = getEl('authModal');
-            if (!authModal) return;
-            authModal.classList.add('opacity-0');
-            setTimeout(() => {
-                authModal.classList.add('hidden');
-            }, 300);
-        }
+        // --- INTERNAL LOGIC ---
 
-        // Make these global so they can be re-accessed correctly
-        window.showLogin = function() {
-            const loginForm = getEl('loginForm');
-            const registerForm = getEl('registerForm');
-            const loginTab = getEl('loginTab');
-            const registerTab = getEl('registerTab');
-            
-            if (!loginForm || !registerForm) return;
-            registerForm.classList.add('hidden');
-            registerForm.classList.remove('active');
-            loginForm.classList.add('active');
-            loginForm.classList.remove('hidden');
-            
-            if (loginTab && registerTab) {
-                loginTab.classList.add('active');
-                registerTab.classList.remove('active');
-            }
-        }
-        
-        window.showRegister = function() {
-            const loginForm = getEl('loginForm');
-            const registerForm = getEl('registerForm');
-            const loginTab = getEl('loginTab');
-            const registerTab = getEl('registerTab');
-            
-            if (!loginForm || !registerForm) return;
-            loginForm.classList.add('hidden');
-            loginForm.classList.remove('active');
-            registerForm.classList.add('active');
-            registerForm.classList.remove('hidden');
-            
-            if (loginTab && registerTab) {
-                registerTab.classList.add('active');
-                loginTab.classList.remove('active');
-            }
-        }
-        
-        // Initial setup for the freshly loaded modal elements
-        const initModalListeners = () => {
-            const loginTab = getEl('loginTab');
-            const registerTab = getEl('registerTab');
+        const initListeners = () => {
+            // Re-bind listeners on every page load (Turbo replaces body/modal)
+            const loginTab = getEl('loginTab'), regTab = getEl('registerTab');
             if (loginTab) loginTab.onclick = () => window.showLogin();
-            if (registerTab) registerTab.onclick = () => window.showRegister();
-        };
+            if (regTab) regTab.onclick = () => window.showRegister();
 
-        // Run once for the current page
-        initModalListeners();
-        
-        // And on subsequent Turbo loads
-        document.addEventListener('turbo:load', initModalListeners);
-        
-        // Initialize Form Listeners (Password Strength & Validation)
-        const initFormListeners = () => {
-            const registerPassword = getEl('registerPassword');
-            const registerPasswordConfirmation = getEl('registerPasswordConfirmation');
-            const strengthBar = getEl('strengthBar');
-            const strengthText = getEl('strengthText');
-            const passwordValidation = getEl('passwordValidation');
-            const passwordValidationText = getEl('passwordValidationText');
+            // Password Match Validation
+            const regPwd = getEl('registerPassword');
+            const regPwdConf = getEl('registerPasswordConfirmation');
+            const pwdValBox = getEl('passwordValidation');
+            const pwdValText = getEl('passwordValidationText');
             
-            function validatePasswordMatch() {
-                if (!registerPassword || !registerPasswordConfirmation || !passwordValidation || !passwordValidationText) return true;
-                const password = registerPassword.value;
-                const confirmPassword = registerPasswordConfirmation.value;
+            function validateMatch() {
+                if (!regPwd || !regPwdConf || !pwdValBox || !pwdValText) return true;
+                if (!regPwdConf.value) { pwdValBox.classList.add('hidden'); return true; }
                 
-                if (confirmPassword === '') {
-                    passwordValidation.classList.add('hidden');
+                pwdValBox.classList.remove('hidden');
+                if (regPwd.value === regPwdConf.value) {
+                    pwdValBox.className = 'mt-2 text-sm text-green-400';
+                    pwdValText.textContent = 'Passwords match';
                     return true;
-                }
-                
-                if (password !== confirmPassword) {
-                    passwordValidation.classList.remove('hidden');
-                    passwordValidation.className = 'mt-2 text-sm text-red-400';
-                    passwordValidationText.textContent = 'Passwords do not match';
-                    return false;
                 } else {
-                    passwordValidation.classList.remove('hidden');
-                    passwordValidation.className = 'mt-2 text-sm text-green-400';
-                    passwordValidationText.textContent = 'Passwords match';
-                    return true;
+                    pwdValBox.className = 'mt-2 text-sm text-red-400';
+                    pwdValText.textContent = 'Passwords do not match';
+                    return false;
                 }
             }
 
-            if (registerPassword && strengthBar && strengthText) {
-                registerPassword.addEventListener('input', function() {
-                    const password = this.value;
-                    let strength = 0;
-                    let strengthLabel = '';
-                    let strengthColor = '';
-                    if (password.length >= 8) strength += 25;
-                    if (password.length >= 12) strength += 25;
-                    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
-                    if (/[0-9]/.test(password)) strength += 12.5;
-                    if (/[^A-Za-z0-9]/.test(password)) strength += 12.5;
-                    
-                    if (strength <= 25) { strengthLabel = 'Weak'; strengthColor = 'bg-red-500'; }
-                    else if (strength <= 50) { strengthLabel = 'Fair'; strengthColor = 'bg-orange-500'; }
-                    else if (strength <= 75) { strengthLabel = 'Good'; strengthColor = 'bg-yellow-500'; }
-                    else { strengthLabel = 'Strong'; strengthColor = 'bg-green-500'; }
-                    
-                    strengthBar.style.width = Math.max(strength, 25) + '%';
-                    strengthBar.className = 'password-strength-bar h-1.5 rounded-full ' + strengthColor;
-                    strengthText.textContent = strengthLabel;
-                    strengthText.className = 'text-[10px] font-semibold ' + strengthColor.replace('bg-', 'text-');
-                });
+            if (regPwd && regPwdConf) {
+                regPwd.addEventListener('input', validateMatch);
+                regPwdConf.addEventListener('input', validateMatch);
             }
 
-            if (registerPassword && registerPasswordConfirmation) {
-                registerPassword.addEventListener('input', validatePasswordMatch);
-                registerPasswordConfirmation.addEventListener('input', validatePasswordMatch);
-            }
-
-            const registerFormEl = document.querySelector('#registerForm form');
-            if (registerFormEl) {
-                registerFormEl.addEventListener('submit', function(e) {
-                    if (!validatePasswordMatch()) {
+            const regForm = document.querySelector('#registerForm form');
+            if (regForm) {
+                regForm.onsubmit = function(e) {
+                    if (!validateMatch()) {
                         e.preventDefault();
-                        if (passwordValidationText) {
-                            passwordValidationText.textContent = 'Please make sure passwords match before submitting';
-                        }
+                        alert('Please make sure your passwords match.');
                     }
-                });
+                };
             }
-        };
 
-        initFormListeners();
-        document.addEventListener('turbo:load', initFormListeners);
-
-        // Initialize all modal components
-        const initAuthModal = () => {
-            initModalListeners();
-            initFormListeners();
-            
-            // Toggle Password Visibility
-            document.querySelectorAll('.toggle-password').forEach(button => {
-                // Use onclick to avoid duplicate listeners on persistent elements if they existed
-                button.onclick = function(e) {
+            // Toggle Password
+            document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.onclick = function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
-                    const targetId = this.getAttribute('data-target');
-                    const passwordInput = document.getElementById(targetId);
+                    const input = getEl(this.getAttribute('data-target'));
                     const svg = this.querySelector('svg');
-                    
-                    if (passwordInput) {
-                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                        passwordInput.setAttribute('type', type);
+                    if (input) {
+                        const type = input.type === 'password' ? 'text' : 'password';
+                        input.type = type;
                         svg.innerHTML = type === 'text' 
-                            ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`
-                            : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
+                            ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268-2.943 9.543-7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`
+                            : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268-2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
                     }
                 };
             });
 
-            // Check for URL hash to open modal automatically
-            if (window.location.hash === '#register') {
-                window.openAuthModal('register');
-            } else if (window.location.hash === '#login') {
-                window.openAuthModal('login');
+            // Password Strength
+            const strengthBar = getEl('strengthBar'), strengthText = getEl('strengthText');
+            if (regPwd && strengthBar) {
+                regPwd.addEventListener('input', function() {
+                    const pwd = this.value;
+                    let s = 0;
+                    if (pwd.length >= 8) s += 25;
+                    if (pwd.length >= 12) s += 25;
+                    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) s += 25;
+                    if (/[0-9]/.test(pwd) || /[^A-Za-z0-9]/.test(pwd)) s += 25;
+                    let cls = 'bg-red-500', lbl = 'Weak';
+                    if (s > 75) { cls = 'bg-green-500'; lbl = 'Strong'; }
+                    else if (s > 50) { cls = 'bg-yellow-500'; lbl = 'Good'; }
+                    else if (s > 25) { cls = 'bg-orange-500'; lbl = 'Fair'; }
+                    strengthBar.style.width = Math.max(s, 10) + '%';
+                    strengthBar.className = 'password-strength-bar h-1.5 rounded-full transition-all duration-300 ' + cls;
+                    if (strengthText) strengthText.textContent = lbl;
+                });
             }
-            
-            // Auto-open modal if there are validation errors or registration success
+        };
+
+        window.checkAutoOpen = function() {
             @guest
-            @if($errors->any() || session('error') || session('registration_success'))
-                @if(session('registration_success'))
-                    window.openAuthModal('login');
-                @else
-                    window.openAuthModal('{{ old('_form_type') === 'register' ? 'register' : 'login' }}');
-                @endif
-            @endif
+            const trigger = getEl('authTrigger');
+            const hasError = trigger ? trigger.getAttribute('data-has-error') === 'true' : false;
+            const hasSuccess = trigger ? trigger.getAttribute('data-has-success') === 'true' : false;
+            const formType = trigger ? trigger.getAttribute('data-form-type') : 'login';
+
+            // 1. Errors and Fresh Registration Success always force open
+            if (hasError || hasSuccess) {
+                // If we've already shown it for this exact URL/state, don't repeat
+                const stateKey = window.location.href + hasError + hasSuccess;
+                if (window.lastAutoOpenKey === stateKey) return;
+
+                window.openAuthModal(hasSuccess ? 'login' : formType);
+                
+                window.lastAutoOpenKey = stateKey;
+                window.sessionStorage.setItem('auth_modal_auto_opened', 'true');
+                return;
+            }
+
+            // 2. Hash-based open (Only once per session)
+            const h = window.location.hash;
+            if ((h === '#login' || h === '#register') && !window.sessionStorage.getItem('auth_modal_auto_opened')) {
+                window.openAuthModal(h.substring(1));
+                history.replaceState(null, null, window.location.pathname + window.location.search);
+                window.sessionStorage.setItem('auth_modal_auto_opened', 'true');
+            }
+            @else
+                window.sessionStorage.removeItem('auth_modal_auto_opened');
             @endguest
         };
 
-        // Run on initial load
-        initAuthModal();
+        // --- RUN ---
+        initListeners();
+        window.checkAutoOpen();
         
-        // Run on every Turbo navigation
-        document.addEventListener('turbo:load', initAuthModal);
+        // Ensure re-run on Turbo visit
+        if (!window.authTurboBound) {
+            document.addEventListener('turbo:load', () => {
+                initListeners();
+                window.checkAutoOpen();
+            });
+            window.authTurboBound = true;
+        }
     })();
 </script>
