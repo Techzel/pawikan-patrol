@@ -531,25 +531,8 @@
                 });
             });
 
-            // Mobile menu toggle
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
+            // Mobile menu functionality is handled in navigation.blade.php
             
-            if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
-
-            // Close mobile menu when clicking on links
-            document.querySelectorAll('.mobile-nav-link').forEach(link => {
-                link.addEventListener('click', function() {
-                    if (mobileMenu) {
-                        mobileMenu.classList.add('hidden');
-                    }
-                });
-            });
-
             // Add hover effects to interactive elements
             document.querySelectorAll('.hover-scale').forEach(element => {
                 element.addEventListener('mouseenter', function() {

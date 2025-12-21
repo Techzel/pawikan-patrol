@@ -502,94 +502,88 @@
 
 <script>
     (function() {
-        // Prevent multiple initializations of global functions
-        if (window.navInitialized) return;
-
         /**
          * Robust Mobile Menu Controller
-         * Works with both standard loads and Turbo transitions
+         * Handles toggling, state icons, and account submenus
          */
         function initializeMobileMenu() {
-            const menuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            
-            if (!menuButton || !mobileMenu) return;
+            const menuBtn = document.getElementById('mobile-menu-button');
+            const menu = document.getElementById('mobile-menu');
+            if (!menuBtn || !menu) return;
 
-            // Reset menu state on re-initialization (useful for Turbo)
-            mobileMenu.classList.add('hidden');
-            menuButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+            // Reset menu state (closed)
+            menu.classList.add('hidden');
+            const icon = menuBtn.querySelector('svg');
+            if (icon) icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
 
-            // Remove and re-add click listener to avoid duplicates
-            menuButton.onclick = function(e) {
+            // Click listener for hamburger (use onclick for idempotency with Turbo)
+            menuBtn.onclick = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                const isOpen = !mobileMenu.classList.contains('hidden');
+                const isOpen = !menu.classList.contains('hidden');
+                console.log('Mobile menu toggle clicked. Current state:', isOpen ? 'Open' : 'Closed');
                 
                 if (isOpen) {
-                    mobileMenu.classList.add('hidden');
-                    this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                    menu.classList.add('hidden');
+                    if (icon) icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
                 } else {
-                    mobileMenu.classList.remove('hidden');
-                    this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+                    menu.classList.remove('hidden');
+                    if (icon) icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
                 }
             };
 
-            // Account dropdown toggle initialization
-            const accountToggle = mobileMenu.querySelector('.mobile-account-toggle');
-            if (accountToggle) {
-                accountToggle.onclick = function(e) {
+            // Account toggle
+            const accToggle = menu.querySelector('.mobile-account-toggle');
+            if (accToggle) {
+                accToggle.onclick = (e) => {
+                    e.preventDefault();
                     e.stopPropagation();
-                    const submenu = this.nextElementSibling;
-                    const arrow = this.querySelector('svg');
+                    const submenu = accToggle.nextElementSibling;
+                    const arrow = accToggle.querySelector('svg');
                     if (submenu) submenu.classList.toggle('hidden');
                     if (arrow) arrow.classList.toggle('rotate-180');
                 };
             }
 
-            // Close menu if a nav link is clicked (important for same-page anchors or Turbo)
-            mobileMenu.querySelectorAll('a, button').forEach(el => {
+            // Auto-close on link clicks
+            menu.querySelectorAll('a, button').forEach(el => {
                 if (!el.classList.contains('mobile-account-toggle')) {
-                    el.addEventListener('click', () => {
-                        mobileMenu.classList.add('hidden');
-                    });
+                    el.onclick = () => menu.classList.add('hidden');
                 }
             });
         }
 
-        /**
-         * Global Page Loader Logic
-         */
-        window.showPageLoader = function() {
+        // --- GLOBAL UTILITIES ---
+        window.showPageLoader = window.showPageLoader || function() {
             const loader = document.getElementById("page-loader");
             if (loader) {
                 loader.classList.add("active");
-                // Fail-safe: hide after 10 seconds
-                setTimeout(() => {
-                    if (loader.classList.contains('active')) {
-                        loader.classList.remove('active');
-                    }
-                }, 10000);
+                setTimeout(() => loader.classList.remove('active'), 10000);
             }
         };
 
+        // --- BIND EVENTS (Once per window) ---
         if (!window.navEventsBound) {
             document.addEventListener("turbo:before-visit", () => {
                 window.showPageLoader();
-                const mm = document.getElementById('mobile-menu');
-                if (mm) mm.classList.add('hidden');
+                const menu = document.getElementById('mobile-menu');
+                if (menu) menu.classList.add('hidden');
             });
+            
             document.addEventListener("turbo:submit-start", window.showPageLoader);
+            
             document.addEventListener("turbo:load", () => {
-                const l = document.getElementById("page-loader");
-                if (l) setTimeout(() => l.classList.remove("active"), 300);
+                const loader = document.getElementById("page-loader");
+                if (loader) setTimeout(() => loader.classList.remove("active"), 300);
                 initializeMobileMenu();
             });
+            
             window.navEventsBound = true;
         }
 
+        // Run on initial load
         initializeMobileMenu();
-        window.navInitialized = true;
     })();
 </script>
 
