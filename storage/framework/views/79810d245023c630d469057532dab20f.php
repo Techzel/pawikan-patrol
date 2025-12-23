@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'DENR Admin Dashboard'); ?>
 
-@section('title', 'DENR Admin Dashboard')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
         #admin-dashboard,
@@ -63,27 +61,27 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!-- Background Wrapper -->
     <div id="admin-dashboard" class="min-h-screen bg-gray-900 pt-20">
         <!-- Main Dashboard Content -->
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12 relative z-10">
             <!-- Alert Messages -->
-            @if(session('success'))
+            <?php if(session('success')): ?>
                 <div class="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-100 text-sm backdrop-blur-sm flex items-center shadow-lg animate-fadeIn">
                     <i class="fas fa-check-circle mr-3 text-green-400 text-lg"></i>
-                    <span class="font-medium font-poppins">{{ session('success') }}</span>
+                    <span class="font-medium font-poppins"><?php echo e(session('success')); ?></span>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            @if(session('error'))
+            <?php if(session('error')): ?>
                 <div class="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-100 text-sm backdrop-blur-sm flex items-center shadow-lg animate-fadeIn">
                     <i class="fas fa-exclamation-circle mr-3 text-red-400 text-lg"></i>
-                    <span class="font-medium font-poppins">{{ session('error') }}</span>
+                    <span class="font-medium font-poppins"><?php echo e(session('error')); ?></span>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <!-- Professional Admin Header -->
             <header class="mb-8 sm:mb-10">
@@ -138,7 +136,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-300 stat-label">Total Patrollers</p>
-                        <p class="text-3xl font-bold text-white mt-2">{{ $totalPatrollers }}</p>
+                        <p class="text-3xl font-bold text-white mt-2"><?php echo e($totalPatrollers); ?></p>
                     </div>
                     <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
                         <i class="fas fa-users text-blue-400 text-xl"></i>
@@ -150,7 +148,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-300 stat-label">Active Patrollers</p>
-                        <p class="text-3xl font-bold text-green-400 mt-2">{{ $totalPatrollers }}</p>
+                        <p class="text-3xl font-bold text-green-400 mt-2"><?php echo e($totalPatrollers); ?></p>
                     </div>
                     <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
                         <i class="fas fa-user-check text-green-400 text-xl"></i>
@@ -162,7 +160,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-300 stat-label">Accepted Reports</p>
-                        <p class="text-3xl font-bold text-purple-400 mt-2">{{ $totalAcceptedReports }}</p>
+                        <p class="text-3xl font-bold text-purple-400 mt-2"><?php echo e($totalAcceptedReports); ?></p>
                     </div>
                     <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
                         <i class="fas fa-clipboard-check text-purple-400 text-xl"></i>
@@ -174,7 +172,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-300 stat-label">User Verifications</p>
-                        <p class="text-3xl font-bold text-ocean-300 mt-2">{{ $totalVerifiedUsers }}</p>
+                        <p class="text-3xl font-bold text-ocean-300 mt-2"><?php echo e($totalVerifiedUsers); ?></p>
                     </div>
                     <div class="w-12 h-12 bg-ocean-500/20 rounded-lg flex items-center justify-center">
                         <i class="fas fa-id-card-alt text-ocean-300 text-xl"></i>
@@ -210,35 +208,37 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-white">
-                                    @foreach($patrollers as $patroller)
+                                    <?php $__currentLoopData = $patrollers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $patroller): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr class="border-b border-white/5 hover:bg-white/5">
                                         <td class="py-3 sm:py-4 text-center">
-                                            <div class="font-medium section-subheading">{{ $patroller->name }}</div>
-                                            <div class="text-xs sm:text-sm text-gray-400 sm:hidden body-muted">{{ $patroller->email }}</div>
+                                            <div class="font-medium section-subheading"><?php echo e($patroller->name); ?></div>
+                                            <div class="text-xs sm:text-sm text-gray-400 sm:hidden body-muted"><?php echo e($patroller->email); ?></div>
                                         </td>
-                                        <td class="py-3 sm:py-4 hidden sm:table-cell text-center">{{ $patroller->email }}</td>
+                                        <td class="py-3 sm:py-4 hidden sm:table-cell text-center"><?php echo e($patroller->email); ?></td>
                                         <td class="py-3 sm:py-4 text-center">
-                                            <span class="px-2 py-1 text-xs rounded-full {{ $patroller->status == 'active' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400' }}">
-                                                {{ ucfirst($patroller->status) }}
+                                            <span class="px-2 py-1 text-xs rounded-full <?php echo e($patroller->status == 'active' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'); ?>">
+                                                <?php echo e(ucfirst($patroller->status)); ?>
+
                                             </span>
                                         </td>
                                         <td class="py-3 sm:py-4 hidden sm:table-cell text-center">
-                                            @if($patroller->getCreatedByDisplayName() === 'admin')
+                                            <?php if($patroller->getCreatedByDisplayName() === 'admin'): ?>
                                                 <span class="text-blue-300 font-medium body-text">admin</span>
-                                            @else
-                                                {{ $patroller->getCreatedByDisplayName() }}
-                                            @endif
+                                            <?php else: ?>
+                                                <?php echo e($patroller->getCreatedByDisplayName()); ?>
+
+                                            <?php endif; ?>
                                         </td>
-                                        <td class="py-3 sm:py-4 hidden sm:table-cell text-center">{{ $patroller->created_at->format('M d, Y') }}</td>
+                                        <td class="py-3 sm:py-4 hidden sm:table-cell text-center"><?php echo e($patroller->created_at->format('M d, Y')); ?></td>
                                         <td class="py-3 sm:py-4 text-center">
                                             <div class="flex items-center justify-center space-x-1 sm:space-x-2">
-                                                <button onclick="deletePatroller({{ $patroller->id }})" class="text-red-400 hover:text-red-300 p-1.5 sm:p-2 rounded hover:bg-red-500/20 transition-colors" title="Delete">
+                                                <button onclick="deletePatroller(<?php echo e($patroller->id); ?>)" class="text-red-400 hover:text-red-300 p-1.5 sm:p-2 rounded hover:bg-red-500/20 transition-colors" title="Delete">
                                                     <i class="fas fa-trash text-sm"></i>
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
                         </div>
@@ -253,7 +253,7 @@
                     <div class="p-4 sm:p-6">
                         <h3 class="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 cinzel-subheading section-heading">User Verification</h3>
                         <div class="space-y-2 sm:space-y-3">
-                            <a href="{{ route('admin.verification.index') }}" class="flex items-center justify-between p-3 bg-blue-500/20 rounded-lg hover:bg-blue-500/30 transition-colors">
+                            <a href="<?php echo e(route('admin.verification.index')); ?>" class="flex items-center justify-between p-3 bg-blue-500/20 rounded-lg hover:bg-blue-500/30 transition-colors">
                                 <div class="flex items-center space-x-2 sm:space-x-3">
                                     <i class="fas fa-shield-alt text-blue-400"></i>
                                     <span class="text-white text-sm sm:text-base body-text">Verification Dashboard</span>
@@ -269,7 +269,7 @@
                     <div class="p-4 sm:p-6">
                         <h3 class="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 cinzel-subheading section-heading">Patrol Reports</h3>
                         <div class="space-y-2 sm:space-y-3">
-                            <a href="{{ route('admin.patrol-reports.index') }}" class="flex items-center justify-between p-3 bg-indigo-500/20 rounded-lg hover:bg-indigo-500/30 transition-colors">
+                            <a href="<?php echo e(route('admin.patrol-reports.index')); ?>" class="flex items-center justify-between p-3 bg-indigo-500/20 rounded-lg hover:bg-indigo-500/30 transition-colors">
                                 <div class="flex items-center space-x-2 sm:space-x-3">
                                     <i class="fas fa-list text-indigo-400"></i>
                                     <span class="text-white text-sm sm:text-base body-text">Manage Reports</span>
@@ -299,8 +299,8 @@
                 </div>
             </div>
             
-            <form id="createPatrollerForm" action="{{ route('admin.patrollers.store') }}" method="POST" class="p-6 space-y-6">
-                @csrf
+            <form id="createPatrollerForm" action="<?php echo e(route('admin.patrollers.store')); ?>" method="POST" class="p-6 space-y-6">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-3">
                     <h4 class="text-sm font-semibold text-white uppercase tracking-wide section-heading">Basic Information</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -309,36 +309,64 @@
                             <input type="text" id="name" name="name" required
                                    class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    placeholder="Enter full name">
-                            @error('name')
-                                <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="mt-1 text-sm text-red-400"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                         <div>
                             <label for="username" class="block text-sm font-medium text-gray-300 mb-2 body-text">Username</label>
                             <input type="text" id="username" name="username" required
                                    class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    placeholder="Enter username">
-                            @error('username')
-                                <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['username'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="mt-1 text-sm text-red-400"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-300 mb-2 body-text">Email Address</label>
                             <input type="email" id="email" name="email" required
                                    class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    placeholder="Enter email address">
-                            @error('email')
-                                <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="mt-1 text-sm text-red-400"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                         <div>
                             <label for="phone" class="block text-sm font-medium text-gray-300 mb-2 body-text">Phone Number</label>
                             <input type="tel" id="phone" name="phone"
                                    class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    placeholder="Optional contact number">
-                            @error('phone')
-                                <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="mt-1 text-sm text-red-400"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
                 </div>
@@ -355,9 +383,16 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            @error('password')
-                                <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="mt-1 text-sm text-red-400"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                         <div>
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-300 mb-2 body-text">Confirm Password</label>
@@ -369,9 +404,16 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            @error('password_confirmation')
-                                <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['password_confirmation'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="mt-1 text-sm text-red-400"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
                 </div>
@@ -423,9 +465,9 @@
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('turbo:load', () => {
     const modal = document.getElementById('createPatrollerModal');
@@ -521,7 +563,7 @@ document.addEventListener('turbo:load', () => {
                 // Create form element
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `{{ route('admin.patrollers.destroy', ':id') }}`.replace(':id', patrollerIdToDelete);
+                form.action = `<?php echo e(route('admin.patrollers.destroy', ':id')); ?>`.replace(':id', patrollerIdToDelete);
                 
                 // Add CSRF token
                 const csrfToken = document.querySelector('meta[name="csrf-token"]');
@@ -565,3 +607,5 @@ document.addEventListener('turbo:load', () => {
     }
 });
 </script>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/admin/dashboard.blade.php ENDPATH**/ ?>

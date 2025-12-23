@@ -98,7 +98,7 @@ class AdminController extends Controller
                 'patroller_username' => $user->username,
             ]);
 
-            return redirect()->route('admin.dashboard')->with('success', 'Patroller account created successfully.');
+            return redirect()->route('admin.dashboard')->with('success', 'Patroller Account Created');
         } catch (\Exception $e) {
             Log::error('Failed to create patroller', [
                 'admin_id' => auth()->id(),
