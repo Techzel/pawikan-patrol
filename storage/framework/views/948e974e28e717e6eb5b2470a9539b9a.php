@@ -512,22 +512,26 @@
         // Guests: always restart/reset on refresh (Session only)
         // Users: save/load progress (Persistent)
         const isLoggedIn = <?php if(auth()->guard()->check()): ?> true <?php else: ?> false <?php endif; ?>;
+        const userStoragePrefix = <?php if(auth()->guard()->check()): ?> '<?php echo e(Auth::id()); ?>_' <?php else: ?> '' <?php endif; ?>;
         
-        let unlockedLevels = ['easy']; // Default
+        let unlockedLevels = <?php echo json_encode($progress); ?>; // Default from server
         
         try {
             if (isLoggedIn) {
-                const stored = localStorage.getItem('ocean_guardian_progress_v2');
+                const stored = localStorage.getItem(`${userStoragePrefix}ocean_guardian_progress_v2`);
                 if (stored) {
                     const parsed = JSON.parse(stored);
                     if (Array.isArray(parsed)) {
-                        unlockedLevels = parsed;
+                        // Merge server progress with local progress to be safe, but prioritize server if needed
+                        // For now, let's just make sure both are considered
+                        parsed.forEach(lvl => {
+                            if (!unlockedLevels.includes(lvl)) unlockedLevels.push(lvl);
+                        });
                     }
                 }
             }
         } catch (e) {
-            console.error("Error loading progress, resetting:", e);
-            unlockedLevels = ['easy'];
+            console.error("Error loading progress:", e);
         }
         
         // Final Safety Checks
@@ -1015,7 +1019,7 @@
             if(nextLevel && !unlockedLevels.includes(nextLevel)) {
                 unlockedLevels.push(nextLevel);
                 if(isLoggedIn) {
-                    localStorage.setItem('ocean_guardian_progress_v2', JSON.stringify(unlockedLevels));
+                    localStorage.setItem(`${userStoragePrefix}ocean_guardian_progress_v2`, JSON.stringify(unlockedLevels));
                 }
             }
             

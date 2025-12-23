@@ -614,6 +614,12 @@
 
         // Check and load unlocked levels from localStorage
         function loadUnlockedLevels() {
+            // Default from server
+            const serverProgress = {!! json_encode($progress) !!};
+            
+            if (serverProgress.includes('medium')) unlockLevel('medium');
+            if (serverProgress.includes('hard')) unlockLevel('hard');
+
             if (!isLoggedIn) return; // Guests do not load saved progress
             
             const easyCompleted = localStorage.getItem(`${userStoragePrefix}memoryMatch_easy_completed`) === 'true';

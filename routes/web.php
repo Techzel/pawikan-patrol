@@ -44,11 +44,19 @@ Route::get('/games', function () {
 })->name('games.index');
 
 Route::get('/games/memory-match', function () {
-    return view('games.memory-match');
+    $progress = ['easy'];
+    if (auth()->check()) {
+        $progress = auth()->user()->getGameProgress()['memory-match'];
+    }
+    return view('games.memory-match', compact('progress'));
 })->name('games.memory-match');
 
 Route::get('/games/puzzle', function () {
-    return view('games.puzzle');
+    $progress = [0 => 1, 1 => 1, 2 => 1];
+    if (auth()->check()) {
+        $progress = auth()->user()->getGameProgress()['puzzle'];
+    }
+    return view('games.puzzle', compact('progress'));
 })->name('games.puzzle');
 
 // Leaderboards Route
@@ -72,7 +80,11 @@ Route::get('/leaderboards', function () {
 })->name('leaderboards');
 
 Route::get('/games/find-the-pawikan', function () {
-    return view('games.find-the-pawikan');
+    $progress = ['easy'];
+    if (auth()->check()) {
+        $progress = auth()->user()->getGameProgress()['find-the-pawikan'];
+    }
+    return view('games.find-the-pawikan', compact('progress'));
 })->name('games.find-the-pawikan');
 
 // Test route for debugging game activity

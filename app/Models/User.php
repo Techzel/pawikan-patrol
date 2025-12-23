@@ -486,4 +486,70 @@ class User extends Authenticatable
         return $this->gameActivities()->create($data);
     }
 
+    /**
+     * Get the user's progress for all games.
+     */
+    public function getGameProgress()
+    {
+        $progress = [
+            'find-the-pawikan' => ['easy'],
+            'memory-match' => ['easy'],
+            'puzzle' => [
+                0 => 1, // Image 0, max level 1
+                1 => 1, // Image 1, max level 1
+                2 => 1  // Image 2, max level 1
+            ]
+        ];
+
+        // Find the Pawikan progression
+        $findPawikanCompleted = $this->gameActivities()
+            ->where('game_type', 'find-the-pawikan')
+            ->pluck('difficulty')
+            ->unique();
+        
+        if ($findPawikanCompleted->contains('easy')) $progress['find-the-pawikan'][] = 'medium';
+        if ($findPawikanCompleted->contains('medium')) $progress['find-the-pawikan'][] = 'hard';
+
+        // Memory Match progression
+        $memoryMatchCompleted = $this->gameActivities()
+            ->where('game_type', 'memory-match')
+            ->pluck('difficulty')
+            ->unique();
+        
+        if ($memoryMatchCompleted->contains('easy')) $progress['memory-match'][] = 'medium';
+        if ($memoryMatchCompleted->contains('medium')) $progress['memory-match'][] = 'hard';
+
+        // Puzzle progression (per image)
+        // Note: For puzzle, we might need a way to track which image was played.
+        // Looking at the schema, we don't have an image_index field.
+        // If we want to be thorough, we might need to add it, but for now we can approximate 
+        // or just use a global puzzle progression if image index isn't stored.
+        // Actually, the current puzzle.blade.php uses {0: 1, 1: 1, 2: 1} in localStorage.
+        // Since we don't store image index in DB, we'll just use the highest difficulty reached globally for all images if we want to sync.
+        // Or better yet, we can check how 'puzzle' is recorded.
+        
+        $puzzleCompleted = $this->gameActivities()
+            ->where('game_type', 'puzzle')
+            ->select('difficulty')
+            ->distinct()
+            ->get();
+
+        $maxPuzzleLevel = 1;
+        foreach ($puzzleCompleted as $activity) {
+            $level = 1;
+            if ($activity->difficulty === 'medium') $level = 2;
+            if ($activity->difficulty === 'hard') $level = 3;
+            if ($level >= $maxPuzzleLevel) $maxPuzzleLevel = $level + 1;
+        }
+        $maxPuzzleLevel = min($maxPuzzleLevel, 3);
+
+        $progress['puzzle'] = [
+            0 => $maxPuzzleLevel,
+            1 => $maxPuzzleLevel,
+            2 => $maxPuzzleLevel
+        ];
+
+        return $progress;
+    }
 }
+

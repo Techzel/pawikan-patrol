@@ -478,12 +478,25 @@
         };
         
         // Independent progress for each image: {0: 1, 1: 1, 2: 1}
-        // Independent progress for each image: {0: 1, 1: 1, 2: 1}
-        let progressData;
-        if (isLoggedIn) {
-             progressData = JSON.parse(localStorage.getItem(`${userStoragePrefix}pawikanPuzzleProgress_v2`)) || {0: 1, 1: 1, 2: 1};
-        } else {
-             progressData = {0: 1, 1: 1, 2: 1};
+        let progressData = {!! json_encode($progress) !!}; // Default from server
+        
+        try {
+            if (isLoggedIn) {
+                const stored = localStorage.getItem(`${userStoragePrefix}pawikanPuzzleProgress_v2`);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (parsed && typeof parsed === 'object') {
+                        // Merge server progress with local progress
+                        Object.keys(parsed).forEach(imgIdx => {
+                            if (parsed[imgIdx] > (progressData[imgIdx] || 0)) {
+                                progressData[imgIdx] = parsed[imgIdx];
+                            }
+                        });
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Error loading progress:", e);
         }
         let maxUnlockedLevel = 1; // Will be set based on currentImageIndex
         let tiles = [];
