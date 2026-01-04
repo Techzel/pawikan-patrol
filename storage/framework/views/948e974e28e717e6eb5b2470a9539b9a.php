@@ -107,7 +107,7 @@
             <!-- Top Bar -->
             <div class="flex flex-row justify-center md:justify-between items-start w-full relative">
                 <!-- Header (Hidden on Mobile) -->
-                <div class="pointer-events-auto pl-14 hidden md:block">
+                <div class="pl-14 hidden md:block select-none">
                     <h1 class="text-2xl md:text-4xl font-bold text-white font-poppins drop-shadow-[0_0_10px_rgba(74,222,128,0.5)] leading-tight">
                         Ocean<br class="hidden md:block"> Guardian
                     </h1>
@@ -115,7 +115,7 @@
                 </div>
 
                 <!-- Stats HUD (Horizontal on Mobile, Vertical on Desktop) -->
-                <div id="gameHUD" class="flex flex-row md:flex-col gap-2 items-start md:items-end pointer-events-auto mx-auto md:mx-0">
+                <div id="gameHUD" class="flex flex-row md:flex-col gap-2 items-start md:items-end mx-auto md:mx-0 select-none">
                     
                     <!-- Status Group -->
                     <div class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-28 md:w-32 transform transition-all hover:scale-105">
