@@ -105,7 +105,7 @@
         z-index: 1000;
     }
 
-    /* Map Modal Styles */
+    /* Map Modal Styles - FULLSCREEN */
     #gps-map-modal {
         display: none;
         position: fixed;
@@ -113,37 +113,40 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.95);
         z-index: 100000;
         backdrop-filter: blur(5px);
     }
 
     #gps-map-modal.active {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        padding-top: 6rem;
+        padding: 0;
     }
 
     .map-modal-content {
         background: #1f2937;
-        border-radius: 16px;
+        border-radius: 0;
         padding: 24px;
-        max-width: 600px;
-        width: 90%;
-        max-height: 90vh;
-        overflow: auto;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(20, 184, 166, 0.3);
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        overflow: hidden;
+        box-shadow: none;
+        border: none;
+        display: flex;
+        flex-direction: column;
     }
 
     #gps-map {
         width: 100%;
-        height: 300px;
+        flex: 1;
         border-radius: 12px;
         margin-top: 16px;
         border: 2px solid rgba(20, 184, 166, 0.3);
+        min-height: 0;
     }
 
     .leaflet-popup-content-wrapper {
@@ -167,69 +170,130 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    // Get current location for coordinates with HIGH ACCURACY GPS
+    // Interactive GPS Map with Click-to-Mark functionality
     let gpsMap = null;
     let gpsMarker = null;
+    let accuracyCircle = null;
 
-    function showMapModal(lat, lng, accuracy) {
+    // Green marker icon
+    const greenIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+
+    // Simplified marker update for manual selection
+    function updateMarkerPosition(lat, lng, accuracy = 10, source = 'manual') {
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+        
+        // Update input fields
+        latitudeInput.value = lat.toFixed(6);
+        longitudeInput.value = lng.toFixed(6);
+        
+        // Remove old marker and circle if exists
+        if (gpsMarker) {
+            gpsMap.removeLayer(gpsMarker);
+        }
+        if (accuracyCircle) {
+            gpsMap.removeLayer(accuracyCircle);
+        }
+        
+        // Add new marker
+        gpsMarker = L.marker([lat, lng], { 
+            icon: greenIcon,
+            draggable: true  // Make marker draggable
+        }).addTo(gpsMap);
+        
+        // Update coordinates when marker is dragged
+        gpsMarker.on('dragend', function(e) {
+            const position = e.target.getLatLng();
+            updateMarkerPosition(position.lat, position.lng, 10, 'drag');
+        });
+        
+        // Add popup with coordinates
+        gpsMarker.bindPopup(`
+            <div style="font-family: 'Poppins', sans-serif; padding: 8px;">
+                <strong style="color: #14b8a6; font-size: 14px;">📍 Location Selected</strong><br>
+                <div style="margin-top: 8px; font-size: 12px;">
+                    <strong>Latitude:</strong> ${lat.toFixed(6)}°<br>
+                    <strong>Longitude:</strong> ${lng.toFixed(6)}°<br>
+                    <em>Drag marker to adjust location</em>
+                </div>
+            </div>
+        `).openPopup();
+        
+        // Add accuracy circle (fixed size for manual visual)
+        accuracyCircle = L.circle([lat, lng], {
+            color: '#14b8a6',
+            fillColor: '#14b8a6',
+            fillOpacity: 0.1,
+            radius: 20 // Fixed radius for visual consistency
+        }).addTo(gpsMap);
+    }
+
+    function showMapModal(lat, lng, accuracy = 10, source = 'manual') {
         const modal = document.getElementById('gps-map-modal');
         modal.classList.add('active');
         
         // Initialize map if not already done
         setTimeout(() => {
             if (!gpsMap) {
-                gpsMap = L.map('gps-map').setView([lat, lng], 16);
+                // Default to Dahican Beach area if no coordinates provided
+                const defaultLat = lat || 6.9363;
+                const defaultLng = lng || 126.2742;
                 
-                // Add OpenStreetMap tiles
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }).addTo(gpsMap);
+                gpsMap = L.map('gps-map').setView([defaultLat, defaultLng], 17);
+                
+                // Define Google Map Layers
+                
+                // Google Streets (Standard Map)
+                const googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    attribution: '© Google Maps'
+                });
+
+                // Google Hybrid (Satellite + Labels) - PREFERRED
+                const googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    attribution: '© Google Maps'
+                });
+
+                // Add default layer (Google Hybrid)
+                googleHybrid.addTo(gpsMap);
+
+                // Add Layer Control
+                const baseMaps = {
+                    "Google Satellite": googleHybrid,
+                    "Google Streets": googleStreets
+                };
+                
+                L.control.layers(baseMaps, null, { position: 'topright' }).addTo(gpsMap);
+                
+                // Add click event to map - users can click to set coordinates
+                gpsMap.on('click', function(e) {
+                    updateMarkerPosition(e.latlng.lat, e.latlng.lng, 10, 'click');
+                });
             } else {
-                gpsMap.setView([lat, lng], 16);
+                gpsMap.setView([lat, lng], 17);
             }
             
-            // Remove old marker if exists
-            if (gpsMarker) {
-                gpsMap.removeLayer(gpsMarker);
+            // Add or update marker
+            if (lat && lng) {
+                updateMarkerPosition(lat, lng, accuracy, source);
             }
-            
-            // Add marker with custom green icon
-            const greenIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            
-            gpsMarker = L.marker([lat, lng], { icon: greenIcon }).addTo(gpsMap);
-            
-            // Add popup with coordinates
-            gpsMarker.bindPopup(`
-                <div style="font-family: 'Poppins', sans-serif; padding: 8px;">
-                    <strong style="color: #14b8a6; font-size: 14px;">📍 GPS Location Acquired</strong><br>
-                    <div style="margin-top: 8px; font-size: 12px;">
-                        <strong>Latitude:</strong> ${lat}°<br>
-                        <strong>Longitude:</strong> ${lng}°<br>
-                        <strong>Accuracy:</strong> ±${accuracy.toFixed(1)}m
-                    </div>
-                </div>
-            `).openPopup();
-            
-            // Add accuracy circle
-            L.circle([lat, lng], {
-                color: '#14b8a6',
-                fillColor: '#14b8a6',
-                fillOpacity: 0.1,
-                radius: accuracy
-            }).addTo(gpsMap);
             
             // Invalidate size to fix display issues
             setTimeout(() => {
                 gpsMap.invalidateSize();
-                gpsMap.panTo([lat, lng]);
+                if (lat && lng) {
+                    gpsMap.panTo([lat, lng]);
+                }
             }, 100);
         }, 100);
     }
@@ -237,172 +301,94 @@
     function closeMapModal() {
         const modal = document.getElementById('gps-map-modal');
         modal.classList.remove('active');
+        
+        // Remove any lingering overlays/notifications
+        const overlays = document.querySelectorAll('#gps-loading-overlay, [style*="position: absolute"][style*="z-index: 10001"]');
+        overlays.forEach(overlay => overlay.remove());
     }
+    
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('gps-map-modal');
+            if (modal && modal.classList.contains('active')) {
+                closeMapModal();
+            }
+        }
+    });
 
-    function getCurrentLocation() {
-        const locationButton = document.getElementById('gps-location-btn');
+    // Open map manually for coordinate selection - FOCUSED ON DAHICAN
+    function openMapManually() {
         const latitudeInput = document.getElementById('latitude');
         const longitudeInput = document.getElementById('longitude');
         
-        if (!navigator.geolocation) {
-            alert('❌ Geolocation is not supported by your browser.\n\nPlease enter coordinates manually or use a device with GPS capability.');
-            return;
-        }
+        // Default Dahican coordinates
+        const DAHICAN_LAT = 6.9363;
+        const DAHICAN_LNG = 126.2742;
 
-        // Show loading state
-        const originalButtonHTML = locationButton.innerHTML;
-        locationButton.disabled = true;
-        locationButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Acquiring GPS Signal...';
-        locationButton.classList.add('opacity-75');
+        // Use existing coordinates if available, otherwise use Dahican center
+        let lat = latitudeInput.value ? parseFloat(latitudeInput.value) : DAHICAN_LAT;
+        let lng = longitudeInput.value ? parseFloat(longitudeInput.value) : DAHICAN_LNG;
         
-        // Remove any existing accuracy message
-        const existingAccuracyMsg = document.getElementById('accuracy-message');
-        if (existingAccuracyMsg) {
-            existingAccuracyMsg.remove();
+        // Open map immediately with these coordinates
+        showMapModal(lat, lng, 10, 'manual');
+        
+        // No loading overlay, no GPS request
+        // Just let the user drag the marker
+    }
+
+    // Character counters
+    function initCharCounters() {
+        const descriptionField = document.getElementById('description');
+        if (descriptionField) {
+            const descriptionLabel = descriptionField.previousElementSibling;
+            
+            const updateDescCounter = function() {
+                const length = this.value.length;
+                const minLength = 10;
+                const existingCounter = descriptionLabel.querySelector('.char-counter');
+                if (existingCounter) existingCounter.remove();
+                
+                const counter = document.createElement('span');
+                counter.className = 'char-counter text-xs ml-2';
+                counter.style.color = length < minLength ? '#ef4444' : '#14b8a6';
+                counter.textContent = `(${length} characters${length < minLength ? ', minimum ' + minLength : ''})`;
+                descriptionLabel.appendChild(counter);
+            };
+            descriptionField.addEventListener('input', updateDescCounter);
+            updateDescCounter.call(descriptionField);
         }
 
-        // HIGH ACCURACY GPS OPTIONS - Optimized for speed and precision
-        const options = {
-            enableHighAccuracy: true,  // Use GPS hardware for high precision
-            timeout: 10000,            // 10 seconds timeout is usually enough
-            maximumAge: 5000           // Allow 5 second old cached position for faster response
-        };
-
-        console.log('🛰️ Requesting high-accuracy GPS position...');
-
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                // ✅ SUCCESS - GPS lock acquired
-                const lat = position.coords.latitude.toFixed(6);
-                const lng = position.coords.longitude.toFixed(6);
-                const accuracy = position.coords.accuracy; // Accuracy radius in meters
+        const titleField = document.getElementById('title');
+        if (titleField) {
+            const titleLabel = titleField.previousElementSibling;
+            
+            const updateTitleCounter = function() {
+                const length = this.value.length;
+                const maxLength = 255;
+                const existingCounter = titleLabel.querySelector('.char-counter');
+                if (existingCounter) existingCounter.remove();
                 
-                console.log('✅ GPS Position acquired:', {
-                    latitude: lat,
-                    longitude: lng,
-                    accuracy: accuracy + 'm',
-                    altitude: position.coords.altitude,
-                    speed: position.coords.speed
-                });
-                
-                latitudeInput.value = lat;
-                longitudeInput.value = lng;
-                
-                // Show map modal with the acquired location
-                showMapModal(parseFloat(lat), parseFloat(lng), accuracy);
-                
-                // Reset button with success state
-                locationButton.disabled = false;
-                locationButton.classList.remove('opacity-75');
-                locationButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>GPS Lock Acquired!';
-                locationButton.classList.add('bg-ocean-600');
-                
-                setTimeout(() => {
-                    locationButton.innerHTML = originalButtonHTML;
-                    locationButton.classList.remove('bg-ocean-600');
-                }, 3000);
-                
-                // Show detailed accuracy information
-                const accuracyMessage = document.createElement('div');
-                accuracyMessage.id = 'accuracy-message';
-                accuracyMessage.className = 'mt-2 p-2 rounded-lg text-xs cinzel-text border';
-                
-                let accuracyLevel = '';
-                let accuracyClass = '';
-                let accuracyIcon = '';
-                let accuracyAdvice = '';
-                
-                if (accuracy <= 5) {
-                    accuracyLevel = 'Excellent';
-                    accuracyClass = 'bg-ocean-50 border-ocean-300 text-ocean-800';
-                    accuracyIcon = '🎯';
-                    accuracyAdvice = 'Sub-5m accuracy! Perfect for precise mapping.';
-                } else if (accuracy <= 10) {
-                    accuracyLevel = 'Very Good';
-                    accuracyClass = 'bg-blue-50 border-blue-300 text-blue-800';
-                    accuracyIcon = '✅';
-                    accuracyAdvice = 'Great accuracy for patrol reports.';
-                } else if (accuracy <= 20) {
-                    accuracyLevel = 'Good';
-                    accuracyClass = 'bg-yellow-50 border-yellow-300 text-yellow-800';
-                    accuracyIcon = '⚠️';
-                    accuracyAdvice = 'Acceptable. For better accuracy, move to an open area.';
-                } else if (accuracy <= 50) {
-                    accuracyLevel = 'Fair';
-                    accuracyClass = 'bg-orange-50 border-orange-300 text-orange-800';
-                    accuracyIcon = '📍';
-                    accuracyAdvice = 'Moderate accuracy. Consider retrying outdoors for better precision.';
-                } else {
-                    accuracyLevel = 'Low';
-                    accuracyClass = 'bg-red-50 border-red-300 text-red-800';
-                    accuracyIcon = '❌';
-                    accuracyAdvice = 'Low accuracy detected. Please move outdoors with clear sky view and retry.';
-                }
-                
-                accuracyMessage.className += ' ' + accuracyClass;
-                accuracyMessage.innerHTML = `
-                    <div class="flex items-start">
-                        <span class="text-lg mr-2">${accuracyIcon}</span>
-                        <div class="flex-1">
-                            <div class="font-bold mb-1">GPS Accuracy: ${accuracyLevel} (±${accuracy.toFixed(1)}m)</div>
-                            <div class="text-xs opacity-90">${accuracyAdvice}</div>
-                        </div>
-                    </div>
-                `;
-                
-                latitudeInput.parentNode.appendChild(accuracyMessage);
-                
-                // Auto-remove accuracy message after 10 seconds
-                setTimeout(() => {
-                    if (accuracyMessage && accuracyMessage.parentNode) {
-                        accuracyMessage.remove();
-                    }
-                }, 10000);
-            },
-            function(error) {
-                // ❌ ERROR - GPS acquisition failed
-                locationButton.disabled = false;
-                locationButton.classList.remove('opacity-75');
-                locationButton.innerHTML = originalButtonHTML;
-                
-                let errorMessage = '';
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMessage = "❌ GPS Permission Denied\n\nPlease enable location services in your browser settings:\n\n1. Click the lock icon in the address bar\n2. Allow location access for this site\n3. Refresh the page and try again";
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMessage = "❌ GPS Position Unavailable\n\nCannot determine your location. Please ensure:\n\n• You are outdoors or near a window\n• GPS is enabled on your device\n• Location services are allowed for this website\n• Your device has GPS capability";
-                        break;
-                    case error.TIMEOUT:
-                        console.warn("GPS Timeout - Alert suppressed");
-                        // errorMessage = "⏱️ GPS Timeout\n\nGPS signal acquisition took too long.\n\nTips for better GPS signal:\n• Move to an area with clear sky view\n• Ensure GPS/Location is enabled on your device\n• Wait a moment for GPS to initialize, then try again\n• If indoors, move closer to a window";
-                        break;
-                    default:
-                        errorMessage = "❌ GPS Error\n\nAn unknown error occurred while getting your location.\n\nPlease try again or enter coordinates manually.";
-                }
-                
-                if (errorMessage) {
-                    alert(errorMessage);
-                }
-                console.error('GPS Error:', error);
-            },
-            options
-        );
+                const counter = document.createElement('span');
+                counter.className = 'char-counter text-xs ml-2';
+                counter.style.color = length > maxLength ? '#ef4444' : '#94a3b8';
+                counter.textContent = `(${length}/${maxLength})`;
+                titleLabel.appendChild(counter);
+            };
+            titleField.addEventListener('input', updateTitleCounter);
+            updateTitleCounter.call(titleField);
+        }
     }
 
     // Initialize dynamic behaviors
     function initGPSUI() {
-        const locationButton = document.getElementById('gps-location-btn');
-        if (locationButton) {
-            // Remove any existing listeners to prevent duplicates
-            locationButton.onclick = getCurrentLocation;
-        }
-
         const reportTypeSelect = document.getElementById('report_type');
         if (reportTypeSelect) {
             reportTypeSelect.onchange = toggleEggCountField;
             toggleEggCountField();
         }
+
+        initCharCounters();
     }
 
     // Toggle egg count field based on report type
@@ -538,27 +524,6 @@
                             <input type="number" id="latitude" name="latitude" value="<?php echo e(old('latitude')); ?>" 
                                    step="0.000001" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="e.g., 6.9363">
-                            
-                            <!-- GPS Interaction UI - Server Rendered to avoid delay -->
-                            <button type="button" id="gps-location-btn" class="mt-3 px-6 py-2.5 bg-ocean-500 hover:bg-ocean-600 text-white text-xs rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-ocean-500/20 active:scale-95 uppercase tracking-widest font-bold" style="font-family: 'Cinzel', serif !important;">
-                                <i class="fas fa-satellite-dish"></i>
-                                <span>Get GPS Coordinates</span>
-                            </button>
-
-                            <div class="mt-3 p-3 bg-blue-500/5 border border-blue-500/20 rounded-xl text-[11px] text-blue-300 leading-relaxed" style="font-family: 'Poppins', sans-serif !important;">
-                                <div class="flex items-start gap-3">
-                                    <i class="fas fa-info-circle mt-0.5 text-blue-400"></i>
-                                    <div>
-                                        <strong class="uppercase tracking-wider text-blue-200">GPS Tips for Best Accuracy:</strong>
-                                        <ul class="mt-1.5 space-y-1 ml-4 list-disc opacity-80">
-                                            <li>Enable GPS/Location Services on your device</li>
-                                            <li>Move to an outdoor location with clear sky view</li>
-                                            <li>Wait 5-10 seconds for GPS to acquire satellites</li>
-                                            <li>Avoid tall buildings, dense forests, or indoor areas</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <div>
@@ -566,6 +531,18 @@
                             <input type="number" id="longitude" name="longitude" value="<?php echo e(old('longitude')); ?>" 
                                    step="0.000001" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
                                    placeholder="e.g., 126.2742">
+                        </div>
+
+                        <!-- Location Selector - Clean & Professional -->
+                        <div class="md:col-span-2">
+                            <button type="button" onclick="openMapManually()" class="w-full px-6 py-3 bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-ocean-500/30 active:scale-[0.98] font-semibold" style="font-family: 'Poppins', sans-serif;">
+                                <i class="fas fa-map-marker-alt text-lg"></i>
+                                <span>Select Location on Map</span>
+                            </button>
+                            
+                            <p class="mt-2 text-xs text-gray-400 text-center" style="font-family: 'Poppins', sans-serif;">
+                                Opens fullscreen map focused on Dahican area. Drag marker to exact location.
+                            </p>
                         </div>
 
                         <!-- Incident Date/Time -->
@@ -713,29 +690,44 @@
                 </div>
             </form>
 
-            <!-- GPS Map Modal -->
+            <!-- GPS Map Modal - FULLSCREEN & PROFESSIONAL -->
             <div id="gps-map-modal">
                 <div class="map-modal-content">
+                    <!-- Header -->
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2" style="font-family: 'Poppins', sans-serif;">
-                            <i class="fas fa-map-marked-alt text-ocean-400"></i>
-                            GPS Location Preview
-                        </h3>
-                        <button onclick="closeMapModal()" class="text-gray-400 hover:text-white transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div>
+                            <h3 class="text-2xl font-bold text-white flex items-center gap-3" style="font-family: 'Poppins', sans-serif;">
+                                <i class="fas fa-map-marker-alt text-ocean-400"></i>
+                                Select Report Location
+                            </h3>
+                            <p class="text-sm text-gray-400 mt-1" style="font-family: 'Poppins', sans-serif;">
+                                Click or drag marker to set exact coordinates
+                            </p>
+                        </div>
+                        <button onclick="closeMapModal()" class="text-gray-400 hover:text-white transition-colors p-2 hover:bg-gray-700/50 rounded-lg">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
                     </div>
-                    <p class="text-gray-300 text-sm mb-2" style="font-family: 'Poppins', sans-serif;">
-                        <i class="fas fa-info-circle text-blue-400"></i>
-                        This map shows your acquired GPS coordinates. The green marker indicates your exact location, and the circle shows the accuracy radius.
-                    </p>
-                    <div id="gps-map"></div>
-                    <div class="mt-4 flex justify-end">
-                        <button onclick="closeMapModal()" class="px-6 py-2 bg-ocean-600 hover:bg-ocean-700 text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif;">
-                            <i class="fas fa-check mr-2"></i>Confirm Location
-                        </button>
+                    
+                    <!-- Map Container -->
+                    <div id="gps-map" style="position: relative;"></div>
+                    
+                    <!-- Footer Actions -->
+                    <div class="mt-4 flex justify-between items-center gap-3">
+                        <div class="text-sm text-gray-400 flex items-center gap-2" style="font-family: 'Poppins', sans-serif;">
+                            <i class="fas fa-info-circle text-ocean-400"></i>
+                            <span>Press <kbd class="px-2 py-1 bg-gray-700 rounded text-xs font-mono">ESC</kbd> to close</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="closeMapModal()" class="px-6 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium" style="font-family: 'Poppins', sans-serif;">
+                                Cancel
+                            </button>
+                            <button onclick="closeMapModal()" class="px-8 py-2.5 bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white rounded-lg transition-colors font-semibold shadow-lg" style="font-family: 'Poppins', sans-serif;">
+                                <i class="fas fa-check mr-2"></i>Confirm Location
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
