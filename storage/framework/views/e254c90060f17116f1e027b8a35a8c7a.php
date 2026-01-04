@@ -651,14 +651,14 @@
                                     <span class="text-4xl">🥚</span>
                                     <h3 class="text-2xl sm:text-3xl font-bold text-green-400">1. Nesting</h3>
                                 </div>
-                                <div class="bg-white rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500">
-                                    <p class="text-gray-900 mb-4 text-lg font-medium leading-relaxed">
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
                                         Mother turtles return to Dahican Beach to lay their eggs, 
                                         continuing an ancient cycle that connects generations of Pawikan.
                                     </p>
-                                    <div class="text-sm text-gray-700 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-600">📅</span> <strong>Season:</strong> November to March</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-600">⏱️</span> <strong>Duration:</strong> 2-3 hours per nest</div>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">📅</span> <strong class="text-gray-300">Season:</strong> November to March</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">⏱️</span> <strong class="text-gray-300">Duration:</strong> 2-3 hours per nest</div>
                                     </div>
                                 </div>
                             </div>
@@ -676,14 +676,14 @@
                                     <span class="text-4xl">🌡️</span>
                                     <h3 class="text-2xl sm:text-3xl font-bold text-green-400">2. Incubation</h3>
                                 </div>
-                                <div class="bg-white rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500">
-                                    <p class="text-gray-900 mb-4 text-lg font-medium leading-relaxed">
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
                                         Eggs incubate in warm sand for 45-70 days, with temperature 
                                         determining the hatchlings' gender - warmer for females, cooler for males.
                                     </p>
-                                    <div class="text-sm text-gray-700 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-600">🌡️</span> <strong>Temperature:</strong> 29-30°C optimal</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-600">📈</span> <strong>Success Rate:</strong> 80-90% in protected nests</div>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🌡️</span> <strong class="text-gray-300">Temperature:</strong> 29-30°C optimal</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">📈</span> <strong class="text-gray-300">Success Rate:</strong> 80-90% in protected nests</div>
                                     </div>
                                 </div>
                             </div>
@@ -699,14 +699,14 @@
                                     <span class="text-4xl">🐣</span>
                                     <h3 class="text-2xl sm:text-3xl font-bold text-green-400">3. Hatching</h3>
                                 </div>
-                                <div class="bg-white rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500">
-                                    <p class="text-gray-900 mb-4 text-lg font-medium leading-relaxed">
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
                                         Hatchlings emerge together at night, using their egg tooth 
                                         to break shells and dig their way to the surface as a team.
                                     </p>
-                                    <div class="text-sm text-gray-700 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-600">🌙</span> <strong>Emergence:</strong> Usually at night</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-600">👥</span> <strong>Group Size:</strong> 50-200 hatchlings</div>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🌙</span> <strong class="text-gray-300">Emergence:</strong> Usually at night</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">👥</span> <strong class="text-gray-300">Group Size:</strong> 50-200 hatchlings</div>
                                     </div>
                                 </div>
                             </div>
@@ -724,14 +724,14 @@
                                     <span class="text-4xl">🌊</span>
                                     <h3 class="text-2xl sm:text-3xl font-bold text-green-400">4. Oceanic Voyage</h3>
                                 </div>
-                                <div class="bg-white rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500">
-                                    <p class="text-gray-900 mb-4 text-lg font-medium leading-relaxed">
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
                                         Young turtles drift with ocean currents for 1-10 years, 
                                         feeding on plankton and growing rapidly in the open sea.
                                     </p>
-                                    <div class="text-sm text-gray-700 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-600">⌛</span> <strong>Duration:</strong> 1-10 years</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-600">🌍</span> <strong>Location:</strong> Open ocean currents</div>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">⌛</span> <strong class="text-gray-300">Duration:</strong> 1-10 years</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🌍</span> <strong class="text-gray-300">Location:</strong> Open ocean currents</div>
                                     </div>
                                 </div>
                             </div>
@@ -747,14 +747,14 @@
                                     <span class="text-4xl">🐢</span>
                                     <h3 class="text-2xl sm:text-3xl font-bold text-green-400">5. Adulthood</h3>
                                 </div>
-                                <div class="bg-white rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500">
-                                    <p class="text-gray-900 mb-4 text-lg font-medium leading-relaxed">
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
                                         Mature turtles return to coastal waters at 20-50 years old, 
                                         ready to nest and continue the ancient cycle of life.
                                     </p>
-                                    <div class="text-sm text-gray-700 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-600">🐢</span> <strong>Maturity:</strong> 20-50 years</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-600">🔄</span> <strong>Lifespan:</strong> 50-100+ years</div>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🐢</span> <strong class="text-gray-300">Maturity:</strong> 20-50 years</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🔄</span> <strong class="text-gray-300">Lifespan:</strong> 50-100+ years</div>
                                     </div>
                                 </div>
                             </div>
