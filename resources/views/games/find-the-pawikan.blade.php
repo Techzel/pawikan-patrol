@@ -22,6 +22,23 @@
 
     .animate-float { animation: float 6s ease-in-out infinite; }
     @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
+
+    /* Custom scrollbar for instruction modal */
+    #instruction-modal-content::-webkit-scrollbar {
+        width: 8px;
+    }
+    #instruction-modal-content::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+    }
+    #instruction-modal-content::-webkit-scrollbar-thumb {
+        background: rgba(34, 211, 238, 0.5);
+        border-radius: 10px;
+    }
+    #instruction-modal-content::-webkit-scrollbar-thumb:hover {
+        background: rgba(34, 211, 238, 0.8);
+    }
+
 </style>
 @endpush
 
@@ -49,14 +66,23 @@
     <audio id="warning-audio">
         <source src="{{ asset('audio/warning.mp3') }}" type="audio/mpeg">
     </audio>
+    <audio id="instruction-voice">
+        <source src="{{ asset('audio/ocean-guardian-instructions.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="game-saved-sound">
+        <source src="{{ asset('audio/game-saved.mp3') }}" type="audio/mpeg">
+    </audio>
 
-    <!-- Back Button -->
-    <div class="fixed top-24 left-4 z-50 mb-4">
+    <!-- Back Button & How to Play -->
+    <div class="fixed top-24 left-4 z-50 mb-4 flex gap-2">
         <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
         </a>
+        <button onclick="window.showGameInstructions()" class="bg-deep-800/80 px-4 py-2 rounded-xl border border-green-500/30 text-green-300 hover:bg-green-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center gap-2 group font-poppins text-sm font-bold tracking-wide">
+            <span>How to Play</span>
+        </button>
     </div>
 
     <!-- Music Control with Volume -->
@@ -242,7 +268,87 @@
         </div>
         @endguest
 
-
+        <!-- Instruction Modal (How to Play) -->
+        <div id="instruction-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-500 ease-out hidden pointer-events-auto p-4">
+            <div id="instruction-modal-content" class="bg-gradient-to-br from-deep-900 to-ocean-900 border-2 border-ocean-500/40 p-6 md:p-8 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto text-center shadow-2xl relative transform scale-90 opacity-0 transition-all duration-500 ease-out flex flex-col h-full md:h-auto min-h-[500px]">
+                
+                <!-- Close Button -->
+                <button id="close-instruction-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                
+                <!-- Header (Top Anchor) -->
+                <div class="mb-4 flex-none mt-2">
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-1 font-poppins tracking-wide flex items-center justify-center gap-3">
+                        <span class="text-3xl">📜</span>
+                        How to Play
+                    </h2>
+                    <p class="text-gray-500 font-poppins text-sm">Ocean Guardian</p>
+                </div>
+                
+                <!-- Centered Content Wrapper -->
+                <div class="flex-grow flex flex-col justify-center w-full">
+                    <!-- Instructions Content - Horizontal Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 w-full">
+                        <!-- Mission Card -->
+                        <div class="bg-gradient-to-br from-green-900/20 to-green-800/10 border border-green-500/20 rounded-xl p-4 text-center group hover:border-green-500/40 transition-all hover:shadow-lg hover:shadow-green-500/10 flex flex-col items-center justify-center h-full">
+                            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🎯</div>
+                            <h3 class="text-green-400 font-bold font-poppins text-sm mb-2">Your Mission</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed">Click debris before it hits the turtle</p>
+                        </div>
+                        
+                        <!-- Health Card -->
+                        <div class="bg-gradient-to-br from-red-900/20 to-red-800/10 border border-red-500/20 rounded-xl p-4 text-center group hover:border-red-500/40 transition-all hover:shadow-lg hover:shadow-red-500/10 flex flex-col items-center justify-center h-full">
+                            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">❤️</div>
+                            <h3 class="text-red-400 font-bold font-poppins text-sm mb-2">Health System</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed">100 HP, -20 per hit. 0 = Game Over</p>
+                        </div>
+                        
+                        <!-- Win Card -->
+                        <div class="bg-gradient-to-br from-cyan-900/20 to-cyan-800/10 border border-cyan-500/20 rounded-xl p-4 text-center group hover:border-cyan-500/40 transition-all hover:shadow-lg hover:shadow-cyan-500/10 flex flex-col items-center justify-center h-full">
+                            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🗑️</div>
+                            <h3 class="text-cyan-400 font-bold font-poppins text-sm mb-2">Win Condition</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed">Collect 50 trash pieces per level</p>
+                        </div>
+                        
+                        <!-- Difficulty Card -->
+                        <div class="bg-gradient-to-br from-yellow-900/20 to-yellow-800/10 border border-yellow-500/20 rounded-xl p-4 text-center group hover:border-yellow-500/40 transition-all hover:shadow-lg hover:shadow-yellow-500/10 flex flex-col items-center justify-center h-full">
+                            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">⭐</div>
+                            <h3 class="text-yellow-400 font-bold font-poppins text-sm mb-2">Difficulty</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed">Unlock <span class="text-yellow-400">Medium</span> & <span class="text-red-400">Hard</span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Voice-over Indicator -->
+                    <div id="voice-indicator" class="mb-4 flex items-center justify-center gap-2 text-ocean-400 text-sm font-poppins hidden">
+                        <svg class="animate-pulse h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                        </svg>
+                        <span id="voice-status">Playing instructions...</span>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <button id="replay-instructions-btn" class="flex-1 py-3.5 bg-ocean-600/50 hover:bg-ocean-600 text-white rounded-xl font-bold font-poppins transition-all shadow-lg border border-ocean-500/30 flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Replay Instructions
+                        </button>
+                        <button id="start-playing-btn" class="flex-1 py-3.5 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold font-poppins transition-all shadow-lg hover:shadow-green-500/50 border border-white/10 text-lg">
+                            START PLAYING
+                        </button>
+                    </div>
+                    
+                    <!-- Skip Option -->
+                    <p class="text-gray-500 text-xs mt-4 font-poppins">
+                        Press ESC or click the X button to skip
+                    </p>
+                </div>
+            </div>
+        </div>
 
     <!-- Scripts -->
 </div>
@@ -447,6 +553,156 @@
 
         // Standard Turbo Init - Executed immediately as script is at end of body
         initPawikanAudio();
+
+        // ===== INSTRUCTION MODAL SYSTEM =====
+        const instructionModal = document.getElementById('instruction-modal');
+        const instructionModalContent = document.getElementById('instruction-modal-content');
+        const instructionVoice = document.getElementById('instruction-voice');
+        const closeInstructionBtn = document.getElementById('close-instruction-btn');
+        const replayInstructionsBtn = document.getElementById('replay-instructions-btn');
+        const startPlayingBtn = document.getElementById('start-playing-btn');
+        const voiceIndicator = document.getElementById('voice-indicator');
+        const voiceStatus = document.getElementById('voice-status');
+
+        let hasSeenInstructions = false;
+        
+        // Check if user has seen instructions before (using localStorage)
+        try {
+            const storageKey = @auth '{{ Auth::id() }}_ocean_guardian_instructions_seen' @else 'ocean_guardian_instructions_seen' @endauth;
+            hasSeenInstructions = localStorage.getItem(storageKey) === 'true';
+        } catch (e) {
+            console.log('LocalStorage not available');
+        }
+
+        // Show instruction modal
+        function showInstructionModal() {
+            if (!instructionModal || !instructionModalContent) return;
+            
+            // Pause background music
+            if (bgMusic && !bgMusic.paused) {
+                bgMusic.pause();
+                isMusicPlaying = false;
+                updateMusicIcon();
+            }
+            
+            instructionModal.classList.remove('hidden');
+            setTimeout(() => {
+                instructionModalContent.classList.remove('scale-90', 'opacity-0');
+                instructionModalContent.classList.add('scale-100', 'opacity-100');
+                
+                // Auto-play voice-over after modal animation
+                setTimeout(() => {
+                    playInstructionVoice();
+                }, 300);
+            }, 100);
+        }
+
+        // Close instruction modal
+        function closeInstructionModal() {
+            if (!instructionModal || !instructionModalContent) return;
+            
+            // Stop voice-over
+            if (instructionVoice) {
+                instructionVoice.pause();
+                instructionVoice.currentTime = 0;
+            }
+            
+            // Hide voice indicator
+            if (voiceIndicator) voiceIndicator.classList.add('hidden');
+            
+            // Animate out
+            instructionModalContent.classList.remove('scale-100', 'opacity-100');
+            instructionModalContent.classList.add('scale-90', 'opacity-0');
+            
+            setTimeout(() => {
+                instructionModal.classList.add('hidden');
+                
+                // Resume background music
+                window.startPawikanMusic();
+            }, 500);
+            
+            // Mark as seen
+            try {
+                const storageKey = @auth '{{ Auth::id() }}_ocean_guardian_instructions_seen' @else 'ocean_guardian_instructions_seen' @endauth;
+                localStorage.setItem(storageKey, 'true');
+                hasSeenInstructions = true;
+            } catch (e) {
+                console.log('Could not save instruction state');
+            }
+        }
+
+        // Play instruction voice-over
+        function playInstructionVoice() {
+            if (!instructionVoice) return;
+            
+            // Show voice indicator
+            if (voiceIndicator) {
+                voiceIndicator.classList.remove('hidden');
+                if (voiceStatus) voiceStatus.textContent = 'Playing instructions...';
+            }
+            
+            instructionVoice.volume = 0.8;
+            instructionVoice.currentTime = 0;
+            
+            instructionVoice.play()
+                .then(() => {
+                    console.log('Instruction voice-over playing');
+                })
+                .catch(e => {
+                    console.log('Voice-over autoplay prevented:', e);
+                    if (voiceStatus) voiceStatus.textContent = 'Click "Replay Instructions" to hear audio';
+                });
+            
+            // Update indicator when voice ends
+            instructionVoice.addEventListener('ended', () => {
+                if (voiceStatus) voiceStatus.textContent = 'Instructions complete';
+                setTimeout(() => {
+                    if (voiceIndicator) voiceIndicator.classList.add('hidden');
+                }, 2000);
+            }, { once: true });
+        }
+
+        // Event Listeners for Instruction Modal
+        if (closeInstructionBtn) {
+            closeInstructionBtn.addEventListener('click', closeInstructionModal);
+        }
+
+        if (replayInstructionsBtn) {
+            replayInstructionsBtn.addEventListener('click', () => {
+                playClickSound();
+                playInstructionVoice();
+            });
+        }
+
+        if (startPlayingBtn) {
+            startPlayingBtn.addEventListener('click', () => {
+                playClickSound();
+                closeInstructionModal();
+            });
+        }
+
+        // ESC key to close instruction modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && instructionModal && !instructionModal.classList.contains('hidden')) {
+                closeInstructionModal();
+            }
+        });
+
+        // Show instructions on first visit (after guest modal if present)
+        setTimeout(() => {
+            const guestModal = document.getElementById('guest-modal');
+            const isGuestModalVisible = guestModal && !guestModal.classList.contains('hidden');
+            
+            // Only show if user hasn't seen it before AND guest modal is not showing
+            if (!hasSeenInstructions && !isGuestModalVisible) {
+                showInstructionModal();
+            }
+        }, 1000);
+
+        // Expose function to manually show instructions
+        window.showGameInstructions = showInstructionModal;
+        // ===== END INSTRUCTION MODAL SYSTEM =====
+
 
         function updateMusicIcon() {
             if (!bgMusic || bgMusic.paused) {
@@ -1119,6 +1375,13 @@
                     window.dispatchEvent(new CustomEvent('gameCompleted', {
                         detail: { gameType: 'find-the-pawikan', timeSpent: v, completed: true }
                     }));
+                    
+                    // Play "Game Saved" voice-over
+                    const savedSound = document.getElementById('game-saved-sound');
+                    if (savedSound) {
+                        savedSound.volume = 1.0;
+                        savedSound.play().catch(e => console.log('Saved sound failed:', e));
+                    }
                 } else {
                     saveStatus.innerHTML = `
                         <p class="text-red-400 text-sm font-poppins flex items-center justify-center gap-2">

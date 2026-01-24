@@ -381,11 +381,37 @@ class User extends Authenticatable
         return $betterRankers + 1;
     }
 
+
+
     /**
-     * Get the user's rank for a specific game type (based on best time - lower is better).
+     * Get the user's rank for a specific game type.
      */
     public function getGameRank($gameType)
     {
+        if ($gameType === 'quiz') {
+            // Rank by score (high to low)
+            $myHighScore = $this->gameActivities()
+                ->where('game_type', $gameType)
+                ->max('score');
+            
+            if ($myHighScore === null) return null;
+
+            // Count users with strictly better (higher) score
+            // For simplicity in this helper, we only look at score primarily
+            $betterRankers = \DB::table('game_activities')
+                ->selectRaw('max(score) as high_score')
+                ->where('game_type', $gameType)
+                ->groupBy('user_id')
+                ->having('high_score', '>', $myHighScore)
+                ->get()
+                ->count();
+
+            // Tie-breaking with time could be added here, but let's keep it simple for the profile card
+            
+            return $betterRankers + 1;
+        }
+
+        // Default: Rank by time (lower is better) for other games
         // Get user's best time
         $myBestTime = $this->gameActivities()
             ->where('game_type', $gameType)
@@ -414,6 +440,16 @@ class User extends Authenticatable
         return $this->gameActivities()
             ->where('game_type', $gameType)
             ->min('time_spent') ?? 0;
+    }
+
+    /**
+     * Get the user's high score for a specific game type (e.g. Quiz).
+     */
+    public function getBestScoreForGame($gameType)
+    {
+        return $this->gameActivities()
+            ->where('game_type', $gameType)
+            ->max('score') ?? 0;
     }
 
     /**

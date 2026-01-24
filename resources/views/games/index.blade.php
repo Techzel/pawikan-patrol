@@ -120,7 +120,7 @@
                         <div class="flex items-center justify-center gap-4 mt-6">
                             <div class="flex items-center gap-2 text-green-400">
                                 <span class="animate-pulse">🎮</span>
-                                <span class="text-sm font-medium font-poppins">3 Interactive Games</span>
+                                <span class="text-sm font-medium font-poppins">4 Interactive Games</span>
                             </div>
                             <div class="w-1 h-1 bg-green-400 rounded-full"></div>
                             <div class="flex items-center gap-2 text-green-400">
@@ -148,6 +148,7 @@
 
                     <!-- Memory Match Game Card -->
                     <div class="game-card rounded-3xl p-8 hover-lift group">
+                        <div class="absolute top-0 right-0 bg-cyan-600 text-white text-xs font-bold px-4 py-2 rounded-bl-2xl z-20 shadow-lg tracking-widest">GAME</div>
                         <div class="text-center mb-8 relative z-10">
                             <div class="text-7xl mb-6 animate-wiggle">🧠</div>
                             <h3 class="text-3xl font-bold text-green-400 mb-4 font-poppins">Memory Match</h3>
@@ -189,6 +190,7 @@
 
                     <!-- Puzzle Game Card -->
                     <div class="game-card rounded-3xl p-8 hover-lift group">
+                        <div class="absolute top-0 right-0 bg-cyan-600 text-white text-xs font-bold px-4 py-2 rounded-bl-2xl z-20 shadow-lg tracking-widest">GAME</div>
                         <div class="text-center mb-8 relative z-10">
                             <div class="text-7xl mb-6 animate-wiggle">🧩</div>
                             <h3 class="text-3xl font-bold text-green-400 mb-4 font-poppins">Pawikan Puzzle</h3>
@@ -230,6 +232,7 @@
 
                     <!-- Ocean Guardian Game Card (Replaces Pawikan Rush) -->
                     <div class="game-card rounded-3xl p-8 hover-lift group">
+                        <div class="absolute top-0 right-0 bg-cyan-600 text-white text-xs font-bold px-4 py-2 rounded-bl-2xl z-20 shadow-lg tracking-widest">GAME</div>
                         <div class="text-center mb-8 relative z-10">
                             <div class="text-7xl mb-6 animate-wiggle">🛡️</div>
                             <h3 class="text-3xl font-bold text-green-400 mb-4 font-poppins">Ocean Guardian</h3>
@@ -266,6 +269,48 @@
                         <!-- Play Button -->
                         <a href="/games/find-the-pawikan" class="play-button block w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-5 px-8 rounded-2xl text-center text-lg relative z-10 transform group-hover:scale-105 transition-all duration-300" onclick="playClickSound(); window.showPageLoader();">
                             <span class="relative z-10">🛡️ Start Defending</span>
+                        </a>
+                    </div>
+
+                    <!-- Quiz Game Card -->
+                    <div class="game-card rounded-3xl p-8 hover-lift group">
+                        <div class="absolute top-0 right-0 bg-yellow-500 text-black text-xs font-bold px-4 py-2 rounded-bl-2xl z-20 shadow-lg tracking-widest">EDUCATIONAL GAME</div>
+                        <div class="text-center mb-8 relative z-10">
+                            <div class="text-7xl mb-6 animate-wiggle">❓</div>
+                            <h3 class="text-3xl font-bold text-green-400 mb-4 font-poppins">Pawikan Quiz</h3>
+                            <p class="text-gray-300 leading-relaxed text-lg font-poppins">
+                                Challenge your knowledge about sea turtles and Dahican. 
+                                Can you score a perfect 15/15?
+                            </p>
+                        </div>
+                        
+                        <!-- Game Features -->
+                        <div class="space-y-4 mb-10 relative z-10">
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">📚</span>
+                                <span class="font-medium font-poppins">Learn Fun Facts</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🎯</span>
+                                <span class="font-medium font-poppins">15 Questions</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">📝</span>
+                                <span class="font-medium font-poppins">Review History</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🏆</span>
+                                <span class="font-medium font-poppins">Earn Badges</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 group/feature">
+                                <span class="text-2xl text-ocean-400 feature-icon">🔊</span>
+                                <span class="font-medium font-poppins">Voice Over Feedback</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Play Button -->
+                        <a href="/games/quiz" class="play-button block w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-5 px-8 rounded-2xl text-center text-lg relative z-10 transform group-hover:scale-105 transition-all duration-300" onclick="playClickSound(); window.showPageLoader();">
+                            <span class="relative z-10">🤔 Start Quiz</span>
                         </a>
                     </div>
                 </div>

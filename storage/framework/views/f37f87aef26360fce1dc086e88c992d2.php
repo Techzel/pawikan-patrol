@@ -95,7 +95,7 @@
             <h2 class="text-3xl font-bold text-green-400 mb-8 text-center drop-shadow-lg font-poppins">Your Current Rankings</h2>
             
             <?php if(auth()->guard()->check()): ?>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Memory Match Rank -->
                 <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 text-center transform hover:scale-105 transition-all duration-200 border border-white/20 relative overflow-hidden group">
                     <div class="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -155,6 +155,26 @@
                         <div class="text-sm text-gray-300 mb-3"><?php echo e($findPawikanScore > 0 ? sprintf('%02d:%02d.%02d', floor($findPawikanScore / 60), floor($findPawikanScore) % 60, ($findPawikanScore - floor($findPawikanScore)) * 100) : '--'); ?></div>
                     </div>
                 </div>
+
+                <!-- Quiz Rank -->
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 text-center transform hover:scale-105 transition-all duration-200 border border-white/20 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-400/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10">
+                        <?php
+                            $quizRank = auth()->user()->getGameRank('quiz');
+                            $quizScore = auth()->user()->getBestScoreForGame('quiz');
+                        ?>
+                        <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full mb-4 shadow-lg border border-white/20">
+                            <span class="text-2xl">📝</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white mb-2">Pawikan Quiz</h3>
+                        <div class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent mb-1">
+                            #<?php echo e($quizRank ?: 'N/A'); ?>
+
+                        </div>
+                        <div class="text-sm text-gray-300 mb-3"><?php echo e($quizScore > 0 ? ($quizScore * 10) . ' pts' : '--'); ?></div>
+                    </div>
+                </div>
             </div>
             <?php else: ?>
             <div class="text-center py-8 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10">
@@ -186,6 +206,10 @@
                     <button class="tab-btn" data-tab="find-the-pawikan">
                         <span class="text-xl">🐢</span>
                         <span>Ocean Guardians</span>
+                    </button>
+                    <button class="tab-btn" data-tab="quiz">
+                        <span class="text-xl">📝</span>
+                        <span>Quiz</span>
                     </button>
                 </div>
             </div>
@@ -445,6 +469,84 @@
                         </div>
                     </div>
                 </div>
+                </div>
+
+                <!-- Quiz Leaderboard -->
+                <div class="leaderboard-content hidden" data-content="quiz">
+                    <div class="p-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-1">📝 Quiz Rankings</h2>
+                                <p class="text-gray-300">Top scorers in turtle trivia</p>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2">
+                                <button id="refreshQuiz" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-all duration-200 border border-white/20" onclick="refreshLeaderboard('quiz')">
+                                    <span class="flex items-center gap-2">
+                                        <span>↻</span>
+                                        <span>Refresh</span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto rounded-lg border border-white/10 shadow-sm">
+                            <table class="w-full">
+                                <thead class="bg-white/10 backdrop-blur-sm border-b border-white/10">
+                                    <tr>
+                                        <th class="text-left py-4 px-6 font-semibold text-white border-b border-white/10">Rank</th>
+                                        <th class="text-left py-4 px-6 font-semibold text-white border-b border-white/10">Player</th>
+                                        <th class="text-center py-4 px-6 font-semibold text-white border-b border-white/10">Score</th>
+                                        <th class="text-right py-4 px-6 font-semibold text-white border-b border-white/10">Games Played</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if($quizLeaderboard->count() > 0): ?>
+                                        <?php $currentRank = 0; $previousScore = null; $previousTime = null; ?>
+                                        <?php $__currentLoopData = $quizLeaderboard; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $player): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php
+                                                if ($player->high_score != $previousScore || $player->best_time != $previousTime) {
+                                                    $currentRank = $index + 1;
+                                                    $previousScore = $player->high_score;
+                                                    $previousTime = $player->best_time;
+                                                }
+                                            ?>
+                                            <tr class="lb-row hover:bg-white/10 transition-all duration-150 <?php if(auth()->check() && auth()->id() == $player->user_id): ?> bg-green-500/20 border-l-4 border-green-400 <?php endif; ?> border-b border-white/5" data-user-id="<?php echo e($player->user_id); ?>">
+                                                <td class="py-4 px-6 text-white font-bold rank-cell">#<?php echo e($currentRank); ?></td>
+                                                <td class="py-4 px-6 text-white">
+                                                    <div class="flex items-center gap-3">
+                                                        <?php if($player->profile_picture): ?>
+                                                            <img src="<?php echo e(Str::startsWith($player->profile_picture, 'data:') ? $player->profile_picture : asset('storage/' . $player->profile_picture)); ?>" class="w-8 h-8 rounded-full object-cover border border-white/20 shadow-sm">
+                                                        <?php else: ?>
+                                                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold border border-white/20 shadow-sm text-white">
+                                                                <?php echo e(substr($player->name, 0, 1)); ?>
+
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        <span class="font-medium"><?php echo e($player->name); ?></span>
+                                                        <?php if(auth()->check() && auth()->id() == $player->user_id): ?>
+                                                            <span class="text-xs text-green-300 font-semibold ml-2 bg-green-500/20 px-2 py-0.5 rounded-full border border-green-500/30">You</span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </td>
+                                                <td class="py-4 px-6 text-center text-indigo-300 font-bold"><?php echo e($player->high_score * 10); ?> pts</td>
+                                                <td class="py-4 px-6 text-right text-gray-300"><?php echo e($player->games_played); ?></td>
+                                            </tr>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <?php else: ?>
+                                        <tr>
+                                        <tr>
+                                            <td colspan="4" class="py-12 px-6 text-center text-gray-400">
+                                                <div class="text-4xl mb-2">📝</div>
+                                                <p>No records yet. Be the first!</p>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -545,7 +647,8 @@
 
         window.refreshLeaderboard = function(gameType) {
             const buttonId = gameType === 'memory-match' ? 'refreshMemoryMatch' : 
-                           (gameType === 'puzzle' ? 'refreshPuzzle' : 'refreshFindPawikan');
+                           (gameType === 'puzzle' ? 'refreshPuzzle' : 
+                           (gameType === 'find-the-pawikan' ? 'refreshFindPawikan' : 'refreshQuiz'));
             const button = document.getElementById(buttonId);
             if (button) {
                 const originalContent = button.innerHTML;

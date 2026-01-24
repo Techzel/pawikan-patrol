@@ -1,0 +1,15 @@
+Welcome to Ocean Guardian!
+
+Your mission is to protect the sea turtle from ocean trash.
+
+Here's how to play:
+
+Click or tap the floating debris to collect it before it reaches the turtle.
+
+The turtle starts with 100 health. Each piece of trash that hits the turtle reduces health by 20 points. If health reaches zero, the game is over.
+
+To win, collect 50 pieces of trash to complete each level.
+
+Start with Easy difficulty, then unlock Medium and Hard by completing each level. The game gets progressively harder as you advance!
+
+Good luck, Guardian! Let's protect our ocean friends!

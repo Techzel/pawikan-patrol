@@ -16,11 +16,14 @@ class GameActivity extends Model
         'time_spent',
         'moves',
         'difficulty',
+        'score',
+        'metadata',
         'played_at'
     ];
 
     protected $casts = [
         'played_at' => 'datetime',
+        'metadata' => 'array',
     ];
 
     public function user()

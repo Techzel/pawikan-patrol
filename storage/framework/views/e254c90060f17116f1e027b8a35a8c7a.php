@@ -629,6 +629,167 @@
         </script>
     </section>
 
+    <!-- Turtle Introduction Section -->
+    <section class="py-20 px-4 bg-gray-900 fade-in-up visible" id="turtle-intro">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-5xl font-bold text-center mb-12 text-green-400">Introduction to Sea Turtles</h2>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Text Content -->
+                <div class="bg-gray-800 rounded-3xl p-8 lg:p-10 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30 order-2 md:order-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                            <span class="text-2xl">🐢</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-green-400">Sea Turtles 101</h3>
+                    </div>
+                    
+                    <div class="space-y-4 text-gray-300">
+                        <p class="leading-relaxed">
+                             Sea turtles have roamed the Earth's oceans for the last 110 million years. 
+                             An ancient lineage of reptiles, they are a fundamental link in marine ecosystems. 
+                             <strong class="text-green-400">National Geographic</strong> takes you on a journey to understand 
+                             their biology, behavior, and the critical role they play in our oceans.
+                        </p>
+                        
+                        <p class="leading-relaxed">
+                            Learn about the seven species of sea turtles, their incredible migration patterns, 
+                            and the challenges they face in the modern world.
+                        </p>
+                        
+                        <div class="pt-4 border-t border-green-500/30 mt-6">
+                             <h4 class="text-xl font-bold text-green-400 mb-3">Video Highlights:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Ancient history and evolution</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Nesting and life cycle overview</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Conservation status and threats</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video Content -->
+                <div class="relative group order-1 md:order-2">
+                    <div class="bg-gray-800 rounded-3xl p-4 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
+                        <div class="relative rounded-2xl overflow-hidden" style="padding-bottom: 56.25%; height: 0;">
+                            <iframe 
+                                class="absolute top-0 left-0 w-full h-full rounded-xl" 
+                                src="https://www.youtube.com/embed/5Rmv3nliwCs" 
+                                title="Sea Turtles 101 | National Geographic" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
+                        </div>
+                        
+                        <!-- Credits -->
+                        <div class="mt-4 text-center">
+                            <p class="text-sm text-gray-400">
+                                <span class="text-ocean-300">📹 Video Source:</span> 
+                                <a href="https://www.youtube.com/watch?v=5Rmv3nliwCs" target="_blank" rel="noopener noreferrer" class="font-semibold text-gray-300 hover:text-ocean-300 transition-colors duration-300">
+                                    National Geographic
+                                </a>
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                © National Geographic. All rights reserved.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <?php
+                $files = collect(\Illuminate\Support\Facades\Storage::disk('public')->files('resources'))
+                    ->filter(function ($file) {
+                        return str_ends_with(strtolower($file), '.pdf');
+                    })
+                    ->map(function ($file) {
+                        return [
+                            'name' => basename($file),
+                            'url' => \Illuminate\Support\Facades\Storage::url($file)
+                        ];
+                    })
+                    ->values();
+            ?>
+            
+            <?php if(count($files) > 0): ?>
+            <!-- Download Resource -->
+            <div class="mt-16">
+                <?php if(count($files) === 1): ?>
+                    <!-- Single File Design -->
+                    <div class="bg-gradient-to-r from-blue-900/40 to-green-900/40 rounded-2xl p-8 max-w-4xl mx-auto border border-blue-500/30 shadow-lg relative overflow-hidden group hover:border-blue-500/50 transition-all duration-300">
+                        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+                            <span class="text-9xl">📖</span>
+                        </div>
+                        
+                        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div class="text-left w-full md:w-2/3">
+                                <h3 class="text-2xl font-bold text-white mb-2"><?php echo e($files[0]['name']); ?></h3>
+                                <p class="text-blue-200 text-sm md:text-base">Get the full illustrated guide to the Pawikan's journey. Perfect for students and educators.</p>
+                            </div>
+                            
+                            <div class="w-full md:w-1/3 flex justify-center md:justify-end">
+                                <a href="<?php echo e($files[0]['url']); ?>" download class="flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/50 hover:-translate-y-1 group-hover:scale-105 w-full md:w-auto justify-center md:justify-start">
+                                    <span class="text-2xl">📥</span>
+                                    <div class="text-left">
+                                        <span class="block text-xs text-blue-100 uppercase tracking-wider">Free Download</span>
+                                        <span class="block">Get the PDF</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <!-- Multiple Files Grouped Design -->
+                    <div class="bg-gradient-to-r from-blue-900/40 to-green-900/40 rounded-2xl p-8 max-w-4xl mx-auto border border-blue-500/30 shadow-lg relative overflow-hidden group hover:border-blue-500/50 transition-all duration-300">
+                        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+                            <span class="text-9xl">📚</span>
+                        </div>
+
+                        <div class="relative z-10">
+                            <div class="text-center mb-8">
+                                <h3 class="text-3xl font-bold text-white mb-2">Educational Resources</h3>
+                                <p class="text-blue-200">Explore our collection of conservation guides and materials.</p>
+                            </div>
+
+                            <div class="space-y-4">
+                                <?php $__currentLoopData = $files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="bg-gray-900/60 rounded-xl p-4 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 flex items-center justify-between gap-4">
+                                    <div class="flex items-center gap-4 overflow-hidden">
+                                        <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex-shrink-0 flex items-center justify-center">
+                                            <span class="text-xl">📄</span>
+                                        </div>
+                                        <div class="text-left min-w-0">
+                                            <h4 class="font-bold text-white text-sm md:text-base truncate"><?php echo e($file['name']); ?></h4>
+                                            <p class="text-xs text-blue-200">PDF Document</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <a href="<?php echo e($file['url']); ?>" download class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-bold transition-colors shadow-lg">
+                                        <span class="hidden sm:inline">Download</span>
+                                        <span class="text-lg">📥</span>
+                                    </a>
+                                </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+    </section>
+
     <!-- Lifecycle Section -->
     <section class="py-20 px-4 bg-gray-900 fade-in-up visible" id="lifecycle">
         <div class="max-w-7xl mx-auto">
@@ -783,6 +944,59 @@
     <section class="py-20 px-4 bg-gray-800 fade-in-up visible" id="threats">
         <div class="max-w-7xl mx-auto">
             <h2 class="text-5xl font-bold text-center mb-12 text-green-400">Threats to Sea Turtles</h2>
+            
+            <!-- Threats Intro & Video -->
+            <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
+                <!-- Video Content -->
+                <div class="relative group">
+                    <div class="bg-gray-900 rounded-3xl p-4 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
+                        <div class="relative rounded-2xl overflow-hidden" style="padding-bottom: 56.25%; height: 0;">
+                            <iframe 
+                                class="absolute top-0 left-0 w-full h-full rounded-xl" 
+                                src="https://www.youtube.com/embed/ZaQ_AqiKz-w" 
+                                title="How ocean plastic threatens sea turtles" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p class="text-sm text-gray-400">
+                                <span class="text-ocean-300">📹 Video Source:</span> 
+                                <a href="https://www.youtube.com/watch?v=ZaQ_AqiKz-w" target="_blank" rel="noopener noreferrer" class="font-semibold text-gray-300 hover:text-ocean-300 transition-colors duration-300">
+                                    The Economist
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Narrative Text -->
+                <div class="bg-gray-900 rounded-3xl p-8 lg:p-10 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
+                            <span class="text-2xl">⚠️</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-red-400">A Perilous Journey</h3>
+                    </div>
+                    
+                    <div class="space-y-4 text-gray-300">
+                        <p class="leading-relaxed">
+                            It is estimated that only <strong class="text-red-400">1 in 1,000 to 10,000</strong> sea turtle hatchlings 
+                            will survive to adulthood. While they have few natural predators once fully grown, 
+                            human activity has introduced new, deadly challenges.
+                        </p>
+                        <p class="leading-relaxed">
+                            <strong class="text-green-400">Ocean plastic</strong> is one of the gravest threats. 
+                            Turtles often mistake floating debris for food, leading to fatal consequences. 
+                            Watch the video to understand how our choices impact their survival.
+                        </p>
+                        
+
+                    </div>
+                </div>
+            </div>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Plastic Pollution -->

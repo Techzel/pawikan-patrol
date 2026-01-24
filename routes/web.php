@@ -59,6 +59,17 @@ Route::get('/games/puzzle', function () {
     return view('games.puzzle', compact('progress'));
 })->name('games.puzzle');
 
+Route::get('/games/quiz', function () {
+    $lastQuiz = null;
+    if (auth()->check()) {
+        $lastQuiz = \App\Models\GameActivity::where('user_id', auth()->id())
+            ->where('game_type', 'quiz')
+            ->latest()
+            ->first();
+    }
+    return view('games.quiz', compact('lastQuiz'));
+})->name('games.quiz');
+
 // Leaderboards Route
 Route::get('/leaderboards', function () {
     $gameActivityController = new \App\Http\Controllers\Games\GameActivityController();
@@ -71,11 +82,15 @@ Route::get('/leaderboards', function () {
     
     // Find the Pawikan leaderboard
     $findPawikanLeaderboard = $gameActivityController->leaderboard('find-the-pawikan');
+
+    // Quiz leaderboard
+    $quizLeaderboard = $gameActivityController->leaderboard('quiz');
     
     return view('leaderboards', compact(
         'memoryMatchLeaderboard',
         'puzzleLeaderboard',
-        'findPawikanLeaderboard'
+        'findPawikanLeaderboard',
+        'quizLeaderboard'
     ));
 })->name('leaderboards');
 
@@ -300,6 +315,8 @@ Route::middleware('auth')->group(function () {
         
         // Content Management
         Route::get('/content', [AdminController::class, 'contentManagement'])->name('admin.content.manage');
+        Route::post('/content/storytelling/upload', [AdminController::class, 'uploadStorytelling'])->name('admin.content.storytelling.upload');
+        Route::delete('/content/storytelling/delete', [AdminController::class, 'deleteStorytelling'])->name('admin.content.storytelling.delete');
         
         // System Settings
         Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');

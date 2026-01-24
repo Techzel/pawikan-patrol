@@ -24,6 +24,8 @@ class GameActivityController extends Controller
             'time_spent' => 'required|numeric',
             'moves' => 'nullable|integer',
             'difficulty' => 'nullable|string',
+            'score' => 'nullable|numeric',
+            'metadata' => 'nullable|array',
         ]);
 
         $user = Auth::user();
@@ -106,6 +108,13 @@ class GameActivityController extends Controller
             // Overall: Rank by average time across all games, lower is better
             $query->selectRaw('avg(game_activities.time_spent) as overall_avg_time')
                   ->orderBy('overall_avg_time', 'asc');
+        } elseif ($gameType === 'quiz') {
+            // Quiz: Rank by score (high to low) then time (low to high)
+            $query->selectRaw('max(game_activities.score) as high_score, min(game_activities.time_spent) as best_time, game_activities.difficulty')
+                  ->where('game_activities.game_type', $gameType)
+                  ->groupBy('users.id', 'users.name', 'users.profile_picture', 'users.email', 'game_activities.difficulty')
+                  ->orderBy('high_score', 'desc')
+                  ->orderBy('best_time', 'asc');
         } else {
             // Specific game: Group by user AND difficulty to get best time per difficulty
             $query->selectRaw('min(game_activities.time_spent) as best_time, game_activities.difficulty')

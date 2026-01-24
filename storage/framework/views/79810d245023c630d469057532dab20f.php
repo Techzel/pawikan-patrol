@@ -280,6 +280,22 @@
                     </div>
                 </div>
 
+                <!-- Content Management -->
+                <div class="bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                    <div class="p-4 sm:p-6">
+                        <h3 class="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 cinzel-subheading section-heading">Content</h3>
+                        <div class="space-y-2 sm:space-y-3">
+                            <a href="<?php echo e(route('admin.content.manage')); ?>" class="flex items-center justify-between p-3 bg-purple-500/20 rounded-lg hover:bg-purple-500/30 transition-colors">
+                                <div class="flex items-center space-x-2 sm:space-x-3">
+                                    <i class="fas fa-book text-purple-400"></i>
+                                    <span class="text-white text-sm sm:text-base body-text">Manage Resources</span>
+                                </div>
+                                <i class="fas fa-arrow-right text-purple-400"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
 
 
             </div>

@@ -177,13 +177,13 @@
     let gpsMarker = null;
     let accuracyCircle = null;
 
-    // Green marker icon
+    // Custom marker icon
     const greenIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        iconUrl: "{{ asset('img/marker.png') }}",
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
+        iconSize: [80, 80], 
+        iconAnchor: [40, 80], // Bottom center
+        popupAnchor: [0, -80],
         shadowSize: [41, 41]
     });
 
@@ -191,11 +191,17 @@
     function updateMarkerPosition(lat, lng, accuracy = 10, source = 'manual') {
         const latitudeInput = document.getElementById('latitude');
         const longitudeInput = document.getElementById('longitude');
+        const btn = document.getElementById('map-trigger-btn');
         
         // Update input fields
         latitudeInput.value = lat.toFixed(6);
         longitudeInput.value = lng.toFixed(6);
         
+        // Update Button Text to 'View Map Location'
+        if (btn) {
+           btn.innerHTML = '<i class="fas fa-map-marked-alt text-lg"></i><span>View Map Location</span>';
+        }
+
         // Remove old marker and circle if exists
         if (gpsMarker) {
             gpsMap.removeLayer(gpsMarker);
@@ -235,6 +241,17 @@
             fillOpacity: 0.1,
             radius: 20 // Fixed radius for visual consistency
         }).addTo(gpsMap);
+    }
+    
+    // Check initial state
+    function initMapButtonState() {
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+        const btn = document.getElementById('map-trigger-btn');
+        
+        if (latitudeInput && longitudeInput && btn && latitudeInput.value && longitudeInput.value) {
+             btn.innerHTML = '<i class="fas fa-map-marked-alt text-lg"></i><span>View Map Location</span>';
+        }
     }
 
     function showMapModal(lat, lng, accuracy = 10, source = 'manual') {
@@ -319,24 +336,183 @@
         }
     });
 
-    // Open map manually for coordinate selection - FOCUSED ON DAHICAN
+    // Helper for high accuracy location
+    function getHighAccuracyLocation(onSuccess, onError) {
+        if (!navigator.geolocation) {
+            onError(new Error("Geolocation not supported"));
+            return;
+        }
+
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        };
+
+        // Try getting a quick fix first, but fallback to watch if needed? 
+        // Actually, just going straight for watchPosition is often better for "high accuracy" on moving/mobile devices
+        // because it allows the GPS radio to warm up. 
+        // But for a simple button click "get location", we'll do a robust single-attempt structure.
+        
+        let positionFound = false;
+        
+        // We'll use getCurrentPosition but with a longer timeout and high accuracy
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                positionFound = true;
+                onSuccess(pos);
+            },
+            (err) => {
+                if (!positionFound) onError(err);
+            },
+            options
+        );
+    }
+
+    // Open map manually for coordinate selection - FOCUSED ON USER LOCATION OR DAHICAN
     function openMapManually() {
         const latitudeInput = document.getElementById('latitude');
         const longitudeInput = document.getElementById('longitude');
+        const btn = document.getElementById('map-trigger-btn');
         
         // Default Dahican coordinates
         const DAHICAN_LAT = 6.9363;
         const DAHICAN_LNG = 126.2742;
 
-        // Use existing coordinates if available, otherwise use Dahican center
-        let lat = latitudeInput.value ? parseFloat(latitudeInput.value) : DAHICAN_LAT;
-        let lng = longitudeInput.value ? parseFloat(longitudeInput.value) : DAHICAN_LNG;
+        // Check if values exist
+        if (latitudeInput.value && longitudeInput.value) {
+            // "Viewer Mode" - Just show the existing location
+            showMapModal(parseFloat(latitudeInput.value), parseFloat(longitudeInput.value), 10, 'manual');
+            return;
+        }
+
+        // "Locator Mode" - No location set, so we Find User First
+        // Step 1: Get the location (with UI feedback)
         
-        // Open map immediately with these coordinates
-        showMapModal(lat, lng, 10, 'manual');
+        const originalContent = btn.innerHTML;
+        btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-lg"></i><span>Locating (High Accuracy)...</span>';
+
+        // Use a smarter geolocation call
+        const locationTimeout = setTimeout(() => {
+            // If it takes too long (>10s), we might want to fallback or just let it keep trying?
+            // For now, relies on the geolocation API's own timeout (10s)
+        }, 10000);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                clearTimeout(locationTimeout);
+                
+                // Success
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+                
+                // Check if accuracy is acceptable (e.g. < 50 meters)
+                // If not, we could warn, but for now we just show it.
+                
+                resetButton();
+                showMapModal(lat, lng, accuracy, 'gps');
+                
+                // Show a toast or small message if accuracy is poor (>100m)
+                if (accuracy > 100) {
+                   // Optional: Add warning
+                   console.log("Location accuracy is poor: " + accuracy + "m");
+                }
+            },
+            (error) => {
+                clearTimeout(locationTimeout);
+                // Error / Fallback
+                console.error("Location access denied or failed", error);
+                resetButton();
+                
+                // Fallback to Dahican but maybe show an alert?
+                 alert("Could not get precise location. Opening map at default location.");
+                showMapModal(DAHICAN_LAT, DAHICAN_LNG, 10, 'manual');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,    // Increased timeout to 15s for better chance of GPS lock
+                maximumAge: 0      // Force fresh reading
+            }
+        );
+
+        function resetButton() {
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+    }
+
+    // Geolocation function
+    function locateUser() {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser");
+            return;
+        }
+
+        const btn = document.getElementById('locate-me-btn');
+        const originalContent = btn ? btn.innerHTML : '';
         
-        // No loading overlay, no GPS request
-        // Just let the user drag the marker
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Locating...';
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+
+                updateMarkerPosition(lat, lng, accuracy, 'gps');
+                
+                if (gpsMap) {
+                    gpsMap.setView([lat, lng], 18);
+                    
+                    // Add a accuracy circle that fades out
+                    const paramCircle = L.circle([lat, lng], {
+                        radius: accuracy,
+                        color: '#14b8a6',
+                        fillColor: '#14b8a6',
+                        fillOpacity: 0.2,
+                        weight: 1
+                    }).addTo(gpsMap);
+                    
+                    // Zoom to the accuracy circle bounds
+                    // gpsMap.fitBounds(paramCircle.getBounds());
+                }
+                
+                if (btn) {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            },
+            (error) => {
+                console.error("Error getting location", error);
+                if (btn) {
+                    const originalClass = btn.className;
+                    btn.innerHTML = '<i class="fas fa-exclamation-circle mr-2"></i>Failed';
+                    btn.classList.remove('from-blue-500', 'to-blue-600');
+                    btn.classList.add('bg-red-500');
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                        btn.disabled = false;
+                        btn.className = originalClass; // Restore original classes
+                        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    }, 3000);
+                }
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
     }
 
     // Character counters
@@ -391,6 +567,7 @@
         }
 
         initCharCounters();
+        initMapButtonState();
     }
 
     // Toggle egg count field based on report type
@@ -537,13 +714,13 @@
 
                         <!-- Location Selector - Clean & Professional -->
                         <div class="md:col-span-2">
-                            <button type="button" onclick="openMapManually()" class="w-full px-6 py-3 bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-ocean-500/30 active:scale-[0.98] font-semibold" style="font-family: 'Poppins', sans-serif;">
+                            <button id="map-trigger-btn" type="button" onclick="openMapManually()" class="w-full px-6 py-3 bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-ocean-500/30 active:scale-[0.98] font-semibold" style="font-family: 'Poppins', sans-serif;">
                                 <i class="fas fa-map-marker-alt text-lg"></i>
-                                <span>Select Location on Map</span>
+                                <span>Get Location on Map</span>
                             </button>
                             
                             <p class="mt-2 text-xs text-gray-400 text-center" style="font-family: 'Poppins', sans-serif;">
-                                Opens fullscreen map focused on Dahican area. Drag marker to exact location.
+                                Opens map. If no location is set, we'll try to find you automatically.
                             </p>
                         </div>
 
@@ -723,6 +900,9 @@
                             <span>Press <kbd class="px-2 py-1 bg-gray-700 rounded text-xs font-mono">ESC</kbd> to close</span>
                         </div>
                         <div class="flex gap-2">
+                            <button id="locate-me-btn" type="button" onclick="locateUser()" class="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all shadow-lg flex items-center font-medium mr-2" style="font-family: 'Poppins', sans-serif;">
+                                <i class="fas fa-location-arrow mr-2"></i> Locate Me
+                            </button>
                             <button onclick="closeMapModal()" class="px-6 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium" style="font-family: 'Poppins', sans-serif;">
                                 Cancel
                             </button>

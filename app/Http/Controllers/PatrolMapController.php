@@ -20,11 +20,15 @@ class PatrolMapController extends Controller
             })
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->select('id', 'title', 'description', 'location', 'latitude', 'longitude', 'report_type', 'priority', 'incident_datetime', 'turtle_species', 'turtle_count', 'turtle_condition', 'gender', 'egg_count', 'created_at', 'patroller_id', 'images')
-            ->with(['patroller:id,name', 'user:id,name'])
+            ->with(['patroller:id,name', 'user:id,name', 'photos'])
             ->limit(200)
             ->get()
             ->map(function ($report) {
+                // Merge images from JSON column and photos relationship
+                $jsonImages = is_array($report->images) ? $report->images : [];
+                $relationImages = $report->photos ? $report->photos->pluck('photo_path')->toArray() : [];
+                $allImages = array_unique(array_merge($jsonImages, $relationImages));
+
                 return [
                     'id' => $report->id,
                     'title' => $report->title,
@@ -42,11 +46,79 @@ class PatrolMapController extends Controller
                     'egg_count' => $report->egg_count,
                     'reported_at' => $report->created_at->format('M d, Y'),
                     'reported_by' => $report->patroller ? $report->patroller->name : ($report->user ? $report->user->name : 'Unknown'),
-                    'images' => $report->images ?? []
+                    'images' => $allImages
                 ];
             });
 
-        return view('patrol-map', compact('validatedReports'));
+        // Calculate comprehensive report statistics
+        $now = now();
+        $startOfWeek = $now->copy()->startOfWeek();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $startOfYear = $now->copy()->startOfYear();
+
+        // Base query for validated reports (reused logic for consistency)
+        $statsBaseQuery = PatrolReport::where(function($query) {
+                $query->where('validation_status', PatrolReport::VALIDATION_APPROVED)
+                      ->orWhere('status', 'validated')
+                      ->orWhere('status', 'verified');
+            });
+        
+        // Get all validated reports for detailed analysis
+        $allValidatedReports = (clone $statsBaseQuery)->with(['patroller:id,name', 'user:id,name'])->get();
+            
+        // Basic time-based stats
+        $stats = [
+            'weekly' => (clone $statsBaseQuery)->where('created_at', '>=', $startOfWeek)->count(),
+            'monthly' => (clone $statsBaseQuery)->where('created_at', '>=', $startOfMonth)->count(),
+            'yearly' => (clone $statsBaseQuery)->where('created_at', '>=', $startOfYear)->count(),
+            'total' => $allValidatedReports->count(),
+            'last_updated' => $now->format('M d, Y'),
+            
+            // Species breakdown
+            'species' => $allValidatedReports->groupBy('turtle_species')->map->count()->toArray(),
+            
+            // Report type distribution
+            'report_types' => $allValidatedReports->groupBy('report_type')->map->count()->toArray(),
+            
+            // Priority distribution
+            'priorities' => $allValidatedReports->groupBy('priority')->map->count()->toArray(),
+            
+            // Turtle condition stats
+            'conditions' => $allValidatedReports->groupBy('turtle_condition')->map->count()->toArray(),
+            
+            // Total turtle count
+            'total_turtles' => $allValidatedReports->sum('turtle_count'),
+            
+            // Total eggs recorded
+            'total_eggs' => $allValidatedReports->whereNotNull('egg_count')->sum('egg_count'),
+            
+            // Monthly trend (last 6 months)
+            'monthly_trend' => collect(range(5, 0))->map(function($monthsAgo) use ($statsBaseQuery) {
+                $month = now()->subMonths($monthsAgo);
+                return [
+                    'month' => $month->format('M'),
+                    'count' => (clone $statsBaseQuery)
+                        ->whereYear('created_at', $month->year)
+                        ->whereMonth('created_at', $month->month)
+                        ->count()
+                ];
+            })->toArray(),
+            
+            // Top locations
+            'top_locations' => $allValidatedReports
+                ->groupBy('location')
+                ->map->count()
+                ->sortDesc()
+                ->take(5)
+                ->toArray(),
+
+            // Top Reporters
+            'top_reporters' => $allValidatedReports->map(function($report) {
+                return $report->patroller ? $report->patroller->name : ($report->user ? $report->user->name : 'Unknown');
+            })->countBy()->sortDesc()->take(5)->toArray(),
+        ];
+
+        return view('patrol-map', compact('validatedReports', 'stats'));
     }
 
     /**
@@ -61,11 +133,15 @@ class PatrolMapController extends Controller
             })
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->select('id', 'title', 'description', 'location', 'latitude', 'longitude', 'report_type', 'priority', 'incident_datetime', 'turtle_species', 'turtle_count', 'turtle_condition', 'gender', 'egg_count', 'created_at', 'patroller_id', 'images')
-            ->with(['patroller:id,name', 'user:id,name'])
+            ->with(['patroller:id,name', 'user:id,name', 'photos'])
             ->limit(200)
             ->get()
             ->map(function ($report) {
+                // Merge images from JSON column and photos relationship
+                $jsonImages = is_array($report->images) ? $report->images : [];
+                $relationImages = $report->photos ? $report->photos->pluck('photo_path')->toArray() : [];
+                $allImages = array_unique(array_merge($jsonImages, $relationImages));
+
                 return [
                     'id' => $report->id,
                     'title' => $report->title,
@@ -81,7 +157,7 @@ class PatrolMapController extends Controller
                     'turtle_condition' => $report->turtle_condition,
                     'turtle_gender' => $report->gender,
                     'egg_count' => $report->egg_count,
-                    'images' => $report->images ?? [],
+                    'images' => $allImages,
                     'patroller_name' => $report->patroller ? $report->patroller->name : ($report->user ? $report->user->name : 'Unknown'),
                     'created_at' => $report->created_at->format('M d, Y')
                 ];

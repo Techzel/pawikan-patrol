@@ -9,6 +9,7 @@ use App\Models\PatrolReport;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -734,7 +735,111 @@ class AdminController extends Controller
      */
     public function contentManagement()
     {
-        return view('admin.content');
+        // Get all PDF files in the resources directory
+        $files = collect(Storage::disk('public')->files('resources'))
+            ->filter(function ($file) {
+                return str_ends_with(strtolower($file), '.pdf');
+            })
+            ->map(function ($file) {
+                return [
+                    'path' => $file,
+                    'name' => basename($file),
+                    'last_modified' => Storage::disk('public')->lastModified($file),
+                    'size' => Storage::disk('public')->size($file),
+                    'url' => Storage::url($file)
+                ];
+            })
+            ->values();
+        
+        return view('admin.content', compact('files'));
+    }
+
+    /**
+     * Upload storytelling module PDF.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function uploadStorytelling(Request $request)
+    {
+        $request->validate([
+            'module_file' => 'required|file|mimes:pdf|max:20480', // 20MB max
+            'custom_name' => 'nullable|string|max:255',
+        ]);
+
+        try {
+            if ($request->hasFile('module_file')) {
+                $file = $request->file('module_file');
+                
+                // Determine filename
+                $filename = $request->filled('custom_name') 
+                    ? \Illuminate\Support\Str::slug($request->custom_name) . '.pdf'
+                    : $file->getClientOriginalName();
+                
+                // Store in storage/app/public/resources
+                // This will overwrite if file with same name exists
+                $path = $file->storeAs('resources', $filename, 'public');
+                
+                Log::info('Storytelling module uploaded by admin', [
+                    'admin_id' => auth()->id(),
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName()
+                ]);
+
+                return back()->with('success', 'Resource uploaded successfully.');
+            }
+            
+            return back()->with('error', 'No file selected.');
+        } catch (\Exception $e) {
+            Log::error('Failed to upload storytelling module', [
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage()
+            ]);
+            
+            return back()->with('error', 'Failed to upload file. Please try again.');
+        }
+    }
+
+    /**
+     * Delete storytelling module PDF.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteStorytelling(Request $request)
+    {
+        $request->validate([
+            'file_path' => 'required|string'
+        ]);
+
+        try {
+            $path = $request->file_path;
+            
+            // Security check: ensure path is within resources directory and is a PDF
+            if (!str_starts_with($path, 'resources/') || !str_ends_with(strtolower($path), '.pdf')) {
+                return back()->with('error', 'Invalid file path.');
+            }
+
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+                
+                Log::info('Storytelling module deleted by admin', [
+                    'admin_id' => auth()->id(),
+                    'path' => $path
+                ]);
+                
+                return back()->with('success', 'Resource deleted successfully.');
+            }
+            
+            return back()->with('error', 'File not found.');
+        } catch (\Exception $e) {
+            Log::error('Failed to delete storytelling module', [
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage()
+            ]);
+            
+            return back()->with('error', 'Failed to delete file. Please try again.');
+        }
     }
 
     /**

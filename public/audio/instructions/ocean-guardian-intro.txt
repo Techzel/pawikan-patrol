@@ -1,0 +1,1 @@
+Welcome to Ocean Guardian! Your mission is to protect the sea turtle from ocean trash. Click or tap the floating debris to collect it before it reaches the turtle. If trash hits the turtle, it loses health. Collect 50 pieces of trash to complete each level. Good luck, Guardian!

@@ -160,6 +160,9 @@
     <audio id="click-sound">
         <source src="<?php echo e(asset('audio/click sa puzzle ug matching.mp3')); ?>" type="audio/mpeg">
     </audio>
+    <audio id="game-saved-sound">
+        <source src="<?php echo e(asset('audio/game-saved.mp3')); ?>" type="audio/mpeg">
+    </audio>
 
     <?php if(auth()->guard()->guest()): ?>
     <!-- Warning Audio -->
@@ -1066,6 +1069,13 @@
                                     moves: moves
                                 }
                             }));
+                            
+                            // Play "Game Saved" voice-over
+                            const savedSound = document.getElementById('game-saved-sound');
+                            if (savedSound) {
+                                savedSound.volume = 1.0;
+                                savedSound.play().catch(e => console.log('Saved sound failed:', e));
+                            }
                         } else {
                             console.error('Save failed - result:', result);
                             saveStatus.innerHTML = `

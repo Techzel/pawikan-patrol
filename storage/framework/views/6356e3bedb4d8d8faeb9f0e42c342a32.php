@@ -80,6 +80,9 @@
     <audio id="congratulations-sound">
         <source src="<?php echo e(asset('audio/ma complete ang task.mp3')); ?>" type="audio/mpeg">
     </audio>
+    <audio id="game-saved-sound">
+        <source src="<?php echo e(asset('audio/game-saved.mp3')); ?>" type="audio/mpeg">
+    </audio>
 
     <?php if(auth()->guard()->guest()): ?>
     <!-- Warning Audio -->
@@ -245,6 +248,11 @@
                 background: #06b6d4;
                 transform: scale(1.2);
             }
+
+            @keyframes loading {
+                from { transform: scaleX(0); }
+                to { transform: scaleX(1); }
+            }
         </style>
         
         <audio id="bg-music" loop>
@@ -265,7 +273,7 @@
             <!-- Header -->
             <div class="text-center mb-6">
                 <h1 class="text-4xl md:text-5xl font-bold text-ocean-300 mb-2 font-poppins">Pawikan Puzzle</h1>
-                <p class="text-gray-300 font-poppins">Reassemble the image to reveal the majestic sea turtle!</p>
+                <p id="game-instruction" class="text-gray-300 font-poppins">Reassemble the image to reveal the <span class="text-ocean-300 font-bold">Green Sea Turtle</span>!</p>
             </div>
 
             <!-- Fixed Left Sidebar: Stats (Hidden on mobile, visible on lg+) -->
@@ -318,16 +326,19 @@
             <div class="w-full max-w-4xl mx-auto mb-6">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-deep-800/50 p-4 rounded-2xl border border-ocean-700/30 backdrop-blur-sm">
                     <!-- Image Selection -->
-                    <div class="flex gap-2">
-                        <button onclick="setPuzzleImage(0)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Green Sea Turtle">
-                            <img src="<?php echo e(asset('img/green-sea-turtle.png')); ?>" class="w-full h-full object-cover">
-                        </button>
-                        <button onclick="setPuzzleImage(1)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Hawksbill Sea Turtle">
-                            <img src="<?php echo e(asset('img/hawksbill-sea-turtle.png')); ?>" class="w-full h-full object-cover">
-                        </button>
-                        <button onclick="setPuzzleImage(2)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Olive Sea Turtle">
-                            <img src="<?php echo e(asset('img/olive-sea-turtle.png')); ?>" class="w-full h-full object-cover">
-                        </button>
+                    <div class="flex flex-col sm:flex-row items-center gap-3">
+                        <div class="flex gap-2">
+                            <button onclick="setPuzzleImage(0)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Green Sea Turtle">
+                                <img src="<?php echo e(asset('img/green-sea-turtle.png')); ?>" class="w-full h-full object-cover">
+                            </button>
+                            <button onclick="setPuzzleImage(1)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Hawksbill Sea Turtle">
+                                <img src="<?php echo e(asset('img/hawksbill-sea-turtle.png')); ?>" class="w-full h-full object-cover">
+                            </button>
+                            <button onclick="setPuzzleImage(2)" class="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent hover:border-ocean-400 focus:border-ocean-400 transition-all ring-offset-2 ring-offset-deep-900" title="Olive Sea Turtle">
+                                <img src="<?php echo e(asset('img/olive-sea-turtle.png')); ?>" class="w-full h-full object-cover">
+                            </button>
+                        </div>
+                        <!-- Label removed to reduce info overload -->
                     </div>
 
                     <!-- Difficulty Selection -->
@@ -391,12 +402,44 @@
                     <!-- Target Image (Hidden on mobile, visible on lg+) -->
                     <div class="hidden lg:block ml-2">
                         <div class="bg-gradient-to-br from-deep-800/90 to-deep-900/90 p-4 rounded-2xl border border-ocean-500/20 backdrop-blur-sm shadow-lg">
-                            <h3 class="text-ocean-300 font-bold text-sm mb-3 text-center uppercase tracking-wider">Target Image</h3>
+                            <h3 id="target-image-label" class="text-ocean-300 font-bold text-sm mb-3 text-center uppercase tracking-wider">Green Sea Turtle</h3>
                             <div class="rounded-lg overflow-hidden border-2 border-ocean-500/30">
                                 <img id="reference-image" src="<?php echo e(asset('img/green-sea-turtle.png')); ?>" class="w-full h-auto" alt="Reference" style="max-width: 280px;">
                             </div>
                         </div>
+
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Trivia Overlay -->
+        <div id="trivia-overlay" class="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500">
+            <div class="bg-black/80 backdrop-blur-md border border-ocean-400 p-8 rounded-2xl max-w-2xl w-[90%] text-center transform scale-95 transition-transform duration-500 shadow-[0_0_50px_rgba(34,211,238,0.4)] relative overflow-hidden mt-40" id="trivia-box">
+                <!-- Decoration -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-ocean-400 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-ocean-400 to-transparent"></div>
+                
+                <div class="mb-4">
+                    <span class="text-xs text-ocean-500 font-mono tracking-[0.3em] uppercase animate-pulse">Incoming Transmission</span>
+                </div>
+                
+                <h2 id="flash-trivia-title" class="text-3xl font-bold text-ocean-300 font-poppins mb-2 tracking-widest uppercase drop-shadow-md"></h2>
+                
+                <div class="mb-4">
+                    <span class="inline-block px-3 py-1 bg-ocean-500/20 rounded-full border border-ocean-400/30 text-ocean-300 font-bold text-sm tracking-wider uppercase shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                        Did You Know?
+                    </span>
+                </div>
+                
+                <div class="bg-ocean-900/30 p-6 rounded-xl border border-ocean-500/20 mb-4">
+                    <p id="flash-trivia-content" class="text-lg md:text-xl text-white font-mono leading-relaxed"></p>
+                </div>
+                
+                <div class="w-full h-0.5 bg-ocean-900/50 mt-4 overflow-hidden rounded-full">
+                     <div class="h-full bg-ocean-400 animate-[loading_4s_linear_infinite] w-full origin-left scale-x-0" id="timer-bar"></div>
                 </div>
             </div>
         </div>
@@ -520,6 +563,121 @@
             "<?php echo e(asset('img/olive-sea-turtle.png')); ?>"
         ];
         let currentImageIndex = 0;
+
+        // Trivia Data
+        const turtleTrivia = [
+             {
+                name: "Green Sea Turtle",
+                trivia: "I am the only herbivorous sea turtle! I love grazing on seagrass beds and algae, which gives my fat a greenish color.",
+                seq: "01"
+             },
+             {
+                name: "Hawksbill Sea Turtle",
+                trivia: "My beak is sharp and curved like a hawk's! This is perfect for reaching into crevices to eat sponges found in coral reefs.",
+                seq: "02"
+             },
+             {
+                name: "Olive Ridley Sea Turtle",
+                trivia: "We are famous for 'Arribada', a mass nesting event where thousands of us come ashore together to lay eggs on the same beach!",
+                seq: "03"
+             }
+        ];
+
+
+        
+        let shownTrivia = new Set();
+        let triviaTimeout;
+        
+        function updateTrivia(index, flash = true) {
+             const data = turtleTrivia[index] || turtleTrivia[0];
+             
+             // Update static labels in UI (Always happen)
+             const targetLabel = document.getElementById('target-image-label');
+             const instructionLabel = document.getElementById('game-instruction');
+             
+             if(targetLabel) targetLabel.textContent = data.name;
+             if(instructionLabel) instructionLabel.innerHTML = `Reassemble the image to reveal the <span class="text-ocean-300 font-bold">${data.name}</span>!`;
+             
+             // Flash Overlay Logic (Conditional)
+             if (!flash || shownTrivia.has(index)) return;
+             
+             // Mark this index as shown
+             shownTrivia.add(index);
+             
+             const overlay = document.getElementById('trivia-overlay');
+             const flashTitle = document.getElementById('flash-trivia-title');
+             const flashContent = document.getElementById('flash-trivia-content');
+             const triviaBox = document.getElementById('trivia-box');
+             const timerBar = document.getElementById('timer-bar');
+             const bgMusic = document.getElementById('bg-music');
+             
+             if(overlay && flashTitle && flashContent) {
+                flashTitle.textContent = data.name;
+                
+                // Handle Background Music
+                let musicWasPlaying = false;
+                if(bgMusic && !bgMusic.paused) {
+                    musicWasPlaying = true;
+                    bgMusic.pause();
+                }
+
+                // Voiceover Logic
+                window.speechSynthesis.cancel(); // Cancel any existing speech
+                const speechText = "Did you know? " + data.trivia;
+                const utterance = new SpeechSynthesisUtterance(speechText);
+                utterance.rate = 1.0;
+                
+                // Function to close overlay and resume music
+                const closeTrivia = () => {
+                    overlay.classList.add('opacity-0', 'pointer-events-none');
+                    if(triviaBox) {
+                        triviaBox.classList.add('scale-95');
+                        triviaBox.classList.remove('scale-100');
+                    }
+                    if(musicWasPlaying && bgMusic) {
+                        bgMusic.play().catch(e => console.log('Music resume failed:', e));
+                    }
+                };
+                
+                utterance.onend = closeTrivia;
+                utterance.onerror = closeTrivia; // Fallback
+
+                // Show Overlay
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                if(triviaBox) {
+                    triviaBox.classList.remove('scale-95');
+                    triviaBox.classList.add('scale-100');
+                }
+                
+                // Typing Effect
+                flashContent.textContent = '';
+                let i = 0;
+                const text = data.trivia;
+                const speed = 25; 
+                
+                if(window.triviaTypeInterval) clearInterval(window.triviaTypeInterval);
+                if(triviaTimeout) clearTimeout(triviaTimeout);
+                
+                // Visual Indicator for Voice (Pulse instead of load)
+                if(timerBar) {
+                    timerBar.style.animation = 'none'; 
+                    timerBar.style.transform = 'scaleX(1)';
+                    timerBar.className = 'h-full bg-ocean-400 animate-pulse w-full';
+                }
+
+                window.triviaTypeInterval = setInterval(() => {
+                     if(i < text.length) {
+                         flashContent.textContent += text.charAt(i);
+                         i++;
+                     } else {
+                         clearInterval(window.triviaTypeInterval);
+                     }
+                 }, speed);
+                 
+                 // Start Speaking
+                 window.speechSynthesis.speak(utterance);
+             }
+        }
         
 
         
@@ -552,6 +710,7 @@
             updateLevelButtons();
             createTiles();
             shufflePuzzle();
+            updateTrivia(currentImageIndex, false);
         }
 
         window.addEventListener('resize', () => {
@@ -657,6 +816,7 @@
             updateLevelButtons();
             createTiles();
             shufflePuzzle();
+            updateTrivia(currentImageIndex, true);
         };
 
         function createTiles() {
@@ -1060,6 +1220,12 @@
                                     window.dispatchEvent(new CustomEvent('gameCompleted', {
                                         detail: { gameType: 'puzzle', timeSpent: seconds, moves: moves }
                                     }));
+
+                                    const savedSound = document.getElementById('game-saved-sound');
+                                    if (savedSound) {
+                                        savedSound.volume = 1.0;
+                                        savedSound.play().catch(e => console.log('Saved sound failed:', e));
+                                    }
                                 } else {
                                     saveStatus.innerHTML = `
                                         <p class="text-red-400 text-sm font-poppins flex items-center justify-center gap-2">
