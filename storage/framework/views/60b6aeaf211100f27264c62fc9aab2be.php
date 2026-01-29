@@ -278,7 +278,7 @@
                         </div>
                         <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2 py-1 rounded-md">30 Days</span>
                     </div>
-                    <div class="text-3xl font-bold text-white leading-tight"><?php echo e(array_sum($analytics['recent_reports']->toArray())); ?></div>
+                    <div class="text-3xl font-bold text-white leading-tight"><?php echo e($analytics['recent_reports']->sum('count')); ?></div>
                     <div class="text-xs text-gray-400 mt-1">Reports in Last 30 Days</div>
                 </div>
             </div>
@@ -878,17 +878,19 @@ function rejectReport(reportId) {
     document.addEventListener('turbo:load', function() {
         if (!document.getElementById('activityChart')) return;
 
-        // Prepare data from PHP
+        // Prepare data from PHP - Data is already sorted and filled from Controller
         const rawData = <?php echo json_encode($analytics['recent_reports'] ?? []); ?>;
-        const categories = Object.keys(rawData).map(date => {
+        const dates = Object.keys(rawData);
+        const categories = dates.map(date => {
             const d = new Date(date);
             return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         });
-        const seriesData = Object.values(rawData);
+        const seriesData = dates.map(date => rawData[date].count);
+        const patrollerData = dates.map(date => rawData[date].patrollers);
 
         const options = {
             series: [{
-                name: 'Reports',
+                name: 'Daily Reports',
                 data: seriesData
             }],
             chart: {
@@ -897,12 +899,26 @@ function rejectReport(reportId) {
                 toolbar: { show: false },
                 background: 'transparent',
                 foreColor: 'rgba(255, 255, 255, 0.6)',
-                fontFamily: 'Poppins, sans-serif'
+                fontFamily: 'Poppins, sans-serif',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
+                }
             },
             plotOptions: {
                 bar: {
-                    borderRadius: 6,
-                    columnWidth: '60%',
+                    borderRadius: 8,
+                    borderRadiusApplication: 'end',
+                    columnWidth: '65%',
                     distributed: false,
                     dataLabels: { position: 'top' }
                 }
@@ -910,9 +926,10 @@ function rejectReport(reportId) {
             dataLabels: {
                 enabled: true,
                 formatter: function (val) { return val > 0 ? val : ""; },
-                offsetY: -20,
+                offsetY: -25,
                 style: {
-                    fontSize: '10px',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
                     colors: ["#14b8a6"]
                 }
             },
@@ -927,11 +944,17 @@ function rejectReport(reportId) {
                 axisTicks: { show: false },
                 labels: {
                     rotate: -45,
-                    style: { fontSize: '10px' }
-                }
+                    style: { 
+                        fontSize: '10px',
+                        fontWeight: 500
+                    }
+                },
+                tooltip: { enabled: false }
             },
             yaxis: {
                 title: { text: undefined },
+                min: 0,
+                forceNiceScale: true,
                 labels: {
                     formatter: function(val) { return Math.floor(val); },
                     style: { fontSize: '10px' }
@@ -942,28 +965,86 @@ function rejectReport(reportId) {
                 gradient: {
                     shade: 'dark',
                     type: "vertical",
-                    shadeIntensity: 0.1,
-                    gradientToColors: ['#0d9488'], // darker teal
-                    inverseColors: true,
-                    opacityFrom: 0.85,
-                    opacityTo: 0.55,
-                    stops: [0, 100]
+                    shadeIntensity: 0.2,
+                    gradientToColors: ['#0d9488', '#0ea5e9'],
+                    inverseColors: false,
+                    opacityFrom: 0.9,
+                    opacityTo: 0.4,
+                    stops: [0, 90, 100]
                 }
             },
             colors: ['#14b8a6'],
             grid: {
                 borderColor: 'rgba(255, 255, 255, 0.05)',
                 strokeDashArray: 4,
+                padding: {
+                    top: 10,
+                    right: 10,
+                    bottom: 0,
+                    left: 10
+                },
                 yaxis: { lines: { show: true } }
+            },
+            states: {
+                hover: {
+                    filter: {
+                        type: 'lighten',
+                        value: 0.15,
+                    }
+                },
+                active: {
+                    allowMultipleDataPointsSelection: false,
+                    filter: {
+                        type: 'darken',
+                        value: 0.35,
+                    }
+                }
             },
             tooltip: {
                 theme: 'dark',
-                y: {
-                    title: {
-                        formatter: function() { return 'Submissions:'; }
+                custom: function({series, seriesIndex, dataPointIndex, w}) {
+                    const date = categories[dataPointIndex];
+                    const value = series[seriesIndex][dataPointIndex];
+                    const patrollers = patrollerData[dataPointIndex];
+                    
+                    let patrollersHtml = '';
+                    if (patrollers && patrollers.length > 0) {
+                        patrollersHtml = `
+                            <div class="px-4 py-2 bg-white/5 border-t border-white/5">
+                                <div class="text-[9px] text-gray-400 uppercase font-bold tracking-widest mb-1.5">Submitted By</div>
+                                <div class="flex flex-wrap gap-1">
+                                    ${patrollers.map(name => `
+                                        <span class="px-2 py-0.5 bg-ocean-500/20 text-ocean-300 rounded-md text-[9px] font-bold border border-ocean-500/20">
+                                            ${name}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
                     }
-                },
-                style: { fontSize: '12px' }
+
+                    return `
+                        <div class="bg-gray-900 border border-ocean-500/30 rounded-xl overflow-hidden shadow-2xl min-w-[180px]">
+                            <div class="px-4 py-2 bg-white/5 border-b border-white/5">
+                                <span class="text-[10px] text-ocean-400 font-bold uppercase tracking-widest">${date}</span>
+                            </div>
+                            <div class="px-4 py-3 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-ocean-500/20 flex items-center justify-center text-ocean-400 shadow-inner">
+                                    <i class="fas fa-clipboard-check text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-black text-white leading-none">${value}</div>
+                                    <div class="text-[10px] text-gray-400 uppercase font-bold tracking-tighter mt-1">Total Reports</div>
+                                </div>
+                            </div>
+                            ${patrollersHtml}
+                            <div class="px-4 py-1.5 bg-ocean-500/10 flex items-center gap-1.5">
+                                <div class="w-1.5 h-1.5 rounded-full bg-ocean-400 animate-pulse"></div>
+                                <span class="text-[9px] text-ocean-300 font-bold uppercase tracking-tight">Active Patrol Data</span>
+                            </div>
+                        </div>
+                    `;
+                }
             }
         };
 

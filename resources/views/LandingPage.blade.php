@@ -157,37 +157,23 @@
 
 @section('content')
 @php
-    // Failsafe for missing database table during initial deployment
-    $metadata = collect();
+    // SOURCE OF TRUTH: Fetch from database for persistence in ephemeral environments
+    $files = collect();
     try {
         if (\Illuminate\Support\Facades\Schema::hasTable('resource_metadata')) {
-            $metadata = \App\Models\ResourceMetadata::all()->keyBy('filename');
+            $files = \App\Models\ResourceMetadata::latest()->get()->map(function($meta) {
+                return [
+                    'name' => $meta->filename,
+                    'title' => $meta->title ?: $meta->filename,
+                    'url' => route('view-resource', ['filename' => $meta->filename]),
+                    'description' => $meta->description ?: 'No description provided.',
+                    'published_date' => $meta->published_date ? $meta->published_date->format('Y-m-d') : $meta->created_at->format('Y-m-d')
+                ];
+            });
         }
     } catch (\Exception $e) {
-        // Table not found or database connection issue - proceed with empty metadata
-        \Illuminate\Support\Facades\Log::warning('Resource metadata table not found: ' . $e->getMessage());
+        \Illuminate\Support\Facades\Log::warning('Failed to fetch resources from DB: ' . $e->getMessage());
     }
-
-    $files = collect(\Illuminate\Support\Facades\Storage::disk('public')->files('resources'))
-        ->filter(function ($file) {
-            return str_ends_with(strtolower($file), '.pdf');
-        })
-        ->map(function ($file) use ($metadata) {
-            $filename = basename($file);
-            $fileMeta = $metadata->get($filename);
-            
-            // Generate a bulletproof URL using our PHP proxy
-            $url = route('view-resource', ['filename' => $filename]);
-
-            return [
-                'name' => $filename,
-                'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
-                'url' => $url,
-                'description' => $fileMeta ? $fileMeta->description : 'No description provided.',
-                'published_date' => $fileMeta ? $fileMeta->published_date : date('Y-m-d', \Illuminate\Support\Facades\Storage::disk('public')->lastModified($file))
-            ];
-        })
-        ->values();
 @endphp
 <div id="landing-page">
     <!-- Hero Section with Carousel -->
@@ -1672,7 +1658,7 @@
     <!-- Floating Educational Resources Widget -->
     <div class="fixed bottom-6 left-6 z-[60] flex flex-col items-start gap-3 pointer-events-none group">
         <!-- Panel -->
-        <div id="resource-panel" class="mb-4 w-72 md:w-80 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 origin-bottom-left scale-0 opacity-0 pointer-events-auto">
+        <div id="resource-panel" class="mb-4 w-80 md:w-96 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 origin-bottom-left scale-0 opacity-0 pointer-events-auto">
             <div class="p-5 border-b border-white/5 bg-gradient-to-r from-blue-600/10 to-emerald-600/10">
                 <div class="flex items-center justify-between mb-1">
                     <h3 class="text-white font-bold text-lg flex items-center gap-2">
@@ -1700,38 +1686,46 @@
                 </div>
             </div>
             
-            <div id="resource-list" class="max-h-[400px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
+            <div id="resource-list" class="max-h-[320px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
                 @foreach($files as $file)
-                    <div class="resource-item group/item relative bg-white/5 hover:bg-blue-600/10 border border-white/10 rounded-xl p-4 transition-all duration-300 cursor-pointer" 
+                    <div class="resource-item group/item relative bg-white/5 hover:bg-blue-600/10 border border-white/10 rounded-xl p-3 transition-all duration-300 cursor-pointer" 
                          onclick="openPdfPreview('{{ $file['url'] }}', {{ json_encode($file['title']) }}, {{ json_encode($file['description']) }}, '{{ date('M d, Y', strtotime($file['published_date'])) }}')">
-                        <div class="flex items-center gap-4">
-                            <!-- Icon -->
-                            <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-white/5 flex-shrink-0 group-hover/item:scale-110 transition-transform">
-                                <span class="text-2xl">📘</span>
+                        <div class="flex items-center gap-3">
+                            <!-- PDF Icon -->
+                            <div class="w-8 h-8 bg-red-500/10 rounded-lg flex items-center justify-center border border-red-500/20 flex-shrink-0 group-hover/item:scale-110 transition-transform">
+                                <svg class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <text x="5" y="18" font-size="6" font-weight="bold" fill="currentColor" style="font-family: Arial, sans-serif;">PDF</text>
+                                </svg>
                             </div>
                             <!-- Content -->
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-white text-sm font-bold truncate mb-1 group-hover/item:text-blue-300 transition-colors uppercase tracking-tight">{{ $file['title'] }}</h4>
-                                <p class="text-gray-400 text-[11px] leading-snug line-clamp-2 mb-2 italic">
-                                    {{ $file['description'] }}
-                                </p>
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1.5 p-1 px-2 bg-blue-500/10 rounded-md border border-blue-500/20 text-blue-400 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-300" title="View Guide">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                    </div>
-                                    <span class="text-[10px] text-gray-500 font-medium">PDF • {{ date('M Y', strtotime($file['published_date'])) }}</span>
+                                <h4 class="text-white text-[13px] font-bold truncate group-hover/item:text-blue-300 transition-colors tracking-tight">{{ $file['title'] }}</h4>
+                                <p class="text-[11px] text-gray-400 line-clamp-1 italic mt-0.5">{{ $file['description'] }}</p>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <span class="text-[9px] text-gray-500 font-medium font-poppins">PDF • {{ date('M d, Y', strtotime($file['published_date'])) }}</span>
+                                    <!-- Hidden metadata for search -->
+                                    <span class="hidden-search-data hidden">{{ $file['description'] }}</span>
                                 </div>
                             </div>
-                            <!-- Simple Download -->
-                            <a href="{{ $file['url'] }}" download onclick="event.stopPropagation();" 
-                               class="p-2 text-gray-500 hover:text-emerald-400 transition-all hover:scale-110" title="Download">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                </svg>
-                            </a>
+                            <!-- Actions -->
+                            <div class="flex items-center gap-1.5">
+                                <!-- View Icon -->
+                                <button class="p-1.5 text-gray-500 hover:text-blue-400 transition-all hover:scale-110" title="View Guide">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                                <!-- Simple Download -->
+                                <a href="{{ $file['url'] }}" download onclick="event.stopPropagation();" 
+                                   class="p-1.5 text-gray-500 hover:text-emerald-400 transition-all hover:scale-110" title="Download">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -1848,8 +1842,11 @@
         let visibleCount = 0;
 
         items.forEach(item => {
-            const title = item.querySelector('h4').textContent.toLowerCase();
-            const desc = item.querySelector('p').textContent.toLowerCase();
+            const titleEl = item.querySelector('h4');
+            const descData = item.querySelector('.hidden-search-data');
+            
+            const title = titleEl ? titleEl.textContent.toLowerCase() : '';
+            const desc = descData ? descData.textContent.toLowerCase() : '';
             
             if (title.includes(query) || desc.includes(query)) {
                 item.classList.remove('hidden');

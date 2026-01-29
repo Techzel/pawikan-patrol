@@ -21,6 +21,13 @@ class PatrolReportController extends Controller
         // If it's not an AJAX request, return the view with initial data
         if (!$request->expectsJson()) {
             // Calculate Analytics
+            $recentReportsRaw = PatrolReport::with('patroller:id,name')
+                ->where('created_at', '>=', now()->subDays(30))
+                ->get()
+                ->groupBy(function($report) {
+                    return $report->created_at->format('Y-m-d');
+                });
+
             $analytics = [
                 'total' => PatrolReport::count(),
                 'pending' => PatrolReport::whereIn('status', ['pending', 'submitted', 'under_review', 'needs_correction'])->count(),
@@ -31,12 +38,18 @@ class PatrolReportController extends Controller
                 'by_type' => PatrolReport::selectRaw('report_type, count(*) as count')->groupBy('report_type')->pluck('count', 'report_type'),
                 'by_priority' => PatrolReport::selectRaw('priority, count(*) as count')->groupBy('priority')->pluck('count', 'priority'),
                 
-                // Recent activity (Last 30 days)
-                'recent_reports' => PatrolReport::where('created_at', '>=', now()->subDays(30))
-                    ->selectRaw('DATE(created_at) as date, count(*) as count')
-                    ->groupBy('date')
-                    ->orderBy('date')
-                    ->pluck('count', 'date'),
+                // Recent activity (Last 30 days) - Fill missing dates with 0 and patroller names
+                'recent_reports' => collect(range(0, 29))->mapWithKeys(function($days) {
+                    $date = now()->subDays($days)->format('Y-m-d');
+                    return [$date => ['count' => 0, 'patrollers' => []]];
+                })->merge(
+                    $recentReportsRaw->map(function($reports) {
+                        return [
+                            'count' => $reports->count(),
+                            'patrollers' => $reports->pluck('patroller.name')->filter()->unique()->values()->all()
+                        ];
+                    })
+                )->sortKeys(),
             ];
 
             $reports = PatrolReport::with(['patroller:id,name', 'photos:id,patrol_report_id', 'verifier:id,name'])

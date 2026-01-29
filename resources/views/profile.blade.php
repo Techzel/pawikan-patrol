@@ -177,6 +177,7 @@ if (!function_exists('getRankBadge')) {
                             // Get rank for each game
                             $memoryRank = auth()->user()->getGameRank('memory-match');
                             $puzzleRank = auth()->user()->getGameRank('puzzle');
+                            $quizRank = auth()->user()->getGameRank('quiz');
                             $findPawikanRank = auth()->user()->getGameRank('find-the-pawikan');
                             
                             $badges = [];
@@ -188,6 +189,16 @@ if (!function_exists('getRankBadge')) {
                                     'gradient' => 'from-purple-500 to-purple-600',
                                     'border' => 'border-purple-500/50',
                                     'bg' => 'bg-purple-500/10'
+                                ];
+                            }
+                            if ($quizRank && $quizRank <= 10) {
+                                $badges[] = [
+                                    'game' => 'Pawikan Quiz',
+                                    'icon' => '🤔',
+                                    'rank' => $quizRank,
+                                    'gradient' => 'from-yellow-500 to-yellow-600',
+                                    'border' => 'border-yellow-500/50',
+                                    'bg' => 'bg-yellow-500/10'
                                 ];
                             }
                             if ($puzzleRank && $puzzleRank <= 10) {
@@ -285,18 +296,23 @@ if (!function_exists('getRankBadge')) {
                                     <span class="text-gray-300 truncate">
                                         @if($activity->game_type === 'quiz')
                                             Turtle Quiz
+                                            ({{ $activity->score * 10 }} pts)
                                         @elseif($activity->game_type === 'word_scramble')
                                             Word Scramble
+                                            ({{ $activity->score }} pts)
                                         @elseif($activity->game_type === 'memory-match')
                                             Memory Match
+                                            ({{ $activity->score }} pts)
                                         @elseif($activity->game_type === 'puzzle')
                                             Pawikan Puzzle
+                                            ({{ $activity->score }} pts)
                                         @elseif($activity->game_type === 'find-the-pawikan')
                                             Find the Pawikan
+                                            ({{ $activity->score }} pts)
                                         @else
                                             {{ ucwords(str_replace(['-', '_'], ' ', $activity->game_type)) }}
+                                            ({{ $activity->score }} pts)
                                         @endif
-                                        ({{ $activity->score }} pts)
                                     </span>
                                     <span class="text-gray-500 ml-auto whitespace-nowrap">{{ $activity->created_at->diffForHumans() }}</span>
                                 </div>
@@ -420,7 +436,7 @@ if (!function_exists('getRankBadge')) {
                         Gaming Dashboard
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         
                         <!-- Memory Match Progress -->
                         <div class="bg-gradient-to-br from-purple-500/10 to-purple-600/10 rounded-xl p-4 border border-purple-500/20">
@@ -544,6 +560,44 @@ if (!function_exists('getRankBadge')) {
                                 Play Now
                             </a>
                         </div>
+
+                        <!-- Quiz Progress -->
+                        <div class="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 rounded-xl p-4 border border-yellow-500/20">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-semibold text-sm">Pawikan Quiz</h4>
+                                        <p class="text-gray-300 text-xs">Test your knowledge</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @php
+                                $quizActivities = auth()->user()->gameActivities()->byGameType('quiz')->completed();
+                                $quizGamesPlayed = $quizActivities->count();
+                                $bestScore = $quizActivities->max('score') ?? 0;
+                            @endphp
+                            
+                            <div class="grid grid-cols-2 gap-2 mb-3">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-white" data-stat="quiz-games">{{ $quizGamesPlayed }}</div>
+                                    <div class="text-xs text-gray-300">Played</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-yellow-400" data-stat="quiz-best-score">{{ $bestScore * 10 }}</div>
+                                    <div class="text-xs text-gray-300">Points</div>
+                                </div>
+                            </div>
+                            
+                            <a href="{{ route('games.quiz') }}" class="block w-full bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 text-center py-2 rounded-lg text-xs font-medium transition-colors">
+                                Play Now
+                            </a>
+                        </div>
                     </div>
 
                     <div class="flex gap-3">
@@ -610,8 +664,8 @@ if (!function_exists('getRankBadge')) {
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-green-400 font-bold text-sm">{{ $session->score }} pts</div>
-                                        <div class="text-gray-300 text-xs">{{ sprintf('%02d:%02d.%02d', floor($session->time_spent / 60), $session->time_spent % 60, ($session->time_spent - floor($session->time_spent)) * 100) }}</div>
+                                        <div class="text-green-400 font-bold text-sm">{{ $session->game_type === 'quiz' ? $session->score * 10 : $session->score }} pts</div>
+                                        <div class="text-gray-300 text-xs">{{ sprintf('%02d:%01d.%02d', floor($session->time_spent / 60), $session->time_spent % 60, ($session->time_spent - floor($session->time_spent)) * 100) }}</div>
                                     </div>
                                 </div>
                             @endforeach
@@ -770,6 +824,11 @@ if (!function_exists('getRankBadge')) {
                     el.textContent = '--';
                 }
             });
+        }
+
+        if (stats.quiz) {
+            document.querySelectorAll('[data-stat="quiz-games"]').forEach(el => el.textContent = stats.quiz.games);
+            document.querySelectorAll('[data-stat="quiz-best-score"]').forEach(el => el.textContent = stats.quiz.best_score || 0);
         }
     };
 

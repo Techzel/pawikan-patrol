@@ -167,30 +167,33 @@
         position: absolute;
         top: 1.5rem;
         left: 1.5rem;
-        padding: 0.625rem 1.25rem;
-        border-radius: 100px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        z-index: 2;
+        padding: 0.5rem 1.25rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        backdrop-filter: blur(8px);
+        z-index: 10;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .badge-nesting { background: rgba(251, 191, 36, 0.25); color: #fbbf24; }
-    .badge-rescue { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
-    .badge-sighting { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
-    .badge-threat { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
-    .badge-patrol { background: rgba(34, 197, 94, 0.25); color: #86efac; }
-    .badge-hazard { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
-    .badge-stranding { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
-    .badge-hatchling { background: rgba(34, 197, 94, 0.25); color: #86efac; }
-    .badge-incident { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
-    .badge-observation { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
-    .badge-maintenance { background: rgba(156, 163, 175, 0.25); color: #d1d5db; }
-    .badge-emergency { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
+    .badge-nesting { background: rgba(245, 158, 11, 0.9); color: white; }
+    .badge-rescue { background: rgba(239, 68, 68, 0.9); color: white; }
+    .badge-sighting { background: rgba(59, 130, 246, 0.9); color: white; }
+    .badge-threat { background: rgba(220, 38, 38, 0.9); color: white; }
+    .badge-patrol { background: rgba(16, 185, 129, 0.9); color: white; }
+    .badge-hazard { background: rgba(185, 28, 28, 0.9); color: white; }
+    .badge-stranding { background: rgba(37, 99, 235, 0.9); color: white; }
+    .badge-hatchling { background: rgba(5, 150, 105, 0.9); color: white; }
+    .badge-incident { background: rgba(225, 29, 72, 0.9); color: white; }
+    .badge-observation { background: rgba(79, 70, 229, 0.9); color: white; }
+    .badge-maintenance { background: rgba(75, 85, 99, 0.9); color: white; }
+    .badge-emergency { background: rgba(153, 27, 27, 0.9); color: white; }
 
     .image-counter {
         position: absolute;
@@ -761,8 +764,15 @@
                         <!-- Location Coordinates Block -->
                         <?php if($report['latitude'] && $report['longitude']): ?>
                             <div class="info-block">
-                                <div class="info-block-title">
-                                    <span>🗺️</span> Coordinates
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="info-block-title !mb-0">
+                                        <span>🗺️</span> Coordinates
+                                    </div>
+                                    <a href="<?php echo e(route('patrol-map')); ?>?lat=<?php echo e($report['latitude']); ?>&lng=<?php echo e($report['longitude']); ?>" 
+                                       class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white rounded-lg text-[10px] font-bold uppercase transition-all border border-emerald-500/20 group">
+                                        <i class="fas fa-external-link-alt group-hover:scale-110 transition-transform"></i>
+                                        View on Map
+                                    </a>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Latitude</span>
@@ -835,8 +845,6 @@
     const cards = document.querySelectorAll('.report-card');
     const progressDots = document.querySelectorAll('.progress-dot');
     const totalSlides = cards.length;
-    let autoSwipeInterval;
-    const AUTO_SWIPE_DELAY = 3000; // 3 seconds
 
     // Touch/Swipe Variables
     let touchStartX = 0;
@@ -848,7 +856,6 @@
         if (totalSlides > 0) {
             showSlide(0);
             setupTouchEvents();
-            startAutoSwipe();
         }
     }
 
@@ -878,9 +885,6 @@
         // Update counter
         currentSlide = index;
         updateCounter();
-        
-        // Reset timer when manually changing slides
-        resetAutoSwipe();
     }
 
     // Navigate to Next Slide
@@ -1070,40 +1074,7 @@
         });
     });
 
-    // Auto Swipe Functions
-    function startAutoSwipe() {
-        if (totalSlides <= 1) return;
-        
-        stopAutoSwipe();
-        autoSwipeInterval = setInterval(() => {
-            nextSlide();
-        }, AUTO_SWIPE_DELAY);
-    }
 
-    function stopAutoSwipe() {
-        if (autoSwipeInterval) {
-            clearInterval(autoSwipeInterval);
-            autoSwipeInterval = null;
-        }
-    }
-
-    function resetAutoSwipe() {
-        stopAutoSwipe();
-        startAutoSwipe();
-    }
-
-    // Stop auto swipe on interaction
-    document.addEventListener('DOMContentLoaded', () => {
-        const carouselContainer = document.querySelector('.carousel-container');
-        if (carouselContainer) {
-            carouselContainer.addEventListener('mouseenter', stopAutoSwipe);
-            carouselContainer.addEventListener('mouseleave', startAutoSwipe);
-            
-            // Also handle touch events to pause
-            carouselContainer.addEventListener('touchstart', stopAutoSwipe, { passive: true });
-            carouselContainer.addEventListener('touchend', startAutoSwipe, { passive: true });
-        }
-    });
 </script>
 <?php $__env->stopSection(); ?>
 

@@ -34,9 +34,9 @@
 
             <!-- Analytics Toggle Button -->
             <?php if(isset($stats)): ?>
-            <button id="analytics-toggle" class="absolute top-4 right-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg p-2 shadow-lg transition-all duration-300 flex items-center group overflow-hidden" style="z-index: 900;" title="Patrol Analytics">
+            <button id="analytics-toggle" class="absolute top-4 right-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg p-2 shadow-lg transition-all duration-300 flex items-center group overflow-hidden hover:scale-105 active:scale-95 shadow-emerald-500/10 hover:shadow-emerald-500/20" style="z-index: 900;" title="Report Summary">
                 <span class="text-lg group-hover:scale-110 transition-transform flex-shrink-0">📊</span>
-                <span class="max-w-0 group-hover:max-w-xs opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out whitespace-nowrap ml-0 group-hover:ml-2 font-bold text-sm">Patrol Analytics</span>
+                <span class="max-w-0 group-hover:max-w-xs opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out whitespace-nowrap ml-0 group-hover:ml-2 font-bold text-sm">Report Summary</span>
             </button>
 
             <!-- Analytics Dashboard Panel -->
@@ -53,7 +53,7 @@
                             <span class="text-xl">📊</span>
                         </div>
                         <div>
-                            <h3 class="text-white font-bold text-lg tracking-tight" style="font-family: 'Poppins', sans-serif;">Report Analytics</h3>
+                            <h3 class="text-white font-bold text-lg tracking-tight" style="font-family: 'Poppins', sans-serif;">Report Summary</h3>
                             <p class="text-emerald-400/80 text-xs font-medium uppercase tracking-wider"><?php echo e($stats['last_updated']); ?></p>
                         </div>
                     </div>
@@ -74,18 +74,18 @@
                             ['label' => 'This Year', 'value' => $stats['yearly'], 'icon' => '📆'],
                             ['label' => 'All Time', 'value' => $stats['total'], 'icon' => '📚']
                         ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $stat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group relative overflow-hidden">
+                        <div class="bg-white/5 hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/40 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-[0_20px_40px_rgba(0,0,0,0.3),0_0_20px_rgba(16,185,129,0.2)] group relative overflow-hidden cursor-pointer">
                             <div class="absolute -right-4 -top-4 text-6xl opacity-5 group-hover:opacity-10 transition-opacity rotate-12 select-none">
                                 <?php echo e($stat['icon']); ?>
 
                             </div>
-                            <div class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1 flex items-center gap-2">
+                            <div class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1 flex items-center gap-2 group-hover:text-emerald-300 transition-colors">
                                 <?php echo e($stat['label']); ?>
 
                             </div>
                             <div class="flex items-baseline gap-1">
-                                <span class="text-3xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent counter-up" data-target="<?php echo e($stat['value']); ?>">0</span>
-                                <span class="text-xs text-emerald-500 font-medium">reports</span>
+                                <span class="text-3xl font-bold bg-gradient-to-r from-white to-slate-400 group-hover:from-white group-hover:to-emerald-400 bg-clip-text text-transparent counter-up transition-all duration-500" data-target="<?php echo e($stat['value']); ?>">0</span>
+                                <span class="text-xs text-emerald-500 font-medium group-hover:text-emerald-400 transition-colors">reports</span>
                             </div>
                         </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -320,7 +320,13 @@
                 
                 <!-- Report Content -->
                 <div id="sidebar-content" class="text-white">
-                    <p class="text-gray-300">Click on a report marker to view details</p>
+                    <div class="flex flex-col items-center justify-center h-64 text-center px-4">
+                        <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                            <span class="text-2xl">🐢</span>
+                        </div>
+                        <p class="text-green-300 font-bold mb-1">Select a Report Marker</p>
+                        <p class="text-gray-400 text-xs">Click on any marker on the map to view the full report details and evidence.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -546,6 +552,17 @@
     transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Custom Tooltip Styling */
+.leaflet-tooltip.custom-tooltip {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.leaflet-tooltip-top:before {
+    border-top-color: rgba(15, 23, 42, 0.95) !important;
+}
 </style>
 
 <script>
@@ -648,9 +665,9 @@
         function createIcon() {
             return L.icon({
                 iconUrl: CUSTOM_MARKER_ICON,
-                iconSize: [72, 72],
-                iconAnchor: [24, 72],
-                popupAnchor: [0, -68],
+                iconSize: [64, 64],
+                iconAnchor: [32, 64],
+                popupAnchor: [0, -60],
                 shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
                 shadowSize: [41, 41]
             });
@@ -805,9 +822,43 @@
                         spiderfyOnMaxZoom: true
                     });
                     
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const targetLat = parseFloat(urlParams.get('lat'));
+                    const targetLng = parseFloat(urlParams.get('lng'));
+                    const isIsolatedView = !isNaN(targetLat) && !isNaN(targetLng);
+
                     validatedReports.forEach(report => {
                         if (report.latitude && report.longitude) {
-                            const marker = L.marker([report.latitude, report.longitude], { icon: createIcon() });
+                            const reportLat = parseFloat(report.latitude);
+                            const reportLng = parseFloat(report.longitude);
+
+                            // If in isolated view, skip reports that don't match the target coordinates
+                            if (isIsolatedView) {
+                                if (Math.abs(reportLat - targetLat) > 0.0001 || 
+                                    Math.abs(reportLng - targetLng) > 0.0001) {
+                                    return;
+                                }
+                            }
+
+                            const marker = L.marker([report.latitude, report.longitude], { 
+                                icon: createIcon(),
+                                title: 'Patrol Report: ' + (report.title || 'Untitled')
+                            });
+                            
+                            // Add a hover tooltip as an indicator
+                            marker.bindTooltip(`
+                                <div class="px-2 py-1 bg-slate-900 text-white rounded shadow-lg border border-emerald-500/30">
+                                    <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Patrol Report</div>
+                                    <div class="text-xs font-bold">${report.title || 'Untitled'}</div>
+                                    <div class="text-[9px] text-gray-400 mt-1 italic">Click to view details</div>
+                                </div>
+                            `, {
+                                direction: 'top',
+                                offset: [0, -60],
+                                opacity: 0.9,
+                                className: 'custom-tooltip'
+                            });
+
                             marker.on('click', () => {
                                 // Close analytics panel when clicking a marker
                                 const analyticsPanel = document.getElementById('analytics-panel');
@@ -828,7 +879,22 @@
                     // Crucial: Only fit bounds after a short delay to ensure DOM is settled
                     setTimeout(() => {
                         mapInstance.invalidateSize();
-                        if (markerCluster.getLayers().length > 0) {
+                        
+                        // Check for lat/lng query parameters
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const lat = parseFloat(urlParams.get('lat'));
+                        const lng = parseFloat(urlParams.get('lng'));
+
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            mapInstance.setView([lat, lng], 18);
+                            
+                            // Try to find the specific report to show in sidebar
+                            const report = validatedReports.find(r => 
+                                Math.abs(parseFloat(r.latitude) - lat) < 0.0001 && 
+                                Math.abs(parseFloat(r.longitude) - lng) < 0.0001
+                            );
+                            if (report) showReportInSidebar(report);
+                        } else if (markerCluster.getLayers().length > 0) {
                             mapInstance.fitBounds(markerCluster.getBounds().pad(0.1));
                         } else {
                             mapInstance.setView(HATCHERY_COORDS, 14);

@@ -736,35 +736,40 @@ class AdminController extends Controller
      */
     public function contentManagement()
     {
-        // Get metadata from database - with failsafe for missing table
-        $metadata = collect();
-        if (\Illuminate\Support\Facades\Schema::hasTable('resource_metadata')) {
-            $metadata = ResourceMetadata::all()->keyBy('filename');
+        $files = collect();
+        
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('resource_metadata')) {
+                $files = ResourceMetadata::latest()->get()->map(function($meta) {
+                    $storagePath = 'resources/' . $meta->filename;
+                    $exists = Storage::disk('public')->exists($storagePath);
+                    
+                    // Fallback size calculation from base64 if physical file is gone
+                    $size = 0;
+                    if ($exists) {
+                        try { $size = Storage::disk('public')->size($storagePath); } catch (\Exception $e) {}
+                    }
+                    
+                    if ($size === 0 && $meta->base64_data) {
+                        // Length of base64 string * 3/4 is roughly the binary size
+                        $size = (int)(strlen($meta->base64_data) * 0.75);
+                    }
+
+                    return [
+                        'path' => $storagePath,
+                        'name' => $meta->filename,
+                        'last_modified' => $exists ? Storage::disk('public')->lastModified($storagePath) : $meta->updated_at->timestamp,
+                        'size' => $size,
+                        'url' => route('view-resource', ['filename' => $meta->filename]),
+                        'title' => $meta->title ?: $meta->filename,
+                        'description' => $meta->description ?: 'No description provided.',
+                        'published_date' => $meta->published_date ? (is_string($meta->published_date) ? $meta->published_date : $meta->published_date->format('Y-m-d')) : $meta->created_at->format('Y-m-d')
+                    ];
+                });
+            }
+        } catch (\Exception $e) {
+            Log::error('Content Management error: ' . $e->getMessage());
         }
-
-        $files = collect(Storage::disk('public')->files('resources'))
-            ->filter(function ($file) {
-                return str_ends_with(strtolower($file), '.pdf');
-            })
-            ->map(function ($file) use ($metadata) {
-                $filename = basename($file);
-                $fileMeta = $metadata->get($filename);
-                
-                // Use our bulletproof PHP proxy for admin previews as well
-                $url = route('view-resource', ['filename' => $filename]);
-
-                return [
-                    'path' => $file,
-                    'name' => $filename,
-                    'last_modified' => Storage::disk('public')->lastModified($file),
-                    'size' => Storage::disk('public')->size($file),
-                    'url' => $url,
-                    'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
-                    'description' => $fileMeta ? $fileMeta->description : 'No description provided.',
-                    'published_date' => $fileMeta ? $fileMeta->published_date : date('Y-m-d', Storage::disk('public')->lastModified($file))
-                ];
-            })
-            ->values();
         
         return view('admin.content', compact('files'));
     }
@@ -797,13 +802,18 @@ class AdminController extends Controller
                 // Store in storage/app/public/resources
                 $path = $file->storeAs('resources', $filename, 'public');
 
+                // Convert to Base64 for database persistence (ephemeral storage fix)
+                $fileContent = file_get_contents($file->getRealPath());
+                $base64Data = base64_encode($fileContent);
+                
                 // Save/Update Metadata
                 ResourceMetadata::updateOrCreate(
                     ['filename' => $filename],
                     [
                         'title' => $request->title ?? ($request->custom_name ?? $file->getClientOriginalName()),
                         'description' => $request->description ?? 'No description provided.',
-                        'published_date' => $request->published_date ?? date('Y-m-d')
+                        'published_date' => $request->published_date ?? date('Y-m-d'),
+                        'base64_data' => $base64Data
                     ]
                 );
                 
@@ -880,7 +890,18 @@ class AdminController extends Controller
      */
     public function viewPdf($filename)
     {
-        // 1. Try public/resources folder first (for committed files)
+        // 1. Try Database first (for persistence in ephemeral environments)
+        $metadata = ResourceMetadata::where('filename', $filename)->first();
+        if ($metadata && $metadata->base64_data) {
+            $pdfContent = base64_decode($metadata->base64_data);
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+                'Cache-Control' => 'public, max-age=3600',
+            ]);
+        }
+
+        // 2. Try public/resources folder (for committed files)
         $publicPath = public_path('resources/' . $filename);
         if (file_exists($publicPath)) {
             return response()->file($publicPath, [
@@ -889,7 +910,7 @@ class AdminController extends Controller
             ]);
         }
 
-        // 2. Try storage/resources folder (for uploaded files)
+        // 3. Try storage/resources folder (for uploaded files)
         $storagePath = 'resources/' . $filename;
         if (Storage::disk('public')->exists($storagePath)) {
             return response()->stream(function () use ($storagePath) {
@@ -901,17 +922,6 @@ class AdminController extends Controller
                 'Content-Disposition' => 'inline; filename="' . $filename . '"',
                 'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
             ]);
-        }
-
-        // 3. Last resort - check /tmp (Vercel specific temp storage)
-        if (env('VERCEL') === true) {
-            $tmpPath = '/tmp/storage/app/public/resources/' . $filename;
-            if (file_exists($tmpPath)) {
-                return response()->file($tmpPath, [
-                    'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'inline; filename="' . $filename . '"'
-                ]);
-            }
         }
 
         abort(404, "Requested resource '{$filename}' not found on server.");
