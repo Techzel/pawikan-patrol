@@ -14,10 +14,10 @@ The "dist" error persists because Vercel's Project Settings in the dashboard are
 3. **Go to "General" → "Build & Development Settings"**
 
 4. **Configure as follows:**
-   - **Framework Preset**: Select "Other" (NOT Next.js, Vite, etc.)
-   - **Build Command**: Leave EMPTY or set to: `echo "No build needed"`
-   - **Output Directory**: Set to: `public`
-   - **Install Command**: Leave EMPTY or set to: `echo "No install needed"`
+   - **Framework Preset**: Select "Other" (NOT Laravel, Next.js, etc.)
+   - **Build Command**: Leave EMPTY
+   - **Output Directory**: Leave EMPTY (Keep default, do NOT set to public here)
+   - **Install Command**: Leave EMPTY
    - **Development Command**: Leave EMPTY
 
 5. **Click "Save"**

@@ -178,7 +178,9 @@
             return [
                 'name' => $filename,
                 'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
-                'url' => \Illuminate\Support\Facades\Storage::url($file),
+                'url' => file_exists(public_path('resources/' . $filename)) 
+                    ? asset('resources/' . $filename) 
+                    : \Illuminate\Support\Facades\Storage::url($file),
                 'description' => $fileMeta ? $fileMeta->description : 'No description provided.',
                 'published_date' => $fileMeta ? $fileMeta->published_date : date('Y-m-d', \Illuminate\Support\Facades\Storage::disk('public')->lastModified($file))
             ];
