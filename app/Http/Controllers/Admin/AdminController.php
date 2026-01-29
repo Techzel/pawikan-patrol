@@ -736,8 +736,11 @@ class AdminController extends Controller
      */
     public function contentManagement()
     {
-        // Get metadata from database
-        $metadata = ResourceMetadata::all()->keyBy('filename');
+        // Get metadata from database - with failsafe for missing table
+        $metadata = collect();
+        if (\Illuminate\Support\Facades\Schema::hasTable('resource_metadata')) {
+            $metadata = ResourceMetadata::all()->keyBy('filename');
+        }
 
         $files = collect(Storage::disk('public')->files('resources'))
             ->filter(function ($file) {
