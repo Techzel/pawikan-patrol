@@ -83,6 +83,26 @@
             </div>
         </div>
 
+        <!-- Activity Trend Chart -->
+        <div class="mb-8 glass-dark border border-white/10 rounded-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider cinzel-text">Patrol Activity Trend</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Frequency of reports over the last 30 days</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-ocean-500 shadow-[0_0_8px_rgba(20,184,166,0.6)]"></span>
+                        <span class="text-[10px] text-gray-400 uppercase tracking-tighter font-bold">Daily Reports</span>
+                    </div>
+                    <i class="fas fa-chart-area text-ocean-400 opacity-50"></i>
+                </div>
+            </div>
+            <div class="p-6" style="height: 300px; position: relative;">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
         <!-- Detailed Analytics Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- Report Type Distribution -->
@@ -847,4 +867,106 @@ function rejectReport(reportId) {
 }
 
 </script>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('turbo:load', function() {
+        if (!document.getElementById('activityChart')) return;
+
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        
+        // Prepare data from PHP
+        const rawData = {!! json_encode($analytics['recent_reports'] ?? []) !!};
+        const labels = Object.keys(rawData).map(date => {
+            const d = new Date(date);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        });
+        const values = Object.values(rawData);
+
+        // Create Gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(20, 184, 166, 0.4)');
+        gradient.addColorStop(1, 'rgba(20, 184, 166, 0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Daily Reports',
+                    data: values,
+                    borderColor: '#14b8a6',
+                    borderWidth: 3,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#14b8a6',
+                    pointBorderColor: 'rgba(255, 255, 255, 0.2)',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#14b8a6',
+                    pointHoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleFont: { family: 'Cinzel', size: 12 },
+                        bodyFont: { family: 'Poppins', size: 13 },
+                        padding: 12,
+                        cornerRadius: 10,
+                        displayColors: false,
+                        borderColor: 'rgba(20, 184, 166, 0.3)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' Reports Submitted';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            font: { size: 10, family: 'Poppins' },
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            font: { size: 10, family: 'Poppins' },
+                            stepSize: 1,
+                            precision: 0
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+    });
+</script>
+@endpush
 @endsection
