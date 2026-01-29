@@ -758,7 +758,7 @@
                 <div id="feedback-panel" class="explanation-panel">
                     <div id="feedback-icon-container"></div>
                     <h4 id="feedback-title" class="explanation-title">Did you know?</h4>
-                    <p id="fact-text" class="explanation-text">Explanation goes here...</p>
+                    <div id="fact-text" class="explanation-text">Explanation goes here...</div>
                     <button onclick="nextStep()" class="next-btn">Continue →</button>
                 </div>
             </div>
@@ -809,11 +809,11 @@
 <script>
     // --- DATABASE ---
     const QUESTIONS = [
-        { q: "How many sea turtle species are found in Dahican?", o: ["One", "Two", "Three", "Five"], a: 2, e: "Dahican hosts the Green Sea Turtle, Hawksbill, and Olive Ridley." },
+        { q: "How many sea turtle species are found in the Philippines?", o: ["Two", "Three", "Five", "Seven"], a: 2, e: "The Philippines is home to 5 of the 7 sea turtle species in the world." },
         { q: "Which turtle grazes on seagrass?", o: ["Green Sea Turtle", "Hawksbill", "Olive Ridley", "Leatherback"], a: 0, e: "Green Sea Turtles are vegetarians that love seagrass!" },
         { q: "Which species has a hawk-like beak?", o: ["Green Sea Turtle", "Hawksbill", "Loggerhead", "Flatback"], a: 1, e: "The Hawksbill is named for its sharp, curved beak." },
         { q: "Which species is famous for 'Arribada'?", o: ["Green Sea Turtle", "Hawksbill", "Olive Ridley", "Leatherback"], a: 2, e: "Olive Ridleys nest in massive synchronized groups!" },
-        { q: "When is the nesting season in Dahican?", o: ["Jan-Jun", "Nov-March", "Aug-Dec", "All Year"], a: 1, e: "The cooler months of November to March are prime nesting time." },
+        { q: "What is the primary reason sea turtles come ashore?", o: ["To sunbathe", "To lay eggs", "To find food", "To rest"], a: 1, e: "Female sea turtles come ashore only to lay their eggs in the sand." },
         { q: "How long is the incubation period?", o: ["20-30 days", "45-70 days", "90-100 days", "10-15 days"], a: 1, e: "Eggs incubate in the sand for about 2 months." },
         { q: "What determines a hatchling's gender?", o: ["Genetics", "Sand Temp", "Humidity", "Tides"], a: 1, e: "Hot chicks, cool dudes! Temperature controls sex." },
         { q: "When do hatchlings usually emerge?", o: ["Noon", "Morning", "Night", "Rain"], a: 2, e: "They emerge at night to avoid heat and predators." },
@@ -821,8 +821,8 @@
         { q: "How long do 'Lost Years' last?", o: ["1-10 Years", "20-30 Years", "1 Month", "6 Months"], a: 0, e: "This drifting phase can last up to a decade." },
         { q: "Age of sea turtle adulthood?", o: ["5-10 yrs", "15-20 yrs", "20-50 yrs", "100 yrs"], a: 2, e: "They take a very long time to grow up!" },
         { q: "What looks like a jellyfish to turtles?", o: ["Seaweed", "Plastic Bags", "Fish", "Coral"], a: 1, e: "Plastic bags floating in water look exactly like jellies." },
-        { q: "Where is the sanctuary located?", o: ["Manila", "Davao", "Dahican, Mati", "Palawan"], a: 2, e: "It represents the pride of Mati City, Davao Oriental." },
-        { q: "Hatching success in protected nests?", o: ["20%", "40%", "80-90%", "100%"], a: 2, e: "Protection boosts survival rates massively!" },
+        { q: "How do sea turtles navigate back to their birth beach?", o: ["Using landmarks", "Memory of smells", "Magnetic Field", "Following others"], a: 2, e: "Sea turtles use the Earth's magnetic field like a built-in compass." },
+        { q: "Hatching success in protected nests?", o: ["20%", "40%", "80-90%", "100%"], a: 2, e: "Protection from predators and poachers boosts survival rates massively!" },
         { q: "Hatchlings per nest?", o: ["10-20", "50-200", "500+", "2-5"], a: 1, e: "A single nest can hold up to 200 eggs." }
     ];
 
@@ -1038,9 +1038,22 @@
         // Show feedback
         const panel = document.getElementById('feedback-panel');
         const iconContainer = document.getElementById('feedback-icon-container');
+        const factTextEl = document.getElementById('fact-text');
+        
         iconContainer.innerHTML = `<div class="explanation-icon ${ok ? 'correct' : 'wrong'}">${ok ? '✨' : '💡'}</div>`;
-        document.getElementById('feedback-title').textContent = ok ? 'Correct!' : 'Did you know?';
-        document.getElementById('fact-text').textContent = q.e;
+        document.getElementById('feedback-title').textContent = ok ? 'Correct!' : 'Not quite right!';
+        
+        if (ok) {
+            factTextEl.textContent = q.e;
+        } else {
+            const correctOptionText = q.o[q.a];
+            factTextEl.innerHTML = `<div class="mb-4 p-3 bg-white/5 rounded-lg border-l-4 border-emerald-500">
+                <span class="block text-gray-400 text-xs uppercase tracking-wider mb-1">Correct Answer</span>
+                <span class="text-white font-bold text-base font-poppins">${correctOptionText}</span>
+            </div>
+            <div class="text-gray-300">${q.e}</div>`;
+        }
+        
         panel.classList.add('show');
     }
 

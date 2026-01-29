@@ -18,20 +18,7 @@ Route::get('/', function () {
 // PDF Proxy Route - Critical for cross-environment PDF viewing
 Route::get('/view-resource/{filename}', [AdminController::class, 'viewPdf'])->name('view-resource');
 
-// Helper for initial database setup on Vercel
-Route::get('/migrate-db', function () {
-    try {
-        // Run fresh migration to fix any schema inconsistencies
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
-            '--force' => true,
-            '--seed' => true // Optional: seed initial data if you have seeders
-        ]);
-        return 'Database successfully RESET and MIGRATED! <br>' . nl2br(\Illuminate\Support\Facades\Artisan::output());
-    } catch (\Exception $e) {
-        return 'Migration failed: ' . $e->getMessage();
-    }
-});
-
+// 3D Explorer
 Route::get('/3d-explorer', function () {
     return view('3d-explorer');
 });
@@ -105,15 +92,7 @@ Route::get('/games/find-the-pawikan', function () {
     return view('games.find-the-pawikan', compact('progress'));
 })->name('games.find-the-pawikan');
 
-// Test route for debugging game activity
-Route::get('/test-game-activity', function () {
-    return view('test-game-activity');
-})->name('test.game-activity');
-
-// Diagnostic page
-Route::get('/diagnostic', function () {
-    return view('diagnostic');
-})->name('diagnostic');
+// Removed diagnostic and test routes for cleanliness
 
 
 
@@ -137,10 +116,6 @@ Route::middleware('guest')->group(function () {
     })->name('register.form');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     
-    // Test route for register form (can be removed if not needed)
-    Route::get('/test-register', function () {
-        return redirect('/#register');
-    })->name('test.register');
 });
 
 // API route removed - now handled by PatrolMapController
@@ -188,10 +163,10 @@ Route::middleware('auth')->group(function () {
                 'email' => $user->email,
                 'username' => $user->username ?? 'N/A',
                 'role' => $user->role,
-                'status' => $user->status ?? 'active',
+                'status' => $user->is_active ? 'active' : 'inactive',
                 'verification_status' => $user->verification_status,
-                'verification_notes' => $user->verification_notes,
-                'verified_at' => $user->verified_at ? $user->verified_at->format('M j, Y g:i A') : null,
+                'verification_notes' => $user->verification ? $user->verification->admin_notes : null,
+                'verified_at' => $user->verification && $user->verification->verified_at ? $user->verification->verified_at->format('M j, Y g:i A') : null,
                 'created_at' => $user->created_at->format('M j, Y g:i A'),
                 'updated_at' => $user->updated_at->format('M j, Y g:i A')
             ]);
@@ -264,15 +239,15 @@ Route::middleware('auth')->group(function () {
             Route::post('/bulk-deactivate', [AdminController::class, 'bulkDeactivatePatrollers'])->name('admin.patrollers.bulk-deactivate');
             Route::post('/bulk-delete', [AdminController::class, 'bulkDeletePatrollers'])->name('admin.patrollers.bulk-delete');
             
-            // User verification management (Legacy)
-            Route::get('/verification', [AdminController::class, 'verificationDashboard'])->name('admin.verification.index');
-            Route::get('/verification/pending', [AdminController::class, 'pendingVerifications'])->name('admin.verification.pending');
-            Route::put('/verification/{id}/approve', [AdminController::class, 'approveVerification'])->name('admin.verification.approve');
-            Route::put('/verification/{id}/reject', [AdminController::class, 'rejectVerification'])->name('admin.verification.reject');
-            Route::post('/verification/bulk-approve', [AdminController::class, 'bulkApproveVerifications'])->name('admin.verification.bulk-approve');
-            Route::post('/verification/bulk-reject', [AdminController::class, 'bulkRejectVerifications'])->name('admin.verification.bulk-reject');
+            // User Verification Management (Unified)
+            Route::get('/verification', [UserVerificationController::class, 'dashboard'])->name('admin.verification.index');
+            Route::get('/verification/pending', [UserVerificationController::class, 'pending'])->name('admin.verification.pending');
+            Route::match(['POST', 'PUT'], '/verification/{id}/approve', [UserVerificationController::class, 'approve'])->name('admin.verification.approve');
+            Route::match(['POST', 'PUT'], '/verification/{id}/reject', [UserVerificationController::class, 'reject'])->name('admin.verification.reject');
+            Route::match(['POST', 'PUT'], '/verification/bulk-approve', [UserVerificationController::class, 'bulkApprove'])->name('admin.verification.bulk-approve');
+            Route::match(['POST', 'PUT'], '/verification/bulk-reject', [UserVerificationController::class, 'bulkReject'])->name('admin.verification.bulk-reject');
             
-            // New User Verification System
+            // New User Verification System (Extended API)
             Route::prefix('verification-new')->group(function () {
                 Route::get('/dashboard', [UserVerificationController::class, 'dashboard'])->name('admin.verification-new.dashboard');
                 Route::get('/pending', [UserVerificationController::class, 'pending'])->name('admin.verification-new.pending');
@@ -307,15 +282,6 @@ Route::middleware('auth')->group(function () {
                 ->name('admin.patrol-reports.bulk-status-update');
         });
 
-        // Ecological Submissions Review
-        Route::prefix('submissions')->group(function () {
-            Route::get('/', [AdminController::class, 'submissions'])->name('admin.submissions');
-            Route::get('/pending', [AdminController::class, 'submissions'])->name('admin.submissions.pending');
-            Route::get('/approved', [AdminController::class, 'submissions'])->name('admin.submissions.approved');
-            Route::get('/rejected', [AdminController::class, 'submissions'])->name('admin.submissions.rejected');
-            Route::put('/{id}/status', [AdminController::class, 'updateSubmissionStatus'])->name('admin.submissions.update-status');
-        });
-        
         // Content Management
         Route::get('/content', [AdminController::class, 'contentManagement'])->name('admin.content.manage');
         Route::post('/content/storytelling/upload', [AdminController::class, 'uploadStorytelling'])->name('admin.content.storytelling.upload');

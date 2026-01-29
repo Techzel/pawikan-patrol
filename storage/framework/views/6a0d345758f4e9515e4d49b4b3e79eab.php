@@ -252,7 +252,7 @@ if (!function_exists('getRankBadge')) {
                             </div>
                         <?php endif; ?>                        
                         <div class="flex justify-center gap-2 mb-3">
-                            <?php echo auth()->user()->getVerificationStatusBadge(); ?>
+                            <?php echo auth()->user()->getVerificationBadge(); ?>
 
                             <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs border border-green-500/30">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">

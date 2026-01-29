@@ -215,81 +215,127 @@
 
                 <!-- Review History -->
                 <?php if($patrolReport->reviewed_at): ?>
-                <div class="glass-dark rounded-xl p-6 border border-ocean-500/20 mt-12">
-                    <h3 class="text-lg font-bold text-white mb-4 cinzel-heading">
-                        <i class="fas fa-history mr-2 text-purple-400"></i>Review History
-                    </h3>
-                            <div class="space-y-3">
-                                <div>
-                                    <div class="text-sm text-gray-400 cinzel-text">Last Reviewed By</div>
-                                    <div class="text-white font-medium cinzel-text"><?php echo e($patrolReport->reviewer ? $patrolReport->reviewer->name : 'N/A'); ?></div>
-                                </div>
-                                <div>
-                                    <div class="text-sm text-gray-400 cinzel-text">Review Date</div>
-                                    <div class="text-white font-medium cinzel-text"><?php echo e($patrolReport->reviewed_at ? $patrolReport->reviewed_at->format('M d, Y \a\t g:i A') : 'N/A'); ?></div>
-                                </div>
-                                <div>
-                                    <div class="text-sm text-gray-400 cinzel-text">Time Since Review</div>
-                                    <div class="text-gray-300 cinzel-text"><?php echo e($patrolReport->reviewed_at ? $patrolReport->reviewed_at->diffForHumans() : 'Never reviewed'); ?></div>
-                                </div>
+                    <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
+                        <h3 class="text-lg font-bold text-white mb-4 cinzel-heading">
+                            <i class="fas fa-history mr-2 text-purple-400"></i>Review History
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="text-sm text-gray-400 cinzel-text">Last Reviewed By</div>
+                                <div class="text-white font-medium cinzel-text"><?php echo e($patrolReport->reviewer ? $patrolReport->reviewer->name : ( $patrolReport->verifier ? $patrolReport->verifier->name : 'N/A' )); ?></div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400 cinzel-text">Review Date</div>
+                                <div class="text-white font-medium cinzel-text"><?php echo e($patrolReport->reviewed_at ? $patrolReport->reviewed_at->format('M d, Y \a\t g:i A') : 'N/A'); ?></div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400 cinzel-text">Time Since Review</div>
+                                <div class="text-gray-300 cinzel-text"><?php echo e($patrolReport->reviewed_at ? $patrolReport->reviewed_at->diffForHumans() : 'Never reviewed'); ?></div>
                             </div>
                         </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Report Actions -->
+                <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
+                    <h3 class="text-lg font-bold text-white mb-4 cinzel-heading">
+                        <i class="fas fa-tasks mr-2 text-ocean-400"></i>Report Actions
+                    </h3>
+                    <div class="space-y-3">
+                        <?php if($patrolReport->status == 'pending' || $patrolReport->status == 'submitted' || $patrolReport->status == 'under_review' || $patrolReport->status == 'pending_review' || $patrolReport->status == 'reviewing'): ?>
+                            <div class="grid grid-cols-1 gap-3">
+                                <button onclick="validateReport('validated', 'validate')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-4 rounded-lg font-medium transition-all cinzel-text text-sm shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2">
+                                    <i class="fas fa-check-circle text-lg"></i> Validate & Accept
+                                </button>
+
+                                <button onclick="validateReport('rejected', 'validate')" class="w-full bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white py-3 px-4 rounded-lg font-medium transition-all cinzel-text text-sm border border-red-500/30 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2">
+                                    <i class="fas fa-times-circle text-lg"></i> Reject Report
+                                </button>
+
+                                <button onclick="validateReport('under_review', 'validate')" class="w-full bg-ocean-600/20 hover:bg-ocean-600 text-ocean-400 hover:text-white py-3 px-4 rounded-lg font-medium transition-all cinzel-text text-sm border border-ocean-500/30 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2">
+                                    <i class="fas fa-search text-lg"></i> Mark Under Review
+                                </button>
+                            </div>
+                        <?php else: ?>
+                            <div class="p-4 rounded-lg <?php if($patrolReport->status == 'accepted' || $patrolReport->status == 'validated' || $patrolReport->status == 'verified'): ?> bg-emerald-500/10 border border-emerald-500/30 <?php else: ?> bg-red-500/10 border border-red-500/30 <?php endif; ?>">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas <?php if($patrolReport->status == 'accepted' || $patrolReport->status == 'validated' || $patrolReport->status == 'verified'): ?> fa-check-circle text-emerald-400 <?php else: ?> fa-times-circle text-red-400 <?php endif; ?>"></i>
+                                    <div>
+                                        <h4 class="<?php if($patrolReport->status == 'accepted' || $patrolReport->status == 'validated' || $patrolReport->status == 'verified'): ?> text-emerald-300 <?php else: ?> text-red-300 <?php endif; ?> font-medium cinzel-text">
+                                            Report <?php echo e(ucfirst(str_replace('_', ' ', $patrolReport->status))); ?>
+
+                                        </h4>
+                                        <p class="<?php if($patrolReport->status == 'accepted' || $patrolReport->status == 'validated' || $patrolReport->status == 'verified'): ?> text-emerald-200/70 <?php else: ?> text-red-200/70 <?php endif; ?> text-xs cinzel-text mt-1">
+                                            This report has already been processed.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
 
-                    <div class="space-y-3">
-                        <?php if($patrolReport->status == 'pending_review' || $patrolReport->status == 'reviewing'): ?>
-                            <div class="grid grid-cols-1 gap-3">
-                                <button onclick="validateReport('accepted', 'validate')" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors cinzel-text text-sm shadow-lg hover:shadow-xl transform hover:scale-105">
-                                    <i class="fas fa-check-circle mr-2 text-lg"></i>✓ Validate & Accept Report
-                                </button>
+                <!-- Danger Zone -->
+                <div class="glass-dark rounded-xl p-6 border border-red-500/20">
+                    <h3 class="text-lg font-bold text-red-400 mb-4 cinzel-heading">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Danger Zone
+                    </h3>
+                    <button onclick="handleDelete()" class="w-full bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white py-3 px-4 rounded-lg font-medium transition-all cinzel-text text-sm border border-red-500/20 group flex items-center justify-center gap-2">
+                        <i class="fas fa-trash-alt group-hover:animate-pulse"></i> Delete Report Permanently
+                    </button>
+                    <p class="text-[10px] text-red-500/60 mt-3 cinzel-text italic text-center">
+                        * Irreversible action. All data and photos will be lost.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
 
-                                <button onclick="validateReport('reject', 'validate')" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-lg font-medium transition-colors cinzel-text text-sm shadow-lg hover:shadow-xl transform hover:scale-105">
-                                    <i class="fas fa-times-circle mr-2 text-lg"></i>✗ Validate & Reject Report
-                                </button>
+    <!-- Delete Form -->
+    <form id="deleteForm" action="<?php echo e(route('admin.patrol-reports.destroy', $patrolReport)); ?>" method="POST" style="display: none;">
+        <?php echo csrf_field(); ?>
+        <?php echo method_field('DELETE'); ?>
+    </form>
 
-                                <button onclick="validateReport('reviewing', 'validate')" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-3 px-4 rounded-lg font-medium transition-colors cinzel-text text-sm shadow-lg hover:shadow-xl transform hover:scale-105">
-                                    <i class="fas fa-search mr-2 text-lg"></i>🔍 Mark as Under Review
-                                </button>
-                            </div>
+    <!-- Status Update Form -->
+    <form id="statusForm" action="<?php echo e(route('admin.patrol-reports.update-status', $patrolReport)); ?>" method="POST" style="display: none;">
+        <?php echo csrf_field(); ?>
+        <?php echo method_field('PATCH'); ?>
+        <input type="hidden" name="status" id="status">
+    </form>
 
-                            <div class="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                                <div class="flex items-start space-x-3">
-                                    <i class="fas fa-info-circle text-blue-400 mt-1"></i>
-                                    <div>
-                                        <h4 class="text-blue-300 font-medium cinzel-text">Validation Guidelines</h4>
-                                        <ul class="text-blue-200 text-sm cinzel-text mt-2 space-y-1">
-                                            <li>• Check report completeness and accuracy</li>
-                                            <li>• Verify location and coordinates</li>
-                                            <li>• Review attached images and evidence</li>
-                                            <li>• Ensure report follows submission guidelines</li>
-                                        </ul>
-                                    </div>
-                                </div>
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 z-[9999] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeConfirmModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-ocean-500/30">
+                <div class="px-6 pt-6 pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div id="modalIconContainer" class="mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-green-500/20 sm:mx-0 sm:h-12 sm:w-12">
+                            <svg id="modalIcon" class="h-7 w-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
+                            <h3 class="text-xl font-bold text-white mb-2 cinzel-heading" id="modal-title">Confirm Action</h3>
+                            <div class="mt-2 text-sm text-gray-300 cinzel-text" id="modalMessage">
+                                Are you sure you want to proceed?
                             </div>
-                        <?php elseif($patrolReport->status == 'accepted'): ?>
-                            <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check-circle text-green-400"></i>
-                                    <div>
-                                        <h4 class="text-green-300 font-medium cinzel-text">Report Validated</h4>
-                                        <p class="text-green-200 text-sm cinzel-text">This report has been successfully validated and accepted.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php elseif($patrolReport->status == 'reject'): ?>
-                            <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-times-circle text-red-400"></i>
-                                    <div>
-                                        <h4 class="text-red-300 font-medium cinzel-text">Report Rejected</h4>
-                                        <p class="text-red-200 text-sm cinzel-text">This report has been reviewed and rejected during validation.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
+                </div>
+                <div class="bg-gray-800/50 px-6 py-4 sm:flex sm:flex-row-reverse gap-3">
+                    <button type="button" id="confirmButton" onclick="confirmModalAction()" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-base font-medium text-white hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200 transform hover:scale-105 cinzel-text">
+                        OK
+                    </button>
+                    <button type="button" onclick="closeConfirmModal()" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-600 shadow-sm px-6 py-3 bg-gray-700 text-base font-medium text-gray-200 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:w-auto sm:text-sm transition-all duration-200 cinzel-text">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
                 </div>
 
 
@@ -324,57 +370,71 @@
 </div>
 
 <script>
-// Quick status update function
-function quickStatusUpdate(status) {
-    const statusText = {
-        'reviewing': 'start reviewing',
-        'accepted': 'accept',
-        'reject': 'reject',
-        'resolved': 'mark as resolved',
-        'closed': 'close'
-    }[status] || status.replace('_', ' ');
+let confirmModalCallback = null;
 
-    if (!confirm(`Are you sure you want to ${statusText} this report?`)) {
-        return;
-    }
-
-    // Update form and submit
-    document.getElementById('status').value = status;
-    document.getElementById('statusForm').submit();
+function showConfirmModal(message, title = 'Confirm Action', type = 'success') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirmModal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalIconContainer = document.getElementById('modalIconContainer');
+        const confirmButton = document.getElementById('confirmButton');
+        
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        
+        if (type === 'danger') {
+            modalIconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-red-500/20 sm:mx-0 sm:h-12 sm:w-12';
+            modalIcon.className = 'h-7 w-7 text-red-400';
+            modalIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+            confirmButton.className = 'w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-base font-medium text-white hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200 transform hover:scale-105 cinzel-text';
+        } else if (type === 'warning') {
+            modalIconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-yellow-500/20 sm:mx-0 sm:h-12 sm:w-12';
+            modalIcon.className = 'h-7 w-7 text-yellow-400';
+            modalIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>';
+            confirmButton.className = 'w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 text-base font-medium text-white hover:from-yellow-700 hover:to-yellow-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200 transform hover:scale-105 cinzel-text';
+        } else {
+            modalIconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-green-500/20 sm:mx-0 sm:h-12 sm:w-12';
+            modalIcon.className = 'h-7 w-7 text-green-400';
+            modalIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+            confirmButton.className = 'w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-base font-medium text-white hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200 transform hover:scale-105 cinzel-text';
+        }
+        
+        confirmModalCallback = resolve;
+        modal.classList.remove('hidden');
+    });
 }
 
-// Validation report function
-function validateReport(status, action) {
-    const validationMessages = {
-        'accepted': {
-            title: 'Validate & Accept Report',
-            message: 'Are you sure you want to validate and accept this report? This will mark it as officially approved.',
-            confirmText: 'Yes, Validate & Accept'
-        },
-        'reject': {
-            title: 'Validate & Reject Report',
-            message: 'Are you sure you want to validate and reject this report? Please ensure you have provided proper reasoning.',
-            confirmText: 'Yes, Validate & Reject'
-        },
-        'reviewing': {
-            title: 'Mark as Under Review',
-            message: 'Are you sure you want to mark this report as under review for further validation?',
-            confirmText: 'Yes, Mark as Under Review'
-        }
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+    if (confirmModalCallback) { confirmModalCallback(false); confirmModalCallback = null; }
+}
+
+function confirmModalAction() {
+    document.getElementById('confirmModal').classList.add('hidden');
+    if (confirmModalCallback) { confirmModalCallback(true); confirmModalCallback = null; }
+}
+
+async function validateReport(status, action) {
+    const messages = {
+        'validated': { title: 'Validate & Accept', message: 'Mark this report as officially validated? This action is public and will appear on the conservation map.', type: 'success' },
+        'rejected': { title: 'Reject Report', message: 'Are you sure you want to reject this report? This will notify the patroller.', type: 'danger' },
+        'under_review': { title: 'Mark Under Review', message: 'Set this report to "Under Review" status for further investigation?', type: 'warning' }
     };
 
-    const config = validationMessages[status];
-
-    // Create custom confirmation dialog
-    const confirmed = confirm(`${config.title}\n\n${config.message}\n\nClick OK to proceed with validation.`);
+    const config = messages[status] || { title: 'Confirm Status Change', message: 'Are you sure you want to change the status of this report?', type: 'warning' };
     
-    if (!confirmed) {
-        return;
+    if (await showConfirmModal(config.message, config.title, config.type)) {
+        document.getElementById('status').value = status;
+        document.getElementById('statusForm').submit();
     }
+}
 
-    // Update form and submit
-    document.getElementById('status').value = status;
-    document.getElementById('statusForm').submit();
+async function handleDelete() {
+    if (await showConfirmModal('CRITICAL: This will permanently delete the report and all its associated data (photos, history, etc.). This action CANNOT be undone.', 'Delete Report Permanently?', 'danger')) {
+        document.getElementById('deleteForm').submit();
+    }
 }
 
 // Image modal functions

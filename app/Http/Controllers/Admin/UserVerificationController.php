@@ -15,80 +15,98 @@ class UserVerificationController extends Controller
      */
     public function dashboard()
     {
-        // Get counts for all verification statuses
-        $totalUsers = User::count();
-        $pendingCount = User::where('verification_status', 'pending')->count();
-        $verifiedCount = User::where('verification_status', 'verified')->count();
-        $rejectedCount = User::where('verification_status', 'rejected')->count();
-        $underReviewCount = User::where('verification_status', 'under_review')->count();
-        $requiresResubmissionCount = User::where('verification_status', 'requires_resubmission')->count();
+        // Get counts for all verification statuses using our new scope
+        $totalUsers = User::where('role', 'user')->count();
+        $pendingUsers = User::where('role', 'user')->hasVerificationStatus('pending')->count();
+        $verifiedUsers = User::where('role', 'user')->hasVerificationStatus('verified')->count();
+        $rejectedUsers = User::where('role', 'user')->hasVerificationStatus('rejected')->count();
+        $underReviewCount = User::where('role', 'user')->hasVerificationStatus('under_review')->count();
+        $requiresResubmissionCount = User::where('role', 'user')->hasVerificationStatus('requires_resubmission')->count();
 
-        // Get recent verification activity (both pending and completed)
-        $recentActivity = User::with('verifiedBy')
-            ->whereNotNull('verification_status')
-            ->where('verification_status', '!=', 'unverified')
+        // Calculate percentages safely
+        $pendingPercentage = $totalUsers > 0 ? round(($pendingUsers / $totalUsers) * 100) : 0;
+        $verifiedPercentage = $totalUsers > 0 ? round(($verifiedUsers / $totalUsers) * 100) : 0;
+        $rejectedPercentage = $totalUsers > 0 ? round(($rejectedUsers / $totalUsers) * 100) : 0;
+
+        // Daily/Monthly Snapshot stats
+        $verifiedToday = User::where('role', 'user')
+            ->hasVerificationStatus('verified')
+            ->whereHas('verification', function($q) {
+                $q->whereDate('verified_at', today());
+            })->count();
+
+        $rejectedThisMonth = User::where('role', 'user')
+            ->hasVerificationStatus('rejected')
+            ->whereHas('verification', function($q) {
+                $q->whereMonth('updated_at', now()->month);
+            })->count();
+
+        // Get recent verification activity
+        $recentActivity = User::where('role', 'user')
+            ->whereHas('verification', function($q) {
+                $q->whereIn('status', ['pending', 'verified', 'rejected', 'under_review', 'requires_resubmission']);
+            })
+            ->with(['verification.verifier'])
             ->orderBy('updated_at', 'desc')
             ->take(10)
             ->get();
 
         // Get verification statistics for the last 30 days
-        $verificationStats = User::select(
-            DB::raw('DATE(updated_at) as date'),
-            DB::raw('COUNT(CASE WHEN verification_status = "verified" AND DATE(updated_at) = DATE(verified_at) THEN 1 END) as verified'),
-            DB::raw('COUNT(CASE WHEN verification_status = "rejected" AND DATE(updated_at) = DATE(updated_at) THEN 1 END) as rejected'),
-            DB::raw('COUNT(CASE WHEN verification_status = "pending" AND DATE(created_at) = DATE(updated_at) THEN 1 END) as pending')
-        )
-        ->where('updated_at', '>=', now()->subDays(30))
-        ->whereIn('verification_status', ['verified', 'rejected', 'pending'])
-        ->groupBy('date')
-        ->orderBy('date')
-        ->get()
-        ->map(function($item) {
-            return [
-                'date' => $item->date,
-                'verified' => (int)$item->verified,
-                'rejected' => (int)$item->rejected,
-                'pending' => (int)$item->pending
-            ];
-        });
+        $verificationStats = DB::table('user_verifications')
+            ->select(
+                DB::raw('DATE(updated_at) as date'),
+                DB::raw('COUNT(CASE WHEN status = "verified" AND DATE(updated_at) = DATE(verified_at) THEN 1 END) as verified'),
+                DB::raw('COUNT(CASE WHEN status = "rejected" THEN 1 END) as rejected'),
+                DB::raw('COUNT(CASE WHEN status = "pending" THEN 1 END) as pending')
+            )
+            ->where('updated_at', '>=', now()->subDays(30))
+            ->whereIn('status', ['verified', 'rejected', 'pending'])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
 
-        // Fill in missing dates with zero values
+        // Fill in missing dates with zero values for the chart
         $dateRange = collect();
         $startDate = now()->subDays(29);
-        
         for ($i = 0; $i < 30; $i++) {
             $date = $startDate->copy()->addDays($i)->format('Y-m-d');
-            $stats = $verificationStats->firstWhere('date', $date) ?? [
+            $stats = $verificationStats->firstWhere('date', $date);
+            $dateRange->push([
                 'date' => $date,
-                'verified' => 0,
-                'rejected' => 0,
-                'pending' => 0
-            ];
-            $dateRange->push($stats);
+                'verified' => $stats ? (int)$stats->verified : 0,
+                'rejected' => $stats ? (int)$stats->rejected : 0,
+                'pending' => $stats ? (int)$stats->pending : 0
+            ]);
         }
 
-        // If this is an AJAX request, return JSON
+        // Handle AJAX requests
         if (request()->ajax()) {
             return response()->json([
                 'totalUsers' => $totalUsers,
-                'pendingCount' => $pendingCount,
-                'verifiedCount' => $verifiedCount,
-                'rejectedCount' => $rejectedCount,
-                'underReviewCount' => $underReviewCount,
-                'requiresResubmissionCount' => $requiresResubmissionCount,
+                'pendingUsers' => $pendingUsers,
+                'verifiedUsers' => $verifiedUsers,
+                'rejectedUsers' => $rejectedUsers,
+                'pendingPercentage' => $pendingPercentage,
+                'verifiedPercentage' => $verifiedPercentage,
+                'rejectedPercentage' => $rejectedPercentage,
                 'verificationStats' => $dateRange
             ]);
         }
 
         return view('admin.verification.dashboard', [
             'totalUsers' => $totalUsers,
-            'pendingCount' => $pendingCount,
-            'verifiedCount' => $verifiedCount,
-            'rejectedCount' => $rejectedCount,
-            'underReviewCount' => $underReviewCount,
-            'requiresResubmissionCount' => $requiresResubmissionCount,
+            'pendingUsers' => $pendingUsers,
+            'verifiedUsers' => $verifiedUsers,
+            'rejectedUsers' => $rejectedUsers,
+            'pendingPercentage' => $pendingPercentage,
+            'verifiedPercentage' => $verifiedPercentage,
+            'rejectedPercentage' => $rejectedPercentage,
+            'verifiedToday' => $verifiedToday,
+            'rejectedThisMonth' => $rejectedThisMonth,
             'recentActivity' => $recentActivity,
-            'verificationStats' => $dateRange
+            'verificationStats' => $dateRange,
+            'underReviewCount' => $underReviewCount,
+            'requiresResubmissionCount' => $requiresResubmissionCount
         ]);
     }
 
@@ -97,11 +115,11 @@ class UserVerificationController extends Controller
      */
     public function pending()
     {
-        $users = User::where('verification_status', 'pending')
+        $pendingUsers = User::hasVerificationStatus('pending')
             ->orderBy('created_at', 'asc')
             ->paginate(10);
 
-        return view('admin.verification.pending', compact('users'));
+        return view('admin.verification.pending', compact('pendingUsers'));
     }
 
     /**
@@ -109,7 +127,7 @@ class UserVerificationController extends Controller
      */
     public function underReview()
     {
-        $users = User::where('verification_status', 'under_review')
+        $users = User::hasVerificationStatus('under_review')
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
 
@@ -121,7 +139,7 @@ class UserVerificationController extends Controller
      */
     public function requiresResubmission()
     {
-        $users = User::where('verification_status', 'requires_resubmission')
+        $users = User::hasVerificationStatus('requires_resubmission')
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
 
@@ -133,7 +151,7 @@ class UserVerificationController extends Controller
      */
     public function show($id)
     {
-        $user = User::with('verifiedBy')->findOrFail($id);
+        $user = User::with(['verification.verifier'])->findOrFail($id);
         
         if (request()->ajax() || request()->expectsJson()) {
             return response()->json($user);
@@ -149,10 +167,13 @@ class UserVerificationController extends Controller
     {
         $user = User::findOrFail($id);
         
-        $user->update([
-            'verification_status' => 'under_review',
-            'verified_by' => Auth::id()
-        ]);
+        $user->verification()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'status' => 'under_review',
+                'verified_by' => Auth::id()
+            ]
+        );
 
         return response()->json([
             'success' => true,
@@ -171,12 +192,15 @@ class UserVerificationController extends Controller
 
         $user = User::findOrFail($id);
         
-        $user->update([
-            'verification_status' => 'verified',
-            'verified_at' => now(),
-            'verified_by' => Auth::id(),
-            'verification_notes' => $request->notes
-        ]);
+        $user->verification()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'status' => 'verified',
+                'verified_at' => now(),
+                'verified_by' => Auth::id(),
+                'admin_notes' => $request->notes
+            ]
+        );
 
         if ($request->ajax()) {
             return response()->json([
@@ -199,12 +223,16 @@ class UserVerificationController extends Controller
 
         $user = User::findOrFail($id);
         
-        $user->update([
-            'verification_status' => 'rejected',
-            'verified_at' => now(),
-            'verified_by' => Auth::id(),
-            'verification_notes' => $request->notes
-        ]);
+        $user->verification()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'status' => 'rejected',
+                'verified_at' => now(),
+                'verified_by' => Auth::id(),
+                'rejection_reason' => $request->notes,
+                'admin_notes' => $request->notes
+            ]
+        );
 
         if ($request->ajax()) {
             return response()->json([
@@ -227,11 +255,14 @@ class UserVerificationController extends Controller
 
         $user = User::findOrFail($id);
         
-        $user->update([
-            'verification_status' => 'requires_resubmission',
-            'verified_by' => Auth::id(),
-            'verification_notes' => $request->notes
-        ]);
+        $user->verification()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'status' => 'requires_resubmission',
+                'verified_by' => Auth::id(),
+                'admin_notes' => $request->notes
+            ]
+        );
 
         if ($request->ajax()) {
             return response()->json([
@@ -254,13 +285,21 @@ class UserVerificationController extends Controller
             'notes' => 'nullable|string|max:1000'
         ]);
 
-        $count = User::whereIn('id', $request->user_ids)
-            ->update([
-                'verification_status' => 'verified',
-                'verified_at' => now(),
-                'verified_by' => Auth::id(),
-                'verification_notes' => $request->notes
-            ]);
+        // Update through the relationship for each user
+        $count = 0;
+        $activeUsers = User::whereIn('id', $request->user_ids)->get();
+        foreach ($activeUsers as $user) {
+            $user->verification()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'status' => 'verified',
+                    'verified_at' => now(),
+                    'verified_by' => Auth::id(),
+                    'admin_notes' => $request->notes
+                ]
+            );
+            $count++;
+        }
 
         return response()->json([
             'success' => true,
@@ -280,13 +319,21 @@ class UserVerificationController extends Controller
             'notes' => 'required|string|max:1000'
         ]);
 
-        $count = User::whereIn('id', $request->user_ids)
-            ->update([
-                'verification_status' => 'rejected',
-                'verified_at' => now(),
-                'verified_by' => Auth::id(),
-                'verification_notes' => $request->notes
-            ]);
+        $count = 0;
+        $activeUsers = User::whereIn('id', $request->user_ids)->get();
+        foreach ($activeUsers as $user) {
+            $user->verification()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'status' => 'rejected',
+                    'verified_at' => now(),
+                    'verified_by' => Auth::id(),
+                    'rejection_reason' => $request->notes,
+                    'admin_notes' => $request->notes
+                ]
+            );
+            $count++;
+        }
 
         return response()->json([
             'success' => true,
@@ -301,11 +348,11 @@ class UserVerificationController extends Controller
     public function getStatistics()
     {
         $total = User::count();
-        $pending = User::where('verification_status', 'pending')->count();
-        $verified = User::where('verification_status', 'verified')->count();
-        $rejected = User::where('verification_status', 'rejected')->count();
-        $underReview = User::where('verification_status', 'under_review')->count();
-        $requiresResubmission = User::where('verification_status', 'requires_resubmission')->count();
+        $pending = User::hasVerificationStatus('pending')->count();
+        $verified = User::hasVerificationStatus('verified')->count();
+        $rejected = User::hasVerificationStatus('rejected')->count();
+        $underReview = User::hasVerificationStatus('under_review')->count();
+        $requiresResubmission = User::hasVerificationStatus('requires_resubmission')->count();
 
         return response()->json([
             'success' => true,

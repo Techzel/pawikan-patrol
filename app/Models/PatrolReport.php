@@ -12,6 +12,45 @@ class PatrolReport extends Model
 {
     use HasFactory;
 
+    /**
+     * Temporary storage for legacy images attribute.
+     */
+    protected $tempImages = null;
+
+    /**
+     * The model's boot method.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Intercept images before saving to prevent DB errors
+        static::saving(function ($model) {
+            if (isset($model->attributes['images'])) {
+                $model->tempImages = $model->attributes['images'];
+                unset($model->attributes['images']);
+            }
+        });
+
+        // Save images to relationship after the main model is saved
+        static::saved(function ($model) {
+            if ($model->tempImages) {
+                $images = is_string($model->tempImages) ? json_decode($model->tempImages, true) : $model->tempImages;
+                if (is_array($images)) {
+                    // Sync photos
+                    $model->photos()->delete();
+                    foreach ($images as $index => $path) {
+                        $model->photos()->create([
+                            'photo_path' => $path,
+                            'display_order' => $index,
+                        ]);
+                    }
+                }
+                $model->tempImages = null;
+            }
+        });
+    }
+
     protected $fillable = [
         'patroller_id',
         'report_type',
@@ -52,7 +91,7 @@ class PatrolReport extends Model
         'longitude' => 'decimal:8',
         'turtle_count' => 'integer',
         'requires_followup' => 'boolean',
-        'images' => 'array',
+        // 'images' => 'array', // Removed array cast as we'll handle it via accessor
         'evidence' => 'array',
         'incident_datetime' => 'datetime',
         'reviewed_at' => 'datetime',
@@ -62,7 +101,7 @@ class PatrolReport extends Model
         'needs_followup' => 'boolean',
     ];
 
-    protected $appends = ['validation_status_label', 'report_type_label'];
+    protected $appends = ['validation_status_label', 'report_type_label', 'images'];
 
     // Validation statuses (renamed to avoid conflict with status types)
     const VALIDATION_PENDING = 'pending_validation';
@@ -303,6 +342,24 @@ class PatrolReport extends Model
     public function photos(): HasMany
     {
         return $this->hasMany(PatrolReportPhoto::class)->orderBy('display_order');
+    }
+
+    /**
+     * Legacy accessor for images to maintain backward compatibility.
+     * Returns an array of photo paths.
+     */
+    public function getImagesAttribute()
+    {
+        return $this->photos->pluck('photo_path')->toArray();
+    }
+
+    /**
+     * Legacy mutator for images to maintain backward compatibility.
+     * Stores the value temporarily until the model is saved.
+     */
+    public function setImagesAttribute($value)
+    {
+        $this->attributes['images'] = is_array($value) ? json_encode($value) : $value;
     }
 
     /**

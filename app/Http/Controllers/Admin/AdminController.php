@@ -29,7 +29,7 @@ class AdminController extends Controller
                 ->orWhere('validation_status', PatrolReport::VALIDATION_APPROVED);
         })->count();
         $totalVerifiedReports = PatrolReport::where('status', PatrolReport::STATUS_VERIFIED)->count();
-        $totalVerifiedUsers = User::where('verification_status', 'verified')->count();
+        $totalVerifiedUsers = User::hasVerificationStatus('verified')->count();
         
         $patrollers = User::where('role', 'patroller')->latest()->get();
         
@@ -240,10 +240,17 @@ class AdminController extends Controller
                 'username' => $validated['username'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
-                'badge_number' => $validated['badge_number'] ?? null,
-                'bio' => $validated['bio'] ?? null,
-                'patrol_areas' => $validated['patrol_areas'] ?? [],
             ]);
+
+            // Update patroller profile
+            $patroller->patrollerProfile()->updateOrCreate(
+                ['user_id' => $patroller->id],
+                [
+                    'badge_number' => $validated['badge_number'] ?? null,
+                    'bio' => $validated['bio'] ?? null,
+                    'patrol_areas' => $validated['patrol_areas'] ?? [],
+                ]
+            );
 
             Log::info('Patroller updated by admin', [
                 'admin_id' => auth()->id(),
@@ -307,10 +314,16 @@ class AdminController extends Controller
         ]);
 
         try {
-            // Note: Patroller profile table has been removed
-            // All patroller data is now stored in the users table
-            
-            Log::info('Patroller profile update attempted (table removed)', [
+            $patroller->patrollerProfile()->updateOrCreate(
+                ['user_id' => $patroller->id],
+                [
+                    'department' => $validated['department'] ?? null,
+                    'performance_rating' => $validated['performance_rating'] ?? 0,
+                    // Note: supervisors/certifications/etc would go here if columns were added
+                ]
+            );
+
+            Log::info('Patroller profile updated', [
                 'admin_id' => auth()->id(),
                 'patroller_id' => $patroller->id,
                 'updated_fields' => array_keys($validated)
@@ -339,18 +352,20 @@ class AdminController extends Controller
         $patroller = User::where('role', 'patroller')
             ->findOrFail($id);
 
+        $stats = $patroller->patrollerProfile;
+        
         $statistics = [
-            'total_patrols' => $patroller->total_patrols,
-            'turtles_saved' => $patroller->turtles_saved,
-            'nests_protected' => $patroller->nests_protected,
-            'total_conservation_impact' => $patroller->total_conservation_impact ?? 0,
-            'patroller_rank' => $patroller->patroller_rank ?? 'N/A',
-            'patroller_since' => $patroller->patroller_since ? $patroller->patroller_since->format('M d, Y') : 'Unknown',
+            'total_patrols' => $stats ? $stats->total_patrols : 0,
+            'turtles_saved' => $stats ? $stats->turtles_saved : 0,
+            'nests_protected' => $stats ? $stats->nests_protected : 0,
+            'total_conservation_impact' => ($stats ? $stats->turtles_saved + $stats->nests_protected : 0),
+            'patroller_rank' => $stats ? $stats->rank : 'Member',
+            'patroller_since' => $stats && $stats->patrol_since ? $stats->patrol_since->format('M d, Y') : 'Unknown',
             'last_login' => $patroller->last_login_at ? $patroller->last_login_at->diffForHumans() : 'Never',
-            'performance_rating' => 0,
-            'performance_level' => 'Not Rated',
+            'performance_rating' => $stats ? $stats->performance_rating : 0,
+            'performance_level' => $stats ? ($stats->performance_rating >= 4 ? 'Excellent' : 'Standard') : 'Not Rated',
             'status' => $patroller->is_active ? 'active' : 'inactive',
-            'department' => 'Field Operations',
+            'department' => $stats ? $stats->department : 'Field Operations',
         ];
 
         return response()->json($statistics);
@@ -487,9 +502,9 @@ class AdminController extends Controller
     {
         // Only count and show regular users (not admin or patroller)
         $totalUsers = User::where('role', 'user')->count();
-        $pendingUsers = User::where('role', 'user')->where('verification_status', 'pending')->count();
-        $verifiedUsers = User::where('role', 'user')->where('verification_status', 'verified')->count();
-        $rejectedUsers = User::where('role', 'user')->where('verification_status', 'rejected')->count();
+        $pendingUsers = User::where('role', 'user')->hasVerificationStatus('pending')->count();
+        $verifiedUsers = User::where('role', 'user')->hasVerificationStatus('verified')->count();
+        $rejectedUsers = User::where('role', 'user')->hasVerificationStatus('rejected')->count();
 
         $pendingPercentage = $totalUsers > 0 ? round(($pendingUsers / $totalUsers) * 100, 1) : 0;
         $verifiedPercentage = $totalUsers > 0 ? round(($verifiedUsers / $totalUsers) * 100, 1) : 0;
@@ -497,18 +512,24 @@ class AdminController extends Controller
         
         // Additional helpful stats
         $verifiedToday = User::where('role', 'user')
-            ->where('verification_status', 'verified')
-            ->whereDate('updated_at', today())
+            ->hasVerificationStatus('verified')
+            ->whereHas('verification', function($q) {
+                $q->whereDate('verified_at', today());
+            })
             ->count();
             
         $rejectedThisMonth = User::where('role', 'user')
-            ->where('verification_status', 'rejected')
-            ->whereMonth('updated_at', now()->month)
+            ->hasVerificationStatus('rejected')
+            ->whereHas('verification', function($q) {
+                $q->whereMonth('updated_at', now()->month);
+            })
             ->count();
 
         $recentActivity = User::where('role', 'user')
-            ->whereIn('verification_status', ['pending', 'verified', 'rejected'])
-            ->with('verifiedBy')
+            ->whereHas('verification', function($q) {
+                $q->whereIn('status', ['pending', 'verified', 'rejected']);
+            })
+            ->with(['verification.verifier'])
             ->latest()
             ->take(10)
             ->get();
@@ -535,7 +556,7 @@ class AdminController extends Controller
     public function pendingVerifications()
     {
         $pendingUsers = User::where('role', 'user')
-            ->where('verification_status', 'pending')
+            ->hasVerificationStatus('pending')
             ->latest()
             ->paginate(15);
             
@@ -555,12 +576,15 @@ class AdminController extends Controller
         try {
             $user = User::findOrFail($id);
             
-            $user->update([
-                'verification_status' => 'verified',
-                'verified_at' => now(),
-                'verified_by' => auth()->id(),
-                'verification_notes' => request('notes', 'Account verified by admin')
-            ]);
+            $user->verification()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'status' => 'verified',
+                    'verified_at' => now(),
+                    'verified_by' => auth()->id(),
+                    'admin_notes' => request('notes', 'Account verified by admin')
+                ]
+            );
 
             Log::info('User verification approved by admin', [
                 'admin_id' => auth()->id(),
@@ -602,10 +626,14 @@ class AdminController extends Controller
         try {
             $user = User::findOrFail($id);
             
-            $user->update([
-                'verification_status' => 'rejected',
-                'verification_notes' => $validated['notes']
-            ]);
+            $user->verification()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'status' => 'rejected',
+                    'admin_notes' => $validated['notes'],
+                    'rejection_reason' => $validated['notes']
+                ]
+            );
 
             Log::info('User verification rejected by admin', [
                 'admin_id' => auth()->id(),
@@ -647,14 +675,23 @@ class AdminController extends Controller
         ]);
 
         try {
-            $count = User::whereIn('id', $validated['user_ids'])
-                ->where('verification_status', 'pending')
-                ->update([
-                    'verification_status' => 'verified',
-                    'verified_at' => now(),
-                    'verified_by' => auth()->id(),
-                    'verification_notes' => 'Bulk approved by admin'
-                ]);
+            $ids = $validated['user_ids'];
+            $usersToApprove = User::whereIn('id', $ids)->get();
+            $count = 0;
+            foreach ($usersToApprove as $user) {
+                if ($user->isPendingVerification()) {
+                    $user->verification()->updateOrCreate(
+                        ['user_id' => $user->id],
+                        [
+                            'status' => 'verified',
+                            'verified_at' => now(),
+                            'verified_by' => auth()->id(),
+                            'admin_notes' => 'Bulk approved by admin'
+                        ]
+                    );
+                    $count++;
+                }
+            }
 
             Log::info('Bulk user verification approval by admin', [
                 'admin_id' => auth()->id(),
@@ -696,12 +733,22 @@ class AdminController extends Controller
         ]);
 
         try {
-            $count = User::whereIn('id', $validated['user_ids'])
-                ->where('verification_status', 'pending')
-                ->update([
-                    'verification_status' => 'rejected',
-                    'verification_notes' => $validated['notes']
-                ]);
+            $ids = $validated['user_ids'];
+            $usersToReject = User::whereIn('id', $ids)->get();
+            $count = 0;
+            foreach ($usersToReject as $user) {
+                if ($user->isPendingVerification()) {
+                    $user->verification()->updateOrCreate(
+                        ['user_id' => $user->id],
+                        [
+                            'status' => 'rejected',
+                            'admin_notes' => $validated['notes'],
+                            'rejection_reason' => $validated['notes']
+                        ]
+                    );
+                    $count++;
+                }
+            }
 
             Log::info('Bulk user verification rejection by admin', [
                 'admin_id' => auth()->id(),

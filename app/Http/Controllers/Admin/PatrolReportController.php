@@ -478,7 +478,7 @@ class PatrolReportController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => ['required', 'string', Rule::in(['submitted', 'pending', 'accepted', 'reject', 'resolved', 'closed', 'validated', 'needs_correction', 'rejected'])],
+            'status' => ['required', 'string', Rule::in(['submitted', 'pending', 'accepted', 'rejected', 'resolved', 'closed', 'validated', 'needs_correction'])],
             'notes' => ['nullable', 'string', 'max:1000'],
             'validation_notes' => ['nullable', 'string', 'max:1000'],
             'priority' => ['nullable', 'string', Rule::in(['low', 'medium', 'high', 'critical'])],

@@ -24,10 +24,7 @@ class PatrolMapController extends Controller
             ->limit(200)
             ->get()
             ->map(function ($report) {
-                // Merge images from JSON column and photos relationship
-                $jsonImages = is_array($report->images) ? $report->images : [];
-                $relationImages = $report->photos ? $report->photos->pluck('photo_path')->toArray() : [];
-                $allImages = array_unique(array_merge($jsonImages, $relationImages));
+                $allImages = $report->images;
 
                 return [
                     'id' => $report->id,
@@ -137,10 +134,7 @@ class PatrolMapController extends Controller
             ->limit(200)
             ->get()
             ->map(function ($report) {
-                // Merge images from JSON column and photos relationship
-                $jsonImages = is_array($report->images) ? $report->images : [];
-                $relationImages = $report->photos ? $report->photos->pluck('photo_path')->toArray() : [];
-                $allImages = array_unique(array_merge($jsonImages, $relationImages));
+                $allImages = $report->images;
 
                 return [
                     'id' => $report->id,
@@ -183,14 +177,13 @@ class PatrolMapController extends Controller
                       ->orWhere('status', 'validated')
                       ->orWhere('status', 'verified');
             })
-            ->whereNotNull('images')
-            ->select('id', 'created_at', 'images')
+            ->has('photos')
+            ->select('id', 'created_at')
             ->get();
 
         // Step 2: Filter and sort in PHP. This is much safer when DB sort memory is restricted.
         $reportIds = $reportsCollection->filter(function($report) {
-                $imgs = is_string($report->images) ? json_decode($report->images, true) : $report->images;
-                return !empty($imgs) && (is_array($imgs) || is_object($imgs));
+                return !empty($report->images);
             })
             ->sortByDesc('created_at')
             ->take(100)
@@ -211,7 +204,7 @@ class PatrolMapController extends Controller
         // Step 3: Fetch the full details for the specific 100 IDs.
         // No sorting needed here as we already have the IDs in order.
         $reports = PatrolReport::whereIn('id', $reportIds)
-            ->with(['patroller:id,name', 'user:id,name'])
+            ->with(['patroller:id,name', 'user:id,name', 'photos'])
             ->get()
             // Ensure the collection matches the original ID order (descending by created_at)
             ->sortBy(function($report) use ($reportIds) {
@@ -237,7 +230,7 @@ class PatrolMapController extends Controller
                     'weather_conditions' => $report->weather_conditions,
                     'reported_at' => $report->created_at->format('M d, Y'),
                     'reported_by' => $report->patroller ? $report->patroller->name : ($report->user ? $report->user->name : 'Unknown'),
-                    'images' => is_string($report->images) ? json_decode($report->images, true) : $report->images
+                    'images' => $report->images
                 ];
             });
 
@@ -247,18 +240,16 @@ class PatrolMapController extends Controller
                       ->orWhere('status', 'validated')
                       ->orWhere('status', 'verified');
             })
-            ->whereNotNull('images')
-            ->where('images', '!=', '[]')
-            ->select('id', 'turtle_species', 'location', 'images');
+            ->has('photos')
+            ->with('photos')
+            ->select('id', 'turtle_species', 'location');
 
         $allMatchingReports = $statsQuery->get();
 
         $stats = [
             'total_reports' => $allMatchingReports->count(),
             'total_images' => $allMatchingReports->sum(function($report) {
-                // Handle different image storage formats safely
-                $imgs = is_string($report->images) ? json_decode($report->images, true) : $report->images;
-                return is_array($imgs) ? count($imgs) : 0;
+                return count($report->images);
             }),
             'species_count' => $allMatchingReports->pluck('turtle_species')->filter()->unique()->count(),
             'locations_count' => $allMatchingReports->pluck('location')->filter()->unique()->count()

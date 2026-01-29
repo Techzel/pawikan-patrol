@@ -20,10 +20,6 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'verification_status',
-        'verification_rejection_reason',
-        'verified_by',
-        'verified_at',
         'name',
         'username',
         'email',
@@ -32,14 +28,8 @@ class User extends Authenticatable
         'role',
         'is_active',
         'last_login_at',
-        'patroller_id',
         'profile_picture',
-        'patroller_since',
         'created_by',
-        'verification_status',
-        'verification_notes',
-        'verified_at',
-        'verified_by',
     ];
 
     /**
@@ -60,10 +50,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
-            'patroller_since' => 'datetime',
         ];
     }
 
@@ -83,12 +71,18 @@ class User extends Authenticatable
 
     /**
      * Get the user's verification record.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function verification()
+    public function verification(): HasOne
     {
         return $this->hasOne(UserVerification::class);
+    }
+
+    /**
+     * Get the user's patroller profile.
+     */
+    public function patrollerProfile(): HasOne
+    {
+        return $this->hasOne(PatrollerProfile::class);
     }
 
 
@@ -133,12 +127,35 @@ class User extends Authenticatable
         return $this->password;
     }
 
-    /**
-     * Get the admin who verified this user.
-     */
-    public function verifiedBy()
+    public function getVerifierAttribute()
     {
-        return $this->belongsTo(User::class, 'verified_by');
+        return $this->verification ? $this->verification->verifier : null;
+    }
+
+    /**
+     * Legacy accessor for verifiedBy to maintain backward compatibility with views.
+     */
+    public function getVerifiedByAttribute()
+    {
+        return $this->verifier;
+    }
+
+    /**
+     * Legacy accessor for verification_status to maintain backward compatibility.
+     */
+    public function getVerificationStatusAttribute()
+    {
+        return $this->verification ? $this->verification->status : 'unverified';
+    }
+
+    /**
+     * Scope to filter by verification status (abstracts the join/whereHas).
+     */
+    public function scopeHasVerificationStatus($query, $status)
+    {
+        return $query->whereHas('verification', function($q) use ($status) {
+            $q->where('status', $status);
+        });
     }
 
     /**
@@ -173,108 +190,22 @@ class User extends Authenticatable
 
     /**
      * Get the verification status display text.
-     *
-     * @return string
      */
     public function getVerificationStatusText()
     {
-        return match($this->verification_status) {
-            'pending' => 'Pending Verification',
-            'verified' => 'Verified',
-            'rejected' => 'Rejected',
-            default => 'Unknown',
-        };
+        return $this->verification ? $this->verification->getStatusText() : 'Unverified';
     }
 
     /**
-     * Get the verification status badge HTML (legacy method for backward compatibility).
-     *
-     * @return string
-     */
-    public function getVerificationStatusBadge()
-    {
-        return match($this->verification_status) {
-            'pending' => '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-100 border border-yellow-500/30"><i class="fas fa-clock mr-1"></i> Pending</span>',
-            'verified' => '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-100 border border-green-500/30"><i class="fas fa-check-circle mr-1"></i> Verified</span>',
-            'rejected' => '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-100 border border-red-500/30"><i class="fas fa-times-circle mr-1"></i> Rejected</span>',
-            default => '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-100 border border-gray-500/30"><i class="fas fa-question mr-1"></i> Unknown</span>',
-        };
-    }
-
-    /**
-     * Get the verification status badge HTML using the new verification system.
-     *
-     * @return string
+     * Get the verification status badge HTML.
      */
     public function getVerificationBadge()
     {
-        if ($this->verification) {
-            return $this->verification->getStatusBadge();
-        }
-        
-        // Fallback to legacy system
-        return $this->getVerificationStatusBadge();
+        return $this->verification ? $this->verification->getStatusBadge() : '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-100 border border-gray-500/30"><i class="fas fa-question mr-1"></i> Unverified</span>';
     }
 
-    /**
-     * Get the verification status text using the new verification system.
-     *
-     * @return string
-     */
-    public function getVerificationText()
-    {
-        if ($this->verification) {
-            return $this->verification->getStatusText();
-        }
-        
-        // Fallback to legacy system
-        return $this->getVerificationStatusText();
-    }
-
-    /**
-     * Check if user is verified using the new verification system.
-     *
-     * @return bool
-     */
-    public function isVerifiedNew()
-    {
-        if ($this->verification) {
-            return $this->verification->isVerified();
-        }
-        
-        // Fallback to legacy system
-        return $this->isVerified();
-    }
-
-    /**
-     * Check if user is pending verification using the new verification system.
-     *
-     * @return bool
-     */
-    public function isPendingVerificationNew()
-    {
-        if ($this->verification) {
-            return $this->verification->isPending();
-        }
-        
-        // Fallback to legacy system
-        return $this->isPendingVerification();
-    }
-
-    /**
-     * Check if user is rejected using the new verification system.
-     *
-     * @return bool
-     */
-    public function isRejectedNew()
-    {
-        if ($this->verification) {
-            return $this->verification->isRejected();
-        }
-        
-        // Fallback to legacy system
-        return $this->isRejected();
-    }
+    // Simplified verification checks removed in favor of consistent relationship usage 
+    // or consolidated into getVerificationBadge/Text methods.
 
     /**
      * Check if user is under review using the new verification system.
@@ -332,6 +263,17 @@ class User extends Authenticatable
     public function isActive()
     {
         return $this->is_active;
+    }
+
+    /**
+     * Legacy accessor for status to maintain backward compatibility.
+     * Maps is_active boolean to 'active'/'inactive' strings.
+     *
+     * @return string
+     */
+    public function getStatusAttribute()
+    {
+        return $this->is_active ? 'active' : 'inactive';
     }
 
      /**
@@ -453,21 +395,18 @@ class User extends Authenticatable
     }
 
     /**
-     * Activate the user as a patroller by generating a patroller ID and setting the patroller_since timestamp.
-     *
-     * @return void
+     * Activate the user as a patroller using the normalized PatrollerProfile relationship.
      */
     public function activatePatroller()
     {
-        if (!$this->patroller_id) {
-            $this->patroller_id = 'PTR-' . str_pad($this->id, 4, '0', STR_PAD_LEFT);
-        }
-        
-        if (!$this->patroller_since) {
-            $this->patroller_since = now();
-        }
-        
-        $this->save();
+        $this->patrollerProfile()->updateOrCreate(
+            ['user_id' => $this->id],
+            [
+                'patroller_id' => 'PTR-' . str_pad($this->id, 4, '0', STR_PAD_LEFT),
+                'patrol_since' => now(),
+                'rank' => 'Member'
+            ]
+        );
     }
 
     /**
