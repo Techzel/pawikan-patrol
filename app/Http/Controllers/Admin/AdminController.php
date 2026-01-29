@@ -799,14 +799,21 @@ class AdminController extends Controller
                     ? \Illuminate\Support\Str::slug($request->custom_name) . '.pdf'
                     : $file->getClientOriginalName();
                 
-                // Store in storage/app/public/resources
-                $path = $file->storeAs('resources', $filename, 'public');
-
-                // Convert to Base64 for database persistence (ephemeral storage fix)
+                // Get content first for database (bulletproof persistence)
                 $fileContent = file_get_contents($file->getRealPath());
                 $base64Data = base64_encode($fileContent);
-                
-                // Save/Update Metadata
+
+                // Attempt to store in storage/app/public/resources (for local dev/committed files)
+                // We wrap this in a try-catch because in some deployed environments (Vercel/Railway), 
+                // the local filesystem is read-only/ephemeral and might throw an error.
+                $path = 'resources/' . $filename;
+                try {
+                    $file->storeAs('resources', $filename, 'public');
+                } catch (\Exception $e) {
+                    Log::warning('Disk storage failed (expected in some serverless envs): ' . $e->getMessage());
+                }
+
+                // Save/Update Metadata - This is our SOURCE OF TRUTH
                 ResourceMetadata::updateOrCreate(
                     ['filename' => $filename],
                     [
@@ -819,11 +826,12 @@ class AdminController extends Controller
                 
                 Log::info('Storytelling module uploaded by admin', [
                     'admin_id' => auth()->id(),
-                    'path' => $path,
-                    'original_name' => $file->getClientOriginalName()
+                    'filename' => $filename,
+                    'original_name' => $file->getClientOriginalName(),
+                    'db_persisted' => true
                 ]);
 
-                return back()->with('success', 'Resource and metadata uploaded successfully.');
+                return back()->with('success', 'Resource uploaded and persisted to database successfully.');
             }
             
             return back()->with('error', 'No file selected.');
@@ -857,19 +865,29 @@ class AdminController extends Controller
                 return back()->with('error', 'Invalid file path.');
             }
 
-            if (Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
-                
-                // Delete Metadata
-                ResourceMetadata::where('filename', basename($path))->delete();
-
-                Log::info('Storytelling module deleted by admin', [
-                    'admin_id' => auth()->id(),
-                    'path' => $path
-                ]);
-                
-                return back()->with('success', 'Resource and metadata deleted successfully.');
+            // Attempt to delete from disk (ignore errors if disk is read-only)
+            try {
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to delete file from disk during storytelling deletion: ' . $e->getMessage());
             }
+            
+            // Always delete Metadata from Database - This is our source of truth
+            $filename = basename($path);
+            $deleted = ResourceMetadata::where('filename', $filename)->delete();
+
+            if ($deleted) {
+                Log::info('Storytelling module record deleted by admin', [
+                    'admin_id' => auth()->id(),
+                    'filename' => $filename
+                ]);
+                return back()->with('success', 'Resource record deleted successfully.');
+            }
+            
+            return back()->with('error', 'Resource record not found in database.');
+        } catch (\Exception $e) {
             
             return back()->with('error', 'File not found.');
         } catch (\Exception $e) {
