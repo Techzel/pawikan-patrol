@@ -612,6 +612,8 @@
                 setTimeout(() => {
                     if (document.body.contains(guestModal)) {
                         guestModal.remove();
+                        // Automatically show instructions after guest modal is closed
+                        if (window.openInstructions) window.openInstructions();
                     }
                 }, 700);
             }
@@ -625,7 +627,7 @@
     <div class="orb orb-2"></div>
 
     <!-- Back Button & Instructions -->
-    <div style="position: fixed; top: 120px; left: 30px; z-index: 100; display: flex; gap: 12px; align-items: center;">
+    <div id="game-nav-container" style="position: fixed; top: 120px; left: 30px; z-index: 100; display: flex; gap: 12px; align-items: center;">
         <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" 
            class="flex items-center gap-2 bg-black/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-all h-10">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -634,7 +636,7 @@
             <span class="font-semibold text-sm">Back</span>
         </a>
         
-        <button onclick="openInstructions()" 
+        <button id="btn-how-to-play" onclick="openInstructions()" 
            class="flex items-center gap-2 bg-black/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-all h-10">
             <span class="text-lg leading-none">📜</span>
             <span class="font-semibold text-sm">How to Play</span>
@@ -880,26 +882,38 @@
     // -- Game Actions --
     function readInstructions() {
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Stop any current speech
+            try {
+                window.speechSynthesis.cancel(); // Stop any current speech
 
-            const text = "Welcome to Pawikan Quiz! Here is how to play. You will answer 15 multiple choice questions about sea turtle conservation. You have 10 seconds to answer each question. Speed matters! Select the correct answer to maintain your streak and earn points. Good luck!";
-            const utterance = new SpeechSynthesisUtterance(text);
-            
-            // Try to find a male voice
-            const voices = window.speechSynthesis.getVoices();
-            const maleVoice = voices.find(voice => 
-                voice.name.includes('Male') || 
-                voice.name.includes('David') || 
-                voice.name.includes('Google US English')
-            );
-            
-            if (maleVoice) {
-                utterance.voice = maleVoice;
+                const text = "Welcome to Pawikan Quiz! Here is how to play. You will answer 15 multiple choice questions about sea turtle conservation. You have 10 seconds to answer each question. Speed matters! Select the correct answer to maintain your streak and earn points. Good luck!";
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                const triggerSpeech = () => {
+                    // Try to find a male voice
+                    const voices = window.speechSynthesis.getVoices();
+                    const maleVoice = voices.find(voice => 
+                        voice.name.includes('Male') || 
+                        voice.name.includes('David') || 
+                        voice.name.includes('Google US English')
+                    );
+                    
+                    if (maleVoice) {
+                        utterance.voice = maleVoice;
+                    }
+                    
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.0;
+                    window.speechSynthesis.speak(utterance);
+                };
+
+                if (window.speechSynthesis.getVoices().length > 0) {
+                    triggerSpeech();
+                } else {
+                    window.speechSynthesis.onvoiceschanged = triggerSpeech;
+                }
+            } catch (e) {
+                console.error('Speech synthesis error:', e);
             }
-            
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-            window.speechSynthesis.speak(utterance);
         }
     }
 
@@ -913,6 +927,7 @@
 
         document.getElementById('start-view').style.display = 'none';
         document.getElementById('result-view').style.display = 'none';
+        document.getElementById('btn-how-to-play').style.display = 'none';
         
         // Hide previous results button if it exists
         const prevBtn = document.getElementById('prev-results-btn');
@@ -1136,8 +1151,12 @@
             window.speechSynthesis.cancel();
         }
         document.getElementById('review-view').style.display = 'none';
-        if(isHistReview) document.getElementById('start-view').style.display = 'block';
-        else document.getElementById('result-view').style.display = 'block';
+        if(isHistReview) {
+            document.getElementById('start-view').style.display = 'block';
+            document.getElementById('btn-how-to-play').style.display = 'flex';
+        } else {
+            document.getElementById('result-view').style.display = 'block';
+        }
     }
 
     // Cleanup on exit
@@ -1146,6 +1165,19 @@
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
         }
+    });
+
+    // Auto-popup instructions
+    document.addEventListener('turbo:load', () => {
+        setTimeout(() => {
+            const guestModal = document.getElementById('guest-modal');
+            const isGuestModalVisible = guestModal && !guestModal.classList.contains('hidden');
+            
+            // Show instructions automatically if guest modal is not showing (e.g. for logged in users)
+            if (!isGuestModalVisible && document.querySelector('.journey-container')) {
+                if (window.openInstructions) window.openInstructions();
+            }
+        }, 1000);
     });
 </script>
 @endpush

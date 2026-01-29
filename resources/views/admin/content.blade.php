@@ -113,10 +113,29 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Display Name (Optional)</label>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Resource Title</label>
+                            <input type="text" name="title" placeholder="e.g. The Journey of a Green Sea Turtle"
+                                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="mt-1 text-xs text-gray-500">This will be the main name displayed to users.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Display Name (Optional - slugified)</label>
                             <input type="text" name="custom_name" placeholder="Leave blank to use filename"
                                 class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <p class="mt-1 text-xs text-gray-500">This name will be used for the file.</p>
+                            <p class="mt-1 text-xs text-gray-500">This name will be used for the file URL/slug.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                            <textarea name="description" rows="3" placeholder="Enter a short description of the content..."
+                                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Published Date</label>
+                            <input type="date" name="published_date" value="{{ date('Y-m-d') }}"
+                                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div class="pt-2">
@@ -153,21 +172,23 @@
                                             <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                                         </div>
                                         <div class="min-w-0">
-                                            <h4 class="text-white font-medium truncate" title="{{ $file['name'] }}">
-                                                {{ $file['name'] }}
+                                            <h4 class="text-white font-medium truncate" title="{{ $file['title'] }}">
+                                                {{ $file['title'] }}
                                             </h4>
+                                            <p class="text-[10px] text-gray-500 truncate mb-1">{{ $file['name'] }}</p>
                                             <div class="flex text-xs text-gray-500 gap-3">
                                                 <span>{{ number_format($file['size'] / 1024, 1) }} KB</span>
                                                 <span>•</span>
-                                                <span>{{ date('M d, Y', $file['last_modified']) }}</span>
+                                                <span>Published: {{ date('M d, Y', strtotime($file['published_date'])) }}</span>
                                             </div>
+                                            <p class="text-xs text-gray-400 mt-1 line-clamp-1 italic">{{ $file['description'] }}</p>
                                         </div>
                                     </div>
                                     
                                     <div class="flex items-center gap-2">
-                                        <a href="{{ $file['url'] }}" target="_blank" class="p-2 text-gray-400 hover:text-blue-400 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors" title="View">
+                                        <button onclick="openPdfPreview('{{ $file['url'] }}', '{{ addslashes($file['title']) }}', '{{ addslashes($file['description']) }}', '{{ date('M d, Y', strtotime($file['published_date'])) }}')" class="p-2 text-gray-400 hover:text-blue-400 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors" title="View Preview">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                        </a>
+                                        </button>
                                         
                                         <button onclick="confirmDelete('{{ $file['path'] }}', '{{ $file['name'] }}')" class="p-2 text-gray-400 hover:text-red-400 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors" title="Delete">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -223,6 +244,53 @@
             </div>
         </div>
     </div>
+
+    <!-- PDF Preview Sidebar -->
+    <div id="pdfSidebar" class="fixed inset-y-0 right-0 w-full lg:w-[800px] xl:w-[1000px] bg-gray-900 border-l border-white/20 transform translate-x-full transition-transform duration-300 ease-in-out z-[60] shadow-2xl flex flex-col">
+        <!-- Sidebar Header -->
+        <div class="p-4 border-b border-white/10 flex items-center justify-between bg-gray-800/80 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-red-500/20 rounded flex items-center justify-center">
+                    <i class="fa-solid fa-file-pdf text-red-500"></i>
+                </div>
+                <h3 id="pdfSidebarTitle" class="text-white font-bold truncate max-w-[300px] font-poppins">PDF Preview</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <a id="pdfDownloadLink" href="#" target="_blank" class="p-2 text-gray-400 hover:text-white transition-colors" title="Open in New Tab">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+                <button onclick="closePdfPreview()" class="p-2 text-gray-400 hover:text-white transition-colors" title="Close">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Metadata Info -->
+        <div id="pdfSidebarMetadata" class="px-6 py-4 bg-gray-800/50 border-b border-white/10">
+            <div class="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Resource Details</span>
+            </div>
+            <p id="pdfSidebarDescription" class="text-gray-300 text-sm italic mb-3"></p>
+            <div class="flex items-center gap-2 text-gray-400 text-xs">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Published on: <span id="pdfSidebarDate" class="text-gray-200"></span></span>
+            </div>
+        </div>
+        <!-- Sidebar Content (Iframe) -->
+        <div class="flex-1 bg-gray-800 overflow-hidden relative">
+            <div id="pdfLoading" class="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-gray-400 text-sm font-poppins">Loading PDF Content...</p>
+                </div>
+            </div>
+            <iframe id="pdfIframe" src="" class="w-full h-full border-0" onload="document.getElementById('pdfLoading').classList.add('hidden')"></iframe>
+        </div>
+    </div>
+
+    <!-- Overlay for PDF Sidebar -->
+    <div id="pdfOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[55]" onclick="closePdfPreview()"></div>
 </div>
 
 <script>
@@ -249,6 +317,47 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeDeleteModal();
+            closePdfPreview();
         }
     });
+
+    // PDF Preview Functions
+    function openPdfPreview(url, name, description, date) {
+        const sidebar = document.getElementById('pdfSidebar');
+        const overlay = document.getElementById('pdfOverlay');
+        const iframe = document.getElementById('pdfIframe');
+        const title = document.getElementById('pdfSidebarTitle');
+        const downloadLink = document.getElementById('pdfDownloadLink');
+        const loader = document.getElementById('pdfLoading');
+        const descEl = document.getElementById('pdfSidebarDescription');
+        const dateEl = document.getElementById('pdfSidebarDate');
+
+        title.textContent = name;
+        descEl.textContent = description || 'No description provided.';
+        dateEl.textContent = date || 'N/A';
+        downloadLink.href = url;
+        loader.classList.remove('hidden');
+        iframe.src = url;
+
+        sidebar.classList.remove('translate-x-full');
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
+
+    function closePdfPreview() {
+        const sidebar = document.getElementById('pdfSidebar');
+        const overlay = document.getElementById('pdfOverlay');
+        const iframe = document.getElementById('pdfIframe');
+
+        if (!sidebar) return;
+
+        sidebar.classList.add('translate-x-full');
+        overlay.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore scrolling
+        
+        // Clear iframe src after transition
+        setTimeout(() => {
+            iframe.src = '';
+        }, 300);
+    }
 </script>

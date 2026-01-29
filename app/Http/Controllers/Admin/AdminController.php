@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ResourceMetadata;
 
 class AdminController extends Controller
 {
@@ -735,18 +736,26 @@ class AdminController extends Controller
      */
     public function contentManagement()
     {
-        // Get all PDF files in the resources directory
+        // Get metadata from database
+        $metadata = ResourceMetadata::all()->keyBy('filename');
+
         $files = collect(Storage::disk('public')->files('resources'))
             ->filter(function ($file) {
                 return str_ends_with(strtolower($file), '.pdf');
             })
-            ->map(function ($file) {
+            ->map(function ($file) use ($metadata) {
+                $filename = basename($file);
+                $fileMeta = $metadata->get($filename);
+
                 return [
                     'path' => $file,
-                    'name' => basename($file),
+                    'name' => $filename,
                     'last_modified' => Storage::disk('public')->lastModified($file),
                     'size' => Storage::disk('public')->size($file),
-                    'url' => Storage::url($file)
+                    'url' => Storage::url($file),
+                    'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
+                    'description' => $fileMeta ? $fileMeta->description : 'No description provided.',
+                    'published_date' => $fileMeta ? $fileMeta->published_date : date('Y-m-d', Storage::disk('public')->lastModified($file))
                 ];
             })
             ->values();
@@ -765,6 +774,9 @@ class AdminController extends Controller
         $request->validate([
             'module_file' => 'required|file|mimes:pdf|max:20480', // 20MB max
             'custom_name' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'published_date' => 'nullable|date',
         ]);
 
         try {
@@ -777,8 +789,17 @@ class AdminController extends Controller
                     : $file->getClientOriginalName();
                 
                 // Store in storage/app/public/resources
-                // This will overwrite if file with same name exists
                 $path = $file->storeAs('resources', $filename, 'public');
+
+                // Save/Update Metadata
+                ResourceMetadata::updateOrCreate(
+                    ['filename' => $filename],
+                    [
+                        'title' => $request->title ?? ($request->custom_name ?? $file->getClientOriginalName()),
+                        'description' => $request->description ?? 'No description provided.',
+                        'published_date' => $request->published_date ?? date('Y-m-d')
+                    ]
+                );
                 
                 Log::info('Storytelling module uploaded by admin', [
                     'admin_id' => auth()->id(),
@@ -786,7 +807,7 @@ class AdminController extends Controller
                     'original_name' => $file->getClientOriginalName()
                 ]);
 
-                return back()->with('success', 'Resource uploaded successfully.');
+                return back()->with('success', 'Resource and metadata uploaded successfully.');
             }
             
             return back()->with('error', 'No file selected.');
@@ -823,12 +844,15 @@ class AdminController extends Controller
             if (Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
                 
+                // Delete Metadata
+                ResourceMetadata::where('filename', basename($path))->delete();
+
                 Log::info('Storytelling module deleted by admin', [
                     'admin_id' => auth()->id(),
                     'path' => $path
                 ]);
                 
-                return back()->with('success', 'Resource deleted successfully.');
+                return back()->with('success', 'Resource and metadata deleted successfully.');
             }
             
             return back()->with('error', 'File not found.');

@@ -273,7 +273,7 @@
                     </div>
 
                     <!-- Quiz Game Card -->
-                    <div class="game-card rounded-3xl p-8 hover-lift group">
+                    <div class="game-card rounded-3xl p-8 hover-lift group md:col-start-2">
                         <div class="absolute top-0 right-0 bg-yellow-500 text-black text-xs font-bold px-4 py-2 rounded-bl-2xl z-20 shadow-lg tracking-widest">EDUCATIONAL GAME</div>
                         <div class="text-center mb-8 relative z-10">
                             <div class="text-7xl mb-6 animate-wiggle">❓</div>

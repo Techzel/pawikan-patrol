@@ -202,6 +202,11 @@
            btn.innerHTML = '<i class="fas fa-map-marked-alt text-lg"></i><span>View Map Location</span>';
         }
 
+        const cancelBtn = document.getElementById('cancel-location-btn');
+        if (cancelBtn) {
+            cancelBtn.classList.remove('hidden');
+        }
+
         // Remove old marker and circle if exists
         if (gpsMarker) {
             gpsMap.removeLayer(gpsMarker);
@@ -248,9 +253,40 @@
         const latitudeInput = document.getElementById('latitude');
         const longitudeInput = document.getElementById('longitude');
         const btn = document.getElementById('map-trigger-btn');
+        const cancelBtn = document.getElementById('cancel-location-btn');
         
         if (latitudeInput && longitudeInput && btn && latitudeInput.value && longitudeInput.value) {
              btn.innerHTML = '<i class="fas fa-map-marked-alt text-lg"></i><span>View Map Location</span>';
+             if (cancelBtn) cancelBtn.classList.remove('hidden');
+        }
+    }
+
+    // New Clear Location function
+    function clearLocation() {
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+        const btn = document.getElementById('map-trigger-btn');
+        const cancelBtn = document.getElementById('cancel-location-btn');
+        
+        latitudeInput.value = '';
+        longitudeInput.value = '';
+        
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-map-marker-alt text-lg"></i><span>Get Location on Map</span>';
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.classList.add('hidden');
+        }
+        
+        // Reset map markers if they exist
+        if (gpsMarker && gpsMap) {
+            gpsMap.removeLayer(gpsMarker);
+            gpsMarker = null;
+        }
+        if (accuracyCircle && gpsMap) {
+            gpsMap.removeLayer(accuracyCircle);
+            accuracyCircle = null;
         }
     }
 
@@ -701,22 +737,27 @@
                         <div>
                             <label for="latitude" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Latitude</label>
                             <input type="number" id="latitude" name="latitude" value="{{ old('latitude') }}" 
-                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
-                                   placeholder="e.g., 6.9363">
+                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md bg-gray-800/50 cursor-not-allowed" style="font-family: 'Poppins', sans-serif;" 
+                                   placeholder="e.g., 6.9363" readonly>
                         </div>
 
                         <div>
                             <label for="longitude" class="block text-sm font-medium text-gray-300 mb-2" style="font-family: 'Poppins', sans-serif;">Longitude</label>
                             <input type="number" id="longitude" name="longitude" value="{{ old('longitude') }}" 
-                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md" style="font-family: 'Poppins', sans-serif;" 
-                                   placeholder="e.g., 126.2742">
+                                   step="0.000001" class="form-input w-full px-3 py-2 rounded-md bg-gray-800/50 cursor-not-allowed" style="font-family: 'Poppins', sans-serif;" 
+                                   placeholder="e.g., 126.2742" readonly>
                         </div>
 
                         <!-- Location Selector - Clean & Professional -->
-                        <div class="md:col-span-2">
+                        <div class="md:col-span-2 space-y-3">
                             <button id="map-trigger-btn" type="button" onclick="openMapManually()" class="w-full px-6 py-3 bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-700 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-ocean-500/30 active:scale-[0.98] font-semibold" style="font-family: 'Poppins', sans-serif;">
                                 <i class="fas fa-map-marker-alt text-lg"></i>
                                 <span>Get Location on Map</span>
+                            </button>
+
+                            <button id="cancel-location-btn" type="button" onclick="clearLocation()" class="w-full px-6 py-2 border border-gray-600 text-gray-400 hover:bg-gray-700/50 hover:text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium hidden" style="font-family: 'Poppins', sans-serif;">
+                                <i class="fas fa-times"></i>
+                                <span>Clear Selected Location</span>
                             </button>
                             
                             <p class="mt-2 text-xs text-gray-400 text-center" style="font-family: 'Poppins', sans-serif;">

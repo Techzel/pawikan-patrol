@@ -138,7 +138,6 @@
                     guestModalContent.classList.add('scale-100', 'opacity-100');
                     
                     // Play warning music after modal starts appearing (300ms delay)
-                    // Play warning music after modal starts appearing (300ms delay)
                     if (warningAudio) {
                         setTimeout(() => {
                             const playPromise = warningAudio.play();
@@ -408,12 +407,10 @@
                             </div>
                         </div>
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                </div> <!-- End flex-col/row (388) -->
+            </div> <!-- End board outer (387) -->
+        </div> <!-- End container (272) -->
+    </main> <!-- End main (201) -->
 
         <!-- Flash Trivia Overlay -->
         <div id="trivia-overlay" class="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500">
@@ -499,7 +496,6 @@
                 </div>
             </div>
         </div>
-</div>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
@@ -510,9 +506,7 @@
         const userStoragePrefix = <?php if(auth()->guard()->check()): ?> '<?php echo e(Auth::id()); ?>_' <?php else: ?> '' <?php endif; ?>;
         
         let size = 3; 
-        // ... (rest of the game code remains inside the IIFE)
         let currentDifficulty = 'easy';
-        
         // Time limits in seconds
         const timeLimits = {
             'easy': 180,  // 3 minutes
@@ -588,7 +582,7 @@
         let shownTrivia = new Set();
         let triviaTimeout;
         
-        function updateTrivia(index, flash = true) {
+        function updateTrivia(index, flash = true, callback = null) {
              const data = turtleTrivia[index] || turtleTrivia[0];
              
              // Update static labels in UI (Always happen)
@@ -599,7 +593,10 @@
              if(instructionLabel) instructionLabel.innerHTML = `Reassemble the image to reveal the <span class="text-ocean-300 font-bold">${data.name}</span>!`;
              
              // Flash Overlay Logic (Conditional)
-             if (!flash || shownTrivia.has(index)) return;
+             if (!flash || shownTrivia.has(index)) {
+                 if(callback) callback();
+                 return;
+             }
              
              // Mark this index as shown
              shownTrivia.add(index);
@@ -621,12 +618,6 @@
                     bgMusic.pause();
                 }
 
-                // Voiceover Logic
-                window.speechSynthesis.cancel(); // Cancel any existing speech
-                const speechText = "Did you know? " + data.trivia;
-                const utterance = new SpeechSynthesisUtterance(speechText);
-                utterance.rate = 1.0;
-                
                 // Function to close overlay and resume music
                 const closeTrivia = () => {
                     overlay.classList.add('opacity-0', 'pointer-events-none');
@@ -637,10 +628,39 @@
                     if(musicWasPlaying && bgMusic) {
                         bgMusic.play().catch(e => console.log('Music resume failed:', e));
                     }
+                    if(callback) callback();
                 };
-                
-                utterance.onend = closeTrivia;
-                utterance.onerror = closeTrivia; // Fallback
+
+                // Voiceover Logic
+                if ('speechSynthesis' in window) {
+                    try {
+                        window.speechSynthesis.cancel(); // Cancel any existing speech
+                        const speechText = "Did you know? " + data.trivia;
+                        const utterance = new SpeechSynthesisUtterance(speechText);
+                        utterance.rate = 1.0;
+                        
+                        utterance.onend = closeTrivia;
+                        utterance.onerror = closeTrivia; // Fallback
+
+                        const triggerSpeech = () => {
+                            const voices = window.speechSynthesis.getVoices();
+                            const maleVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Google US English'));
+                            if (maleVoice) utterance.voice = maleVoice;
+                            window.speechSynthesis.speak(utterance);
+                        };
+
+                        if (window.speechSynthesis.getVoices().length > 0) {
+                            triggerSpeech();
+                        } else {
+                            window.speechSynthesis.onvoiceschanged = triggerSpeech;
+                        }
+                    } catch (e) {
+                        console.error('Speech synthesis error:', e);
+                        setTimeout(closeTrivia, 5000);
+                    }
+                } else {
+                    setTimeout(closeTrivia, 5000);
+                }
 
                 // Show Overlay
                 overlay.classList.remove('opacity-0', 'pointer-events-none');
@@ -673,14 +693,8 @@
                          clearInterval(window.triviaTypeInterval);
                      }
                  }, speed);
-                 
-                 // Start Speaking
-                 window.speechSynthesis.speak(utterance);
              }
         }
-        
-
-        
         // Responsive board size calculation logic
         const getResponsiveBoardSize = () => {
              // For Desktop (lg+), prioritize the standard 500px size for best visibility
@@ -816,7 +830,7 @@
             updateLevelButtons();
             createTiles();
             shufflePuzzle();
-            updateTrivia(currentImageIndex, true);
+            updateTrivia(currentImageIndex, false);
         };
 
         function createTiles() {
@@ -1141,69 +1155,10 @@
                 emptyTile.element.style.backgroundSize = `${boardSize}px ${boardSize}px`;
                 emptyTile.element.style.backgroundPosition = `-${(size-1) * (boardSize/size)}px -${(size-1) * (boardSize/size)}px`;
                 
-                
-                // Record game activity for logged-in players
-                // Show modal first
-                setTimeout(() => {
-                    // Reset modal to Success
-                    const modal = document.getElementById('game-over-modal');
-                    const icon = modal.querySelector('.text-6xl');
-                    const title = modal.querySelector('h2');
-                    const message = modal.querySelector('p');
-                    
-                    if (icon) icon.textContent = '🧩';
-                    if (title) title.textContent = 'Puzzle Solved!';
-                    if (message) message.textContent = "You've restored the image!";
-                    
-                    const saveStatus = document.getElementById('save-status');
-                    if (saveStatus) {
-                        saveStatus.style.display = 'block';
-                        saveStatus.innerHTML = `
-                            <p class="text-yellow-400 text-sm font-poppins flex items-center justify-center gap-2">
-                                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Saving game...
-                            </p>
-                        `;
-                    }
-
-                    // Format elapsed time for display
-                    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-                    const secs = (seconds % 60).toString().padStart(2, '0');
-                    document.getElementById('final-time').textContent = `${mins}:${secs}`;
-                    
-                    document.getElementById('final-moves').textContent = moves;
-                    document.getElementById('final-difficulty').textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1);
-                    
-                    // Play congratulations sound
-                    playCongratsSound();
-                    
-                    // Pause background music on victory
-                    if (bgMusic) {
-                        bgMusic.pause();
-                        isMusicPlaying = false;
-                        musicIcon.textContent = '🔇';
-                    }
-                    
-                    document.getElementById('game-over-modal').classList.remove('hidden');
-                    
-                    // Show Next Level button logic
-                    const nextLevelBtn = document.getElementById('next-level-btn');
-                    if (nextLevelBtn) {
-                        if (currentDifficulty === 'easy' || currentDifficulty === 'medium') {
-                            nextLevelBtn.classList.remove('hidden');
-                        } else {
-                            nextLevelBtn.classList.add('hidden');
-                        }
-                    }
-                }, 200);
-                
-                // Record game activity
-                <?php if(auth()->guard()->check()): ?>
-                if (window.gameActivity) {
-                    (async () => {
+                // Use a helper to record activity since we might use it in multiple places
+                const recordActivity = async () => {
+                    <?php if(auth()->guard()->check()): ?>
+                    if (window.gameActivity) {
                         try {
                             const result = await window.gameActivity.recordPuzzle(moves, seconds, currentDifficulty);
                             const saveStatus = document.getElementById('save-status');
@@ -1240,9 +1195,73 @@
                         } catch (error) {
                             console.error('Error saving game:', error);
                         }
-                    })();
-                }
-                <?php endif; ?>
+                    }
+                    <?php endif; ?>
+                };
+
+                // Record game activity for logged-in players
+                // Show trivia first, then success modal
+                updateTrivia(currentImageIndex, true, () => {
+                    setTimeout(() => {
+                        // Reset modal to Success
+                        const modal = document.getElementById('game-over-modal');
+                        const icon = modal.querySelector('.text-6xl');
+                        const title = modal.querySelector('h2');
+                        const message = modal.querySelector('p');
+                        
+                        if (icon) icon.textContent = '🧩';
+                        if (title) title.textContent = 'Puzzle Solved!';
+                        if (message) message.textContent = "You've restored the image!";
+                        
+                        const saveStatus = document.getElementById('save-status');
+                        if (saveStatus) {
+                            saveStatus.style.display = 'block';
+                            saveStatus.innerHTML = `
+                                <p class="text-yellow-400 text-sm font-poppins flex items-center justify-center gap-2">
+                                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Saving game...
+                                </p>
+                            `;
+                        }
+
+                        // Format elapsed time for display
+                        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                        const secs = (seconds % 60).toString().padStart(2, '0');
+                        document.getElementById('final-time').textContent = `${mins}:${secs}`;
+                        
+                        document.getElementById('final-moves').textContent = moves;
+                        document.getElementById('final-difficulty').textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1);
+                        
+                        // Play congratulations sound
+                        playCongratsSound();
+                        
+                        // Pause background music on victory
+                        if (bgMusic) {
+                            bgMusic.pause();
+                            isMusicPlaying = false;
+                            musicIcon.textContent = '🔇';
+                        }
+                        
+                        document.getElementById('game-over-modal').classList.remove('hidden');
+                        
+                        // Show Next Level button logic
+                        const nextLevelBtn = document.getElementById('next-level-btn');
+                        if (nextLevelBtn) {
+                            if (currentDifficulty === 'easy' || currentDifficulty === 'medium') {
+                                nextLevelBtn.classList.remove('hidden');
+                            } else {
+                                nextLevelBtn.classList.add('hidden');
+                            }
+                        }
+
+                        // Actually call the record activity helper
+                        recordActivity();
+
+                    }, 400); // 400ms delay after trivia closes for smoother transition
+                });
             }
         }
 

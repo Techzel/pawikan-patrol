@@ -350,6 +350,39 @@
             </div>
         </div>
 
+        <!-- Trivia Modal -->
+        <div id="trivia-modal" class="fixed inset-0 z-[20000] flex items-center justify-center backdrop-blur-md transition-all duration-500 ease-out hidden pointer-events-auto p-4">
+            <div id="trivia-modal-content" class="bg-[#0f172a] border border-indigo-500/30 p-8 rounded-[2rem] max-w-sm w-full text-center shadow-2xl relative transform scale-90 opacity-0 transition-all duration-500 ease-out">
+                <!-- Decorative element -->
+                <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-indigo-600 rounded-2xl rotate-12 flex items-center justify-center shadow-lg border-2 border-white/10">
+                    <span id="trivia-icon" class="text-4xl -rotate-12">🐢</span>
+                </div>
+                
+                <div class="mt-8 mb-6">
+                    <h3 id="trivia-title" class="text-2xl font-bold text-white mb-1 font-poppins tracking-tight">Did You Know?</h3>
+                    <div class="flex items-center justify-center gap-1.5 opacity-60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+                        <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-[0.2em]">Voice Insight</span>
+                    </div>
+                </div>
+
+                <div class="relative mb-8">
+                    <div class="absolute -left-2 -top-2 text-4xl text-indigo-500/20 font-serif">"</div>
+                    <p id="trivia-text" class="text-gray-200 text-base font-poppins leading-relaxed relative z-10 px-2 italic">
+                        Trivia goes here...
+                    </p>
+                    <div class="absolute -right-2 -bottom-2 text-4xl text-indigo-500/20 font-serif rotate-180">"</div>
+                </div>
+
+                <button onclick="window.closeTriviaModal()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold font-poppins transition-all shadow-xl hover:shadow-indigo-500/30 border border-white/10 text-sm uppercase tracking-widest flex items-center justify-center gap-2 group">
+                    <span>Back to Ocean</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
     <!-- Scripts -->
 </div>
 @endsection
@@ -421,7 +454,11 @@
             if (guestModal) {
                 guestModal.classList.remove('bg-black/90', 'backdrop-blur-md');
                 guestModal.classList.add('bg-black/0', 'backdrop-blur-0');
-                setTimeout(() => guestModal.remove(), 700);
+                setTimeout(() => {
+                    guestModal.remove();
+                    // Automatically show instructions after guest modal is closed (the "Play as Guest" click)
+                    if (window.showGameInstructions) window.showGameInstructions();
+                }, 700);
             }
         };
 
@@ -688,13 +725,13 @@
             }
         });
 
-        // Show instructions on first visit (after guest modal if present)
+        // Show instructions automatically (after guest modal if present)
         setTimeout(() => {
             const guestModal = document.getElementById('guest-modal');
             const isGuestModalVisible = guestModal && !guestModal.classList.contains('hidden');
             
-            // Only show if user hasn't seen it before AND guest modal is not showing
-            if (!hasSeenInstructions && !isGuestModalVisible) {
+            // Show instructions automatically if guest modal is not showing (e.g. for logged in users)
+            if (!isGuestModalVisible) {
                 showInstructionModal();
             }
         }, 1000);
@@ -720,8 +757,122 @@
         let score = 0;
         let health = 100;
         let difficulty = 1; // Internal ramping factor
+        let triviaShown = [false, false, false];
         window.currentLevel = 'easy'; 
         
+        const triviaList = [
+            {
+                title: "Plastic Peril",
+                icon: "🛍️",
+                text: "Over 1 million marine animals die each year from plastic pollution. Turtles often mistake floating plastic bags for jellyfish—their favorite snack!"
+            },
+            {
+                title: "Ghost Gear",
+                icon: "🕸️",
+                text: "Threat Alert! Discarded 'ghost' fishing nets entangle turtles, causing severe injuries or drowning. Always dispose of gear properly to protect our Pawikan!"
+            },
+            {
+                title: "Ocean Guardian",
+                icon: "🛡️",
+                text: "You've become a true Ocean Guardian! By keeping our beaches clean, you help ensure that mother turtles can nest safely and hatchlings can reach the sea."
+            }
+        ];
+
+        let triviaCallback = null;
+
+        function showTrivia(index, callback = null) {
+            const modal = document.getElementById('trivia-modal');
+            const content = document.getElementById('trivia-modal-content');
+            const title = document.getElementById('trivia-title');
+            const icon = document.getElementById('trivia-icon');
+            const text = document.getElementById('trivia-text');
+
+            if (!modal || !content) return;
+
+            triviaCallback = callback;
+            
+            // Pause game if it's currently running
+            if (gameActive) {
+                gameActive = false;
+                if (timerInterval) clearInterval(timerInterval);
+            }
+
+            // Set content
+            const trivia = triviaList[index];
+            title.textContent = trivia.title;
+            icon.textContent = trivia.icon;
+            text.textContent = trivia.text;
+
+            // Show modal
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-90', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+                
+                // Voice over
+                speakTrivia(trivia.title + ". " + trivia.text);
+            }, 100);
+
+            triviaShown[index] = true;
+        }
+
+        function speakTrivia(text) {
+            if ('speechSynthesis' in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    
+                    const triggerSpeech = () => {
+                        const voices = window.speechSynthesis.getVoices();
+                        const maleVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Google US English'));
+                        if (maleVoice) utterance.voice = maleVoice;
+                        utterance.rate = 1.0;
+                        utterance.pitch = 1.0;
+                        window.speechSynthesis.speak(utterance);
+                    };
+
+                    if (window.speechSynthesis.getVoices().length > 0) {
+                        triggerSpeech();
+                    } else {
+                        window.speechSynthesis.onvoiceschanged = triggerSpeech;
+                    }
+                } catch (e) {
+                    console.error('Speech synthesis error:', e);
+                }
+            }
+        }
+
+        window.closeTriviaModal = function() {
+            const modal = document.getElementById('trivia-modal');
+            const content = document.getElementById('trivia-modal-content');
+
+            if (!modal || !content) return;
+
+            // Cancel speech
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-90', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                
+                if (triviaCallback) {
+                    const cb = triviaCallback;
+                    triviaCallback = null;
+                    cb();
+                } else {
+                    // Resume game only if no callback (normal mid-game trivia, though we moved them now)
+                    gameActive = true;
+                    startTime = Date.now() - (elapsedSeconds * 1000);
+                    timerInterval = setInterval(updateTimer, 10);
+                    gameLoop();
+                }
+            }, 500);
+        };
+
         let startTime;
         let timerInterval;
         let elapsedSeconds = 0;
@@ -1284,35 +1435,48 @@
                 isMusicPlaying = false;
                 updateMusicIcon();
             }
-            
-            // Show Success Screen
-            finalScore.textContent = score + '/50';
-            document.getElementById('finalTime').textContent = timerDisplay.textContent;
-            difficultyLabel.textContent = "COMPLETED: " + levelSettings[currentLevel].label;
-            
-            const title = document.getElementById('resultTitle');
-            const icon = document.getElementById('resultIcon');
-            const btn = document.getElementById('actionBtn');
-            
-            title.textContent = "Congratulations!";
-            title.className = "text-xl font-bold text-green-400 mb-2 font-poppins tracking-wider uppercase drop-shadow-md";
-            
-            icon.textContent = "🛡️";
-            btn.textContent = nextLevel ? "Next Level" : "Play Again";
-            btn.className = "w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold font-poppins transition-all shadow-lg hover:shadow-green-500/25 border border-white/10";
-            btn.onclick = () => {
-                updateButtons();
-                if(nextLevel) startGame(nextLevel);
-                else startGame('hard');
+
+            const showSuccessScreen = () => {
+                // Show Success Screen
+                finalScore.textContent = score + '/50';
+                document.getElementById('finalTime').textContent = timerDisplay.textContent;
+                difficultyLabel.textContent = "COMPLETED: " + levelSettings[currentLevel].label;
+                
+                const title = document.getElementById('resultTitle');
+                const icon = document.getElementById('resultIcon');
+                const btn = document.getElementById('actionBtn');
+                
+                title.textContent = "Congratulations!";
+                title.className = "text-xl font-bold text-green-400 mb-2 font-poppins tracking-wider uppercase drop-shadow-md";
+                
+                icon.textContent = "🛡️";
+                btn.textContent = nextLevel ? "Next Level" : "Play Again";
+                btn.className = "w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold font-poppins transition-all shadow-lg hover:shadow-green-500/25 border border-white/10";
+                btn.onclick = () => {
+                    updateButtons();
+                    if(nextLevel) startGame(nextLevel);
+                    else startGame('hard');
+                };
+
+                gameOverScreen.classList.remove('hidden');
+                
+                // Play congratulations sound
+                playCongratsSound();
+                
+                saveGame(elapsedSeconds);
             };
 
-            gameOverScreen.classList.remove('hidden');
-            
-            // Play congratulations sound
-            playCongratsSound();
-            
+            // Determine which trivia to show
+            let triviaIdx = -1;
+            if(currentLevel === 'easy') triviaIdx = 0;
+            else if(currentLevel === 'medium') triviaIdx = 1;
+            else if(currentLevel === 'hard') triviaIdx = 2;
 
-            saveGame(elapsedSeconds);
+            if(triviaIdx !== -1 && !triviaShown[triviaIdx]) {
+                showTrivia(triviaIdx, showSuccessScreen);
+            } else {
+                showSuccessScreen();
+            }
         }
 
         function endGame() {
@@ -1429,6 +1593,10 @@
                     el.currentTime = 0;
                 } catch(e) {}
             });
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
 
             // Clean up listeners
             document.removeEventListener('turbo:before-visit', stopMusic);

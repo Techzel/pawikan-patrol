@@ -130,10 +130,49 @@
                 font-size: 1.75rem !important;
             }
         }
+
+        @keyframes shine {
+            100% { transform: translateX(100%); }
+        }
+        .animate-shine {
+            animation: shine 1.5s infinite;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
     </style>
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
+<?php
+    $metadata = \App\Models\ResourceMetadata::all()->keyBy('filename');
+    $files = collect(\Illuminate\Support\Facades\Storage::disk('public')->files('resources'))
+        ->filter(function ($file) {
+            return str_ends_with(strtolower($file), '.pdf');
+        })
+        ->map(function ($file) use ($metadata) {
+            $filename = basename($file);
+            $fileMeta = $metadata->get($filename);
+            return [
+                'name' => $filename,
+                'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
+                'url' => \Illuminate\Support\Facades\Storage::url($file),
+                'description' => $fileMeta ? $fileMeta->description : 'No description provided.',
+                'published_date' => $fileMeta ? $fileMeta->published_date : date('Y-m-d', \Illuminate\Support\Facades\Storage::disk('public')->lastModified($file))
+            ];
+        })
+        ->values();
+?>
 <div id="landing-page">
     <!-- Hero Section with Carousel -->
     <section class="min-h-screen flex items-center justify-center relative px-4 pt-4 bg-gray-900" id="hero">
@@ -708,235 +747,6 @@
                 </div>
             </div>
             
-            <?php
-                $files = collect(\Illuminate\Support\Facades\Storage::disk('public')->files('resources'))
-                    ->filter(function ($file) {
-                        return str_ends_with(strtolower($file), '.pdf');
-                    })
-                    ->map(function ($file) {
-                        return [
-                            'name' => basename($file),
-                            'url' => \Illuminate\Support\Facades\Storage::url($file)
-                        ];
-                    })
-                    ->values();
-            ?>
-            
-            <?php if(count($files) > 0): ?>
-            <!-- Download Resource -->
-            <div class="mt-16">
-                <?php if(count($files) === 1): ?>
-                    <!-- Single File Design -->
-                    <div class="bg-gradient-to-r from-blue-900/40 to-green-900/40 rounded-2xl p-8 max-w-4xl mx-auto border border-blue-500/30 shadow-lg relative overflow-hidden group hover:border-blue-500/50 transition-all duration-300">
-                        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
-                            <span class="text-9xl">📖</span>
-                        </div>
-                        
-                        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                            <div class="text-left w-full md:w-2/3">
-                                <h3 class="text-2xl font-bold text-white mb-2"><?php echo e($files[0]['name']); ?></h3>
-                                <p class="text-blue-200 text-sm md:text-base">Get the full illustrated guide to the Pawikan's journey. Perfect for students and educators.</p>
-                            </div>
-                            
-                            <div class="w-full md:w-1/3 flex justify-center md:justify-end">
-                                <a href="<?php echo e($files[0]['url']); ?>" download class="flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/50 hover:-translate-y-1 group-hover:scale-105 w-full md:w-auto justify-center md:justify-start">
-                                    <span class="text-2xl">📥</span>
-                                    <div class="text-left">
-                                        <span class="block text-xs text-blue-100 uppercase tracking-wider">Free Download</span>
-                                        <span class="block">Get the PDF</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <!-- Multiple Files Grouped Design -->
-                    <div class="bg-gradient-to-r from-blue-900/40 to-green-900/40 rounded-2xl p-8 max-w-4xl mx-auto border border-blue-500/30 shadow-lg relative overflow-hidden group hover:border-blue-500/50 transition-all duration-300">
-                        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
-                            <span class="text-9xl">📚</span>
-                        </div>
-
-                        <div class="relative z-10">
-                            <div class="text-center mb-8">
-                                <h3 class="text-3xl font-bold text-white mb-2">Educational Resources</h3>
-                                <p class="text-blue-200">Explore our collection of conservation guides and materials.</p>
-                            </div>
-
-                            <div class="space-y-4">
-                                <?php $__currentLoopData = $files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div class="bg-gray-900/60 rounded-xl p-4 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 flex items-center justify-between gap-4">
-                                    <div class="flex items-center gap-4 overflow-hidden">
-                                        <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex-shrink-0 flex items-center justify-center">
-                                            <span class="text-xl">📄</span>
-                                        </div>
-                                        <div class="text-left min-w-0">
-                                            <h4 class="font-bold text-white text-sm md:text-base truncate"><?php echo e($file['name']); ?></h4>
-                                            <p class="text-xs text-blue-200">PDF Document</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <a href="<?php echo e($file['url']); ?>" download class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-bold transition-colors shadow-lg">
-                                        <span class="hidden sm:inline">Download</span>
-                                        <span class="text-lg">📥</span>
-                                    </a>
-                                </div>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </div>
-                        </div>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <?php endif; ?>
-        </div>
-    </section>
-
-    <!-- Lifecycle Section -->
-    <section class="py-20 px-4 bg-gray-900 fade-in-up visible" id="lifecycle">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-5xl font-bold text-center mb-12 text-green-400">Pawikan Life Journey</h2>
-            
-            <!-- Enhanced Lifecycle Timeline -->
-            <div class="relative">
-                <!-- Animated Timeline (desktop only) -->
-                <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-2 h-full bg-gradient-to-b from-green-500 via-green-600 to-green-700 rounded-full shadow-lg">
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-transparent animate-pulse"></div>
-                </div>
-                
-                <div class="space-y-14 lg:space-y-20">
-                    <!-- Stage 1: Nesting -->
-                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
-                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
-                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
-                                <div class="flex items-center gap-4 mb-6">
-                                    <span class="text-4xl">🥚</span>
-                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">1. Nesting</h3>
-                                </div>
-                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
-                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
-                                        Mother turtles return to Dahican Beach to lay their eggs, 
-                                        continuing an ancient cycle that connects generations of Pawikan.
-                                    </p>
-                                    <div class="text-sm text-gray-400 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-400">📅</span> <strong class="text-gray-300">Season:</strong> November to March</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-400">⏱️</span> <strong class="text-gray-300">Duration:</strong> 2-3 hours per nest</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hidden lg:block w-1/2 pl-12"></div>
-                    </div>
-
-                    <!-- Stage 2: Incubation -->
-                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
-                        <div class="hidden lg:block w-1/2 pr-12"></div>
-                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-full lg:w-1/2 lg:pl-12">
-                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
-                                <div class="flex items-center gap-4 mb-6">
-                                    <span class="text-4xl">🌡️</span>
-                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">2. Incubation</h3>
-                                </div>
-                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
-                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
-                                        Eggs incubate in warm sand for 45-70 days, with temperature 
-                                        determining the hatchlings' gender - warmer for females, cooler for males.
-                                    </p>
-                                    <div class="text-sm text-gray-400 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-400">🌡️</span> <strong class="text-gray-300">Temperature:</strong> 29-30°C optimal</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-400">📈</span> <strong class="text-gray-300">Success Rate:</strong> 80-90% in protected nests</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Stage 3: Hatching -->
-                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
-                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
-                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
-                                <div class="flex items-center gap-4 mb-6">
-                                    <span class="text-4xl">🐣</span>
-                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">3. Hatching</h3>
-                                </div>
-                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
-                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
-                                        Hatchlings emerge together at night, using their egg tooth 
-                                        to break shells and dig their way to the surface as a team.
-                                    </p>
-                                    <div class="text-sm text-gray-400 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-400">🌙</span> <strong class="text-gray-300">Emergence:</strong> Usually at night</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-400">👥</span> <strong class="text-gray-300">Group Size:</strong> 50-200 hatchlings</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hidden lg:block w-1/2 pl-12"></div>
-                    </div>
-
-                    <!-- Stage 4: The Lost Years -->
-                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
-                        <div class="hidden lg:block w-1/2 pr-12"></div>
-                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-full lg:w-1/2 lg:pl-12">
-                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
-                                <div class="flex items-center gap-4 mb-6">
-                                    <span class="text-4xl">🌊</span>
-                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">4. Oceanic Voyage</h3>
-                                </div>
-                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
-                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
-                                        Young turtles drift with ocean currents for 1-10 years, 
-                                        feeding on plankton and growing rapidly in the open sea.
-                                    </p>
-                                    <div class="text-sm text-gray-400 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-400">⌛</span> <strong class="text-gray-300">Duration:</strong> 1-10 years</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-400">🌍</span> <strong class="text-gray-300">Location:</strong> Open ocean currents</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Stage 5: Adulthood -->
-                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
-                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
-                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
-                                <div class="flex items-center gap-4 mb-6">
-                                    <span class="text-4xl">🐢</span>
-                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">5. Adulthood</h3>
-                                </div>
-                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
-                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
-                                        Mature turtles return to coastal waters at 20-50 years old, 
-                                        ready to nest and continue the ancient cycle of life.
-                                    </p>
-                                    <div class="text-sm text-gray-400 space-y-1">
-                                        <div class="flex items-center gap-2"><span class="text-green-400">🐢</span> <strong class="text-gray-300">Maturity:</strong> 20-50 years</div>
-                                        <div class="flex items-center gap-2"><span class="text-green-400">🔄</span> <strong class="text-gray-300">Lifespan:</strong> 50-100+ years</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hidden lg:block w-1/2 pl-12"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Conservation Impact Text -->
-            <div class="mt-20 text-center">
-                <div class="bg-gray-900 rounded-3xl p-10 max-w-6xl mx-auto shadow-2xl border border-green-500/30">
-                    <h3 class="text-3xl font-bold mb-8 text-green-400">Protecting the Pawikan Journey</h3>
-                    <p class="text-gray-300 text-lg leading-relaxed max-w-4xl mx-auto">
-                        Every Pawikan's life journey begins with a fragile nest on sandy shores. 
-                        Our conservation work ensures these ancient mariners can safely complete their cycle 
-                        from nesting mothers to ocean-adventuring hatchlings, and finally to returning adults 
-                        that will continue this sacred journey for generations to come.
-                    </p>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -1091,8 +901,158 @@
         </div>
     </section>
 
+    <!-- Lifecycle Section -->
+    <section class="py-20 px-4 bg-gray-900 fade-in-up visible" id="lifecycle">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-5xl font-bold text-center mb-12 text-green-400">Pawikan Life Journey</h2>
+            
+            <!-- Enhanced Lifecycle Timeline -->
+            <div class="relative">
+                <!-- Animated Timeline (desktop only) -->
+                <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-2 h-full bg-gradient-to-b from-green-500 via-green-600 to-green-700 rounded-full shadow-lg">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-transparent animate-pulse"></div>
+                </div>
+                
+                <div class="space-y-14 lg:space-y-20">
+                    <!-- Stage 1: Nesting -->
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
+                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span class="text-4xl">🥚</span>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">1. Nesting</h3>
+                                </div>
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
+                                        Mother turtles return to Dahican Beach to lay their eggs, 
+                                        continuing an ancient cycle that connects generations of Pawikan.
+                                    </p>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">📅</span> <strong class="text-gray-300">Season:</strong> November to March</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">⏱️</span> <strong class="text-gray-300">Duration:</strong> 2-3 hours per nest</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden lg:block w-1/2 pl-12"></div>
+                    </div>
+
+                    <!-- Stage 2: Incubation -->
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block w-1/2 pr-12"></div>
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:pl-12">
+                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span class="text-4xl">🌡️</span>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">2. Incubation</h3>
+                                </div>
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
+                                        Eggs incubate in warm sand for 45-70 days, with temperature 
+                                        determining the hatchlings' gender - warmer for females, cooler for males.
+                                    </p>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🌡️</span> <strong class="text-gray-300">Temperature:</strong> 29-30°C optimal</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">📈</span> <strong class="text-gray-300">Success Rate:</strong> 80-90% in protected nests</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 3: Hatching -->
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
+                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span class="text-4xl">🐣</span>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">3. Hatching</h3>
+                                </div>
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
+                                        Hatchlings emerge together at night, using their egg tooth 
+                                        to break shells and dig their way to the surface as a team.
+                                    </p>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🌙</span> <strong class="text-gray-300">Emergence:</strong> Usually at night</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">👥</span> <strong class="text-gray-300">Group Size:</strong> 50-200 hatchlings</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden lg:block w-1/2 pl-12"></div>
+                    </div>
+
+                    <!-- Stage 4: The Lost Years -->
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block w-1/2 pr-12"></div>
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:pl-12">
+                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span class="text-4xl">🌊</span>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">4. Oceanic Voyage</h3>
+                                </div>
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
+                                        Young turtles drift with ocean currents for 1-10 years, 
+                                        feeding on plankton and growing rapidly in the open sea.
+                                    </p>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">⌛</span> <strong class="text-gray-300">Duration:</strong> 1-10 years</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🌍</span> <strong class="text-gray-300">Location:</strong> Open ocean currents</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 5: Adulthood -->
+                    <div class="relative flex flex-col lg:flex-row items-center gap-6">
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-full lg:w-1/2 lg:text-right lg:pr-12">
+                            <div class="bg-gray-900 rounded-3xl p-4 lg:p-6 transform hover:scale-105 transition-all duration-500 shadow-lg border border-green-500/30">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span class="text-4xl">🐢</span>
+                                    <h3 class="text-2xl sm:text-3xl font-bold text-green-400">5. Adulthood</h3>
+                                </div>
+                                <div class="bg-gray-800 rounded-2xl p-6 shadow-xl text-left border-l-8 border-green-500 border-green-500/20">
+                                    <p class="text-gray-200 mb-4 text-lg font-medium leading-relaxed">
+                                        Mature turtles return to coastal waters at 20-50 years old, 
+                                        ready to nest and continue the ancient cycle of life.
+                                    </p>
+                                    <div class="text-sm text-gray-400 space-y-1">
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🐢</span> <strong class="text-gray-300">Maturity:</strong> 20-50 years</div>
+                                        <div class="flex items-center gap-2"><span class="text-green-400">🔄</span> <strong class="text-gray-300">Lifespan:</strong> 50-100+ years</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden lg:block w-1/2 pl-12"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Conservation Impact Text -->
+            <div class="mt-20 text-center">
+                <div class="bg-gray-900 rounded-3xl p-10 max-w-6xl mx-auto shadow-2xl border border-green-500/30">
+                    <h3 class="text-3xl font-bold mb-8 text-green-400">Protecting the Pawikan Journey</h3>
+                    <p class="text-gray-300 text-lg leading-relaxed max-w-4xl mx-auto">
+                        Every Pawikan's life journey begins with a fragile nest on sandy shores. 
+                        Our conservation work ensures these ancient mariners can safely complete their cycle 
+                        from nesting mothers to ocean-adventuring hatchlings, and finally to returning adults 
+                        that will continue this sacred journey for generations to come.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Species Section -->
-    <section class="py-20 px-4 bg-gray-900 fade-in-up visible" id="species">
+    <section class="py-20 px-4 bg-gray-800 fade-in-up visible" id="species">
         <div class="max-w-7xl mx-auto">
             <h2 class="text-5xl font-bold text-center mb-12 text-green-400">Species Found in Dahican</h2>
             
@@ -1209,7 +1169,7 @@
     </section>
 
     <!-- Guidelines Section -->
-    <section class="py-20 px-4 bg-gray-800 fade-in-up visible" id="guidelines">
+    <section class="py-20 px-4 bg-gray-900 fade-in-up visible" id="guidelines">
         <div class="max-w-7xl mx-auto">
             <h2 class="text-5xl font-bold text-center mb-12 text-green-400">Conservation Guidelines</h2>
             
@@ -1311,7 +1271,7 @@
     </section>
 
     <!-- DOs and DON'Ts Section -->
-    <section class="py-20 px-4 bg-gray-900 fade-in-up visible" id="dos-donts">
+    <section class="py-20 px-4 bg-gray-800 fade-in-up visible" id="dos-donts">
         <div class="max-w-7xl mx-auto">
             <h2 class="text-5xl font-bold text-center mb-12 text-green-400">DOs and DON'Ts</h2>  
             <div class="grid md:grid-cols-2 gap-8">
@@ -1486,7 +1446,7 @@
     </section>
 
     <!-- How to Help Section -->
-    <section class="py-20 px-4 bg-gray-800 fade-in-up visible" id="help">
+    <section class="py-20 px-4 bg-gray-900 fade-in-up visible" id="help">
         <div class="max-w-7xl mx-auto">
             <h2 class="text-5xl font-bold text-center mb-12 text-green-400">How You Can Help</h2>
             
@@ -1601,15 +1561,15 @@
                 <div class="col-span-1 text-left md:text-center">
                     <h4 class="text-lg font-semibold mb-4 text-ocean-400">Quick Links</h4>
                     <ul class="space-y-2 flex flex-col items-start md:items-center">
-                        <li><a href="#hero" data-scroll-target="hero" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Home</a></li>
                         <li><a href="#vision" data-scroll-target="vision" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Vision & Mission</a></li>
                         <li><a href="#video-showcase" data-scroll-target="video-showcase" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Conservation Video</a></li>
-                        <li><a href="#lifecycle" data-scroll-target="lifecycle" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Life Cycle</a></li>
                         <li><a href="#threats" data-scroll-target="threats" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Threats</a></li>
+                        <li><a href="#lifecycle" data-scroll-target="lifecycle" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Life Cycle</a></li>
                         <li><a href="#species" data-scroll-target="species" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Species Guide</a></li>
                         <li><a href="#guidelines" data-scroll-target="guidelines" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Guidelines</a></li>
                         <li><a href="#dos-donts" data-scroll-target="dos-donts" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">DOs & DON'Ts</a></li>
                         <li><a href="#help" data-scroll-target="help" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">How to Help</a></li>
+                        <li><a href="#hero" data-scroll-target="hero" class="text-gray-400 hover:text-ocean-400 transition-colors duration-300">Home</a></li>
                     </ul>
                 </div>
                 
@@ -1637,8 +1597,227 @@
             </div>
         </div>
     </footer>
-    </section>
+    <!-- PDF Preview Sidebar -->
+    <div id="pdfSidebar" class="fixed inset-y-0 right-0 w-full lg:w-[800px] xl:w-[1000px] bg-gray-900 border-l border-white/20 transform translate-x-full transition-transform duration-300 ease-in-out z-[100] shadow-2xl flex flex-col">
+        <!-- Sidebar Header -->
+        <div class="p-4 border-b border-white/10 flex items-center justify-between bg-gray-800/80 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-red-500/20 rounded flex items-center justify-center">
+                    <span class="text-red-500">📄</span>
+                </div>
+                <h3 id="pdfSidebarTitle" class="text-white font-bold truncate max-w-[300px] font-poppins">PDF Preview</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <a id="pdfDownloadLink" href="#" target="_blank" class="p-2 text-gray-400 hover:text-white transition-colors" title="Open in New Tab">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+                <button onclick="closePdfPreview()" class="p-2 text-gray-400 hover:text-white transition-colors" title="Close">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Metadata Info -->
+        <div id="pdfSidebarMetadata" class="px-6 py-4 bg-gray-800/50 border-b border-white/10">
+            <div class="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Resource Details</span>
+            </div>
+            <p id="pdfSidebarDescription" class="text-gray-300 text-sm italic mb-3"></p>
+            <div class="flex items-center gap-2 text-gray-400 text-xs">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span>Published on: <span id="pdfSidebarDate" class="text-gray-200"></span></span>
+            </div>
+        </div>
+        <!-- Sidebar Content (Iframe) -->
+        <div class="flex-1 bg-gray-800 overflow-hidden relative">
+            <div id="pdfLoading" class="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-gray-400 text-sm font-poppins">Loading PDF Content...</p>
+                </div>
+            </div>
+            <iframe id="pdfIframe" src="" class="w-full h-full border-0" onload="document.getElementById('pdfLoading').classList.add('hidden')"></iframe>
+        </div>
+    </div>
+
+    <!-- Overlay for PDF Sidebar -->
+    <div id="pdfOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[95]" onclick="closePdfPreview()"></div>
+
+    <?php if(count($files) > 0): ?>
+    <!-- Floating Educational Resources Widget -->
+    <div class="fixed bottom-6 left-6 z-[60] flex flex-col items-start gap-3 pointer-events-none group">
+        <!-- Panel -->
+        <div id="resource-panel" class="mb-4 w-72 md:w-80 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 origin-bottom-left scale-0 opacity-0 pointer-events-auto">
+            <div class="p-5 border-b border-white/5 bg-gradient-to-r from-blue-600/10 to-emerald-600/10">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-white font-bold text-lg flex items-center gap-2">
+                        <span class="text-xl">📚</span>
+                        Marine Resources
+                    </h3>
+                    <button onclick="toggleResourcePanel()" class="p-1 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <p class="text-blue-200/50 text-[10px] font-medium tracking-wider uppercase">Marine Educational Materials</p>
+            </div>
+            
+            <div class="max-h-[400px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
+                <?php $__currentLoopData = $files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="group/item relative bg-white/5 hover:bg-blue-600/10 border border-white/10 rounded-xl p-4 transition-all duration-300 cursor-pointer" 
+                         onclick="openPdfPreview('<?php echo e($file['url']); ?>', '<?php echo e(addslashes($file['title'])); ?>', '<?php echo e(addslashes($file['description'])); ?>', '<?php echo e(date('M d, Y', strtotime($file['published_date']))); ?>')">
+                        <div class="flex items-center gap-4">
+                            <!-- Icon -->
+                            <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-white/5 flex-shrink-0 group-hover/item:scale-110 transition-transform">
+                                <span class="text-2xl">📘</span>
+                            </div>
+                            <!-- Content -->
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-white text-sm font-bold truncate mb-1 group-hover/item:text-blue-300 transition-colors uppercase tracking-tight"><?php echo e($file['title']); ?></h4>
+                                <p class="text-gray-400 text-[11px] leading-snug line-clamp-2 mb-2 italic">
+                                    <?php echo e($file['description']); ?>
+
+                                </p>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-1.5 p-1 px-2 bg-blue-500/10 rounded-md border border-blue-500/20 text-blue-400 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-300" title="View Guide">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-[10px] text-gray-500 font-medium">PDF • <?php echo e(date('M Y', strtotime($file['published_date']))); ?></span>
+                                </div>
+                            </div>
+                            <!-- Simple Download -->
+                            <a href="<?php echo e($file['url']); ?>" download onclick="event.stopPropagation();" 
+                               class="p-2 text-gray-500 hover:text-emerald-400 transition-all hover:scale-110" title="Download">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+            
+        </div>
+
+        <!-- Floating Button -->
+        <div class="flex items-center gap-4 pointer-events-none">
+            <button id="resource-fab" onclick="toggleResourcePanel()" class="pointer-events-auto w-14 h-14 bg-gradient-to-br from-blue-600 to-emerald-600 rounded-2xl shadow-2xl flex items-center justify-center text-white border border-white/20 hover:scale-110 active:scale-95 transition-all duration-300 group/fab relative overflow-hidden">
+                <!-- Animated background shine -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/fab:animate-shine"></div>
+                
+                <span class="text-2xl group-hover/fab:rotate-12 transition-transform duration-300">📖</span>
+                
+                <!-- Pulse effect -->
+                <div class="absolute inset-0 rounded-2xl ring-4 ring-blue-500/30 animate-pulse"></div>
+            </button>
+
+            <!-- Resource Indicator Label -->
+            <div class="pointer-events-auto bg-slate-900/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl shadow-xl transform transition-all duration-500 opacity-0 -translate-l-4 group-hover:opacity-100 group-hover:translate-x-0 flex items-center gap-3">
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest leading-none mb-1">Marine Educational</span>
+                    <span class="text-xs font-semibold text-white leading-none whitespace-nowrap tracking-tight">Marine Resources & Guides</span>
+                </div>
+                <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse-slow"></div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+    // PDF Preview Functions
+    function openPdfPreview(url, name, description, date) {
+        const sidebar = document.getElementById('pdfSidebar');
+        const overlay = document.getElementById('pdfOverlay');
+        const iframe = document.getElementById('pdfIframe');
+        const title = document.getElementById('pdfSidebarTitle');
+        const downloadLink = document.getElementById('pdfDownloadLink');
+        const loader = document.getElementById('pdfLoading');
+        const descEl = document.getElementById('pdfSidebarDescription');
+        const dateEl = document.getElementById('pdfSidebarDate');
+
+        if (!sidebar) return;
+
+        title.textContent = name;
+        descEl.textContent = description || 'No description provided.';
+        dateEl.textContent = date || 'N/A';
+        downloadLink.href = url;
+        loader.classList.remove('hidden');
+        iframe.src = url;
+
+        sidebar.classList.remove('translate-x-full');
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
+
+    function closePdfPreview() {
+        const sidebar = document.getElementById('pdfSidebar');
+        const overlay = document.getElementById('pdfOverlay');
+        const iframe = document.getElementById('pdfIframe');
+
+        if (!sidebar) return;
+
+        sidebar.classList.add('translate-x-full');
+        overlay.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore scrolling
+        
+        // Clear iframe src after transition
+        setTimeout(() => {
+            iframe.src = '';
+        }, 300);
+    }
+
+    function toggleResourcePanel() {
+        const panel = document.getElementById('resource-panel');
+        if (!panel) return;
+        const isOpen = !panel.classList.contains('scale-0');
+        
+        if (isOpen) {
+            panel.classList.add('scale-0', 'opacity-0');
+            panel.classList.remove('scale-100', 'opacity-100');
+        } else {
+            panel.classList.remove('scale-0', 'opacity-0');
+            panel.classList.add('scale-100', 'opacity-100');
+        }
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePdfPreview();
+        }
+    });
+
+    // Cleanup on Turbo navigation
+    document.addEventListener('turbo:before-visit', function() {
+        closePdfPreview();
+    });
+
+    // Auto-open resource panel on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const panel = document.getElementById('resource-panel');
+            if (panel && panel.classList.contains('scale-0')) {
+                toggleResourcePanel();
+            }
+        }, 800); // Slight delay for better entry feel after main page load
+    });
+
+    // Support for Turbo navigation
+    document.addEventListener('turbo:render', () => {
+        setTimeout(() => {
+            const panel = document.getElementById('resource-panel');
+            if (panel && panel.classList.contains('scale-0')) {
+                toggleResourcePanel();
+            }
+        }, 500);
+    });
+</script>
+<?php $__env->stopPush(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Rayver\Desktop\my_app\resources\views/LandingPage.blade.php ENDPATH**/ ?>

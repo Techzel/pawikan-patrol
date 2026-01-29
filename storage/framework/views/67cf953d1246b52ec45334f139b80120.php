@@ -156,21 +156,21 @@
                     <!-- Dropdown Menu -->
                     <div class="absolute top-full left-0 mt-2 w-64 bg-gradient-to-br from-deep-800/95 to-deep-900/95 backdrop-blur-lg border border-ocean-500/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                         <div class="p-4 space-y-2">
+                             <a href="<?php echo e(url('/#vision')); ?>" data-scroll-target="vision" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <span class="text-xl">🌟</span>
+                                <span class="text-sm font-semibold uppercase">Vision & Mission</span>
+                            </a>
                             <a href="<?php echo e(url('/#video-showcase')); ?>" data-scroll-target="video-showcase" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-xl">🎬</span>
                                 <span class="text-sm font-semibold uppercase">Conservation Video</span>
                             </a>
-                            <a href="<?php echo e(url('/#vision')); ?>" data-scroll-target="vision" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                <span class="text-xl">🌟</span>
-                                <span class="text-sm font-semibold uppercase">Vision & Mission</span>
+                            <a href="<?php echo e(url('/#threats')); ?>" data-scroll-target="threats" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
+                                <span class="text-xl">⚠️</span>
+                                <span class="text-sm font-semibold uppercase">Threats</span>
                             </a>
                             <a href="<?php echo e(url('/#lifecycle')); ?>" data-scroll-target="lifecycle" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-xl">🌊</span>
                                 <span class="text-sm font-semibold uppercase">Life Cycle</span>
-                            </a>
-                            <a href="<?php echo e(url('/#threats')); ?>" data-scroll-target="threats" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
-                                <span class="text-xl">⚠️</span>
-                                <span class="text-sm font-semibold uppercase">Threats</span>
                             </a>
                             <a href="<?php echo e(url('/#species')); ?>" data-scroll-target="species" class="dropdown-link flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-ocean-600/20 rounded-lg transition-colors w-full text-left">
                                 <span class="text-xl">🐢</span>
@@ -349,21 +349,21 @@
                 
                 <!-- Home Sub-items -->
                 <div class="ml-8 space-y-1">
-                    <a href="<?php echo e(url('/#video-showcase')); ?>" data-scroll-target="video-showcase" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                        <span class="text-lg">🎬</span>
-                        <span class="text-sm font-semibold uppercase">Conservation Video</span>
-                    </a>
                     <a href="<?php echo e(url('/#vision')); ?>" data-scroll-target="vision" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">🌟</span>
                         <span class="text-sm font-semibold uppercase">Vision & Mission</span>
                     </a>
-                    <a href="<?php echo e(url('/#lifecycle')); ?>" data-scroll-target="lifecycle" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
-                        <span class="text-lg">🌊</span>
-                        <span class="text-sm font-semibold uppercase">Life Cycle</span>
+                    <a href="<?php echo e(url('/#video-showcase')); ?>" data-scroll-target="video-showcase" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <span class="text-lg">🎬</span>
+                        <span class="text-sm font-semibold uppercase">Conservation Video</span>
                     </a>
                     <a href="<?php echo e(url('/#threats')); ?>" data-scroll-target="threats" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">⚠️</span>
                         <span class="text-sm font-semibold uppercase">Threats</span>
+                    </a>
+                    <a href="<?php echo e(url('/#lifecycle')); ?>" data-scroll-target="lifecycle" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <span class="text-lg">🌊</span>
+                        <span class="text-sm font-semibold uppercase">Life Cycle</span>
                     </a>
                     <a href="<?php echo e(url('/#species')); ?>" data-scroll-target="species" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">🐢</span>
@@ -373,13 +373,17 @@
                         <span class="text-lg">📋</span>
                         <span class="text-sm font-semibold uppercase">Guidelines</span>
                     </a>
+                    <a href="<?php echo e(url('/#dos-donts')); ?>" data-scroll-target="dos-donts" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
+                        <span class="text-lg">✓✗</span>
+                        <span class="text-sm font-semibold uppercase">DOs & DON'Ts</span>
+                    </a>
                     <a href="<?php echo e(url('/#help')); ?>" data-scroll-target="help" class="mobile-nav-link flex items-center gap-3 text-gray-300 hover:text-white hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left">
                         <span class="text-lg">🤝</span>
                         <span class="text-sm font-semibold uppercase">How to Help</span>
                     </a>
                 </div>
             </div>
-            
+
             <!-- Other Pages -->
             <a href="/3d-explorer" class="mobile-nav-link flex items-center gap-3 hover:text-ocean-400 hover:bg-ocean-600/20 px-3 py-2 rounded-lg transition-colors w-full text-left <?php echo e(request()->is('3d-explorer') ? '!bg-ocean-600/30 !text-ocean-300' : 'text-white'); ?>" style="<?php echo e(request()->is('3d-explorer') ? 'background-color: rgba(20, 184, 166, 0.3) !important; color: #5eead4 !important;' : ''); ?>">
                 <span class="text-lg">🌐</span>
