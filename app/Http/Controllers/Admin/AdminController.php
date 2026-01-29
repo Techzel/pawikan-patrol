@@ -749,14 +749,9 @@ class AdminController extends Controller
             ->map(function ($file) use ($metadata) {
                 $filename = basename($file);
                 $fileMeta = $metadata->get($filename);
-                $encodedFilename = rawurlencode($filename);
-                $isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') === true;
-                $url = Storage::url($file);
                 
-                // On Vercel, use the direct public resources path as storage link is unavailable
-                if ($isVercel || file_exists(public_path('resources/' . $filename))) {
-                    $url = asset('resources/' . $encodedFilename);
-                }
+                // Use our bulletproof PHP proxy for admin previews as well
+                $url = route('view-resource', ['filename' => $filename]);
 
                 return [
                     'path' => $file,
@@ -875,6 +870,51 @@ class AdminController extends Controller
             
             return back()->with('error', 'Failed to delete file. Please try again.');
         }
+    }
+
+    /**
+     * View PDF via Proxy - Essential for Vercel/Railway robustness.
+     *
+     * @param  string  $filename
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function viewPdf($filename)
+    {
+        // 1. Try public/resources folder first (for committed files)
+        $publicPath = public_path('resources/' . $filename);
+        if (file_exists($publicPath)) {
+            return response()->file($publicPath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"'
+            ]);
+        }
+
+        // 2. Try storage/resources folder (for uploaded files)
+        $storagePath = 'resources/' . $filename;
+        if (Storage::disk('public')->exists($storagePath)) {
+            return response()->stream(function () use ($storagePath) {
+                $stream = Storage::disk('public')->readStream($storagePath);
+                fpassthru($stream);
+                if (is_resource($stream)) fclose($stream);
+            }, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            ]);
+        }
+
+        // 3. Last resort - check /tmp (Vercel specific temp storage)
+        if (env('VERCEL') === true) {
+            $tmpPath = '/tmp/storage/app/public/resources/' . $filename;
+            if (file_exists($tmpPath)) {
+                return response()->file($tmpPath, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="' . $filename . '"'
+                ]);
+            }
+        }
+
+        abort(404, "Requested resource '{$filename}' not found on server.");
     }
 
     /**
