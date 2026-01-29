@@ -23,8 +23,8 @@ class PatrolReportController extends Controller
             // Calculate Analytics
             $analytics = [
                 'total' => PatrolReport::count(),
-                'pending' => PatrolReport::whereIn('status', ['pending', 'submitted', 'under_review'])->count(),
-                'accepted' => PatrolReport::whereIn('status', ['accepted', 'verified', 'resolved'])->count(),
+                'pending' => PatrolReport::whereIn('status', ['pending', 'submitted', 'under_review', 'needs_correction'])->count(),
+                'accepted' => PatrolReport::whereIn('status', ['accepted', 'verified', 'resolved', 'validated', 'closed'])->count(),
                 'rejected' => PatrolReport::whereIn('status', ['reject', 'rejected'])->count(),
                 
                 // Grouped Stats
