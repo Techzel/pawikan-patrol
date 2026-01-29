@@ -16,21 +16,163 @@
 
     <!-- Filters -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-6">
-        <!-- Quick Status Overview -->
-        <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-center">
-                <div class="text-2xl font-bold text-green-400">{{ $reports->whereIn('status', ['accepted', 'validated'])->count() }}</div>
-                <div class="text-xs text-green-300">Accepted/Validated</div>
+    <!-- Analytics & Statistics Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+        <div class="mb-6 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <h2 class="text-2xl font-bold text-white cinzel-heading">Report Analytics</h2>
+                <button onclick="toggleAnalytics()" class="text-xs bg-white/5 hover:bg-white/10 text-ocean-400 px-2 py-1 rounded border border-white/10 transition-all">
+                    <span id="toggleText">Hide Stats</span>
+                </button>
             </div>
-            <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
-                <div class="text-2xl font-bold text-red-400">{{ $reports->whereIn('status', ['reject', 'rejected'])->count() }}</div>
-                <div class="text-xs text-red-300">Rejected</div>
-            </div>
-            <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-center">
-                <div class="text-2xl font-bold text-blue-400">{{ $reports->whereIn('status', ['pending_review', 'pending', 'submitted'])->count() }}</div>
-                <div class="text-xs text-blue-300">Pending</div>
+            <div class="flex items-center gap-2 text-xs text-gray-400 cinzel-text bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                <i class="fas fa-calendar-alt text-ocean-400"></i>
+                <span>Summary as of {{ now()->format('M d, Y') }}</span>
             </div>
         </div>
+
+        <div id="analyticsContent" class="transition-all duration-500 overflow-hidden">
+            <!-- Metric Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="glass-dark border border-white/10 rounded-2xl p-5 hover:border-ocean-500/50 transition-all group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="p-2.5 bg-ocean-500/20 rounded-xl text-ocean-400 group-hover:bg-ocean-500 group-hover:text-white transition-all">
+                        <i class="fas fa-clipboard-list text-xl"></i>
+                    </div>
+                    <span class="text-xs font-bold text-ocean-400 bg-ocean-500/10 px-2 py-1 rounded-md">Total</span>
+                </div>
+                <div class="text-3xl font-bold text-white leading-tight">{{ $analytics['total'] }}</div>
+                <div class="text-xs text-gray-400 mt-1">Total Reports Submitted</div>
+            </div>
+
+            <div class="glass-dark border border-white/10 rounded-2xl p-5 hover:border-yellow-500/50 transition-all group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="p-2.5 bg-yellow-500/20 rounded-xl text-yellow-400 group-hover:bg-yellow-500 group-hover:text-white transition-all">
+                        <i class="fas fa-clock text-xl"></i>
+                    </div>
+                    @php $pendingTrend = $analytics['pending'] > 0 ? 'Action Needed' : 'All Clear'; @endphp
+                    <span class="text-xs font-bold text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-md">{{ $pendingTrend }}</span>
+                </div>
+                <div class="text-3xl font-bold text-white leading-tight">{{ $analytics['pending'] }}</div>
+                <div class="text-xs text-gray-400 mt-1 text-yellow-300/70">Awaiting Admin Review</div>
+            </div>
+
+            <div class="glass-dark border border-white/10 rounded-2xl p-5 hover:border-emerald-500/50 transition-all group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="p-2.5 bg-emerald-500/20 rounded-xl text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                        <i class="fas fa-check-double text-xl"></i>
+                    </div>
+                    @php 
+                        $acceptanceRate = $analytics['total'] > 0 ? round(($analytics['accepted'] / $analytics['total']) * 100) : 0;
+                    @endphp
+                    <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md">{{ $acceptanceRate }}% Rate</span>
+                </div>
+                <div class="text-3xl font-bold text-white leading-tight">{{ $analytics['accepted'] }}</div>
+                <div class="text-xs text-gray-400 mt-1">Successfully Validated</div>
+            </div>
+
+            <div class="glass-dark border border-white/10 rounded-2xl p-5 hover:border-blue-500/50 transition-all group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="p-2.5 bg-blue-500/20 rounded-xl text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                        <i class="fas fa-chart-line text-xl"></i>
+                    </div>
+                    <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2 py-1 rounded-md">30 Days</span>
+                </div>
+                <div class="text-3xl font-bold text-white leading-tight">{{ array_sum($analytics['recent_reports']->toArray()) }}</div>
+                <div class="text-xs text-gray-400 mt-1">Reports in Last 30 Days</div>
+            </div>
+        </div>
+
+        <!-- Detailed Analytics Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Report Type Distribution -->
+            <div class="glass-dark border border-white/10 rounded-2xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider cinzel-text">Distribution by Type</h3>
+                    <i class="fas fa-layer-group text-ocean-400 opacity-50"></i>
+                </div>
+                <div class="p-6 space-y-4">
+                    @php
+                        $types = [
+                            'nesting' => ['label' => 'Nesting', 'color' => 'bg-emerald-500'],
+                            'rescue' => ['label' => 'Rescue', 'color' => 'bg-blue-500'],
+                            'stranding' => ['label' => 'Stranding', 'color' => 'bg-orange-500'],
+                            'hatchling' => ['label' => 'Hatchling', 'color' => 'bg-teal-500'],
+                            'incident' => ['label' => 'Incident', 'color' => 'bg-red-500'],
+                        ];
+                    @endphp
+                    
+                    @foreach($types as $key => $type)
+                        @php 
+                            $count = $analytics['by_type'][$key] ?? 0;
+                            $percentage = $analytics['total'] > 0 ? ($count / $analytics['total']) * 100 : 0;
+                        @endphp
+                        <div>
+                            <div class="flex justify-between text-xs mb-1.5">
+                                <span class="text-gray-300">{{ $type['label'] }}</span>
+                                <span class="text-white font-bold">{{ $count }}</span>
+                            </div>
+                            <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                                <div class="{{ $type['color'] }} h-full transition-all duration-1000" style="width: {{ $percentage }}%"></div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Priority Breakdown -->
+            <div class="glass-dark border border-white/10 rounded-2xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider cinzel-text">Priority Breakdown</h3>
+                    <i class="fas fa-exclamation-triangle text-ocean-400 opacity-50"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-4 h-full">
+                        <div class="flex-1 space-y-5">
+                            @foreach(['critical' => 'red', 'high' => 'orange', 'medium' => 'yellow', 'low' => 'green'] as $priority => $color)
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-{{ $color }}-500"></div>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="text-gray-400 capitalize">{{ $priority }}</span>
+                                            <span class="text-white font-bold">{{ $analytics['by_priority'][$priority] ?? 0 }}</span>
+                                        </div>
+                                        @php 
+                                            $pCount = $analytics['by_priority'][$priority] ?? 0;
+                                            $pPercent = $analytics['total'] > 0 ? ($pCount / $analytics['total']) * 100 : 0;
+                                        @endphp
+                                        <div class="w-full bg-white/5 rounded-full h-1">
+                                            <div class="bg-{{ $color }}-500 h-full rounded-full" style="width: {{ $pPercent }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="hidden sm:flex flex-col items-center justify-center border-l border-white/10 pl-8 ml-4">
+                            <div class="text-4xl font-black text-red-500/80">{{ $analytics['by_priority']['critical'] ?? 0 }}</div>
+                            <div class="text-[10px] text-red-400 font-bold uppercase tracking-tighter">Critical Alerts</div>
+                            <div class="mt-4 text-xs text-gray-500 italic text-center max-w-[100px]">Requires immediate field response</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnalytics() {
+            const content = document.getElementById('analyticsContent');
+            const text = document.getElementById('toggleText');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                text.textContent = 'Hide Stats';
+            } else {
+                content.classList.add('hidden');
+                text.textContent = 'Show Stats';
+            }
+        }
+    </script>
 
         <div class="glass-dark rounded-xl p-6 border border-ocean-500/20">
             <form method="GET" action="{{ route('admin.patrol-reports.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">

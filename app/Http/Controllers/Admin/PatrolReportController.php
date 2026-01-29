@@ -20,6 +20,25 @@ class PatrolReportController extends Controller
     {
         // If it's not an AJAX request, return the view with initial data
         if (!$request->expectsJson()) {
+            // Calculate Analytics
+            $analytics = [
+                'total' => PatrolReport::count(),
+                'pending' => PatrolReport::whereIn('status', ['pending', 'submitted', 'under_review'])->count(),
+                'accepted' => PatrolReport::whereIn('status', ['accepted', 'verified', 'resolved'])->count(),
+                'rejected' => PatrolReport::whereIn('status', ['reject', 'rejected'])->count(),
+                
+                // Grouped Stats
+                'by_type' => PatrolReport::selectRaw('report_type, count(*) as count')->groupBy('report_type')->pluck('count', 'report_type'),
+                'by_priority' => PatrolReport::selectRaw('priority, count(*) as count')->groupBy('priority')->pluck('count', 'priority'),
+                
+                // Recent activity (Last 30 days)
+                'recent_reports' => PatrolReport::where('created_at', '>=', now()->subDays(30))
+                    ->selectRaw('DATE(created_at) as date, count(*) as count')
+                    ->groupBy('date')
+                    ->orderBy('date')
+                    ->pluck('count', 'date'),
+            ];
+
             $reports = PatrolReport::with(['patroller:id,name', 'photos:id,patrol_report_id', 'verifier:id,name'])
                 ->select([
                     'id', 'patroller_id', 'report_type', 'title', 'description', 
@@ -33,7 +52,7 @@ class PatrolReportController extends Controller
                 ->orderBy('name')
                 ->get();
             
-            return view('admin.patrol-reports.index', compact('reports', 'patrollers'));
+            return view('admin.patrol-reports.index', compact('reports', 'patrollers', 'analytics'));
         }
 
         $validator = Validator::make($request->all(), [

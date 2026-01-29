@@ -173,13 +173,9 @@
         ->map(function ($file) use ($metadata) {
             $filename = basename($file);
             $fileMeta = $metadata->get($filename);
-            $encodedFilename = rawurlencode($filename);
-            $isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') === true;
-            $url = \Illuminate\Support\Facades\Storage::url($file);
             
-            if ($isVercel || file_exists(public_path('resources/' . $filename))) {
-                $url = asset('resources/' . $encodedFilename);
-            }
+            // Generate a bulletproof URL using our PHP proxy
+            $url = route('view-resource', ['filename' => $filename]);
 
             return [
                 'name' => $filename,
