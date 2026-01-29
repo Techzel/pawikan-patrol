@@ -149,7 +149,7 @@
                 <div id="gameHUD" class="flex flex-row md:flex-col gap-2 items-start md:items-end mx-auto md:mx-0 select-none">
                     
                     <!-- Status Group -->
-                    <div class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-28 md:w-32 transform transition-all hover:scale-105">
+                    <div id="hud-status-group" class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-28 md:w-32 transform transition-all hover:scale-105">
                         <div class="px-3 py-1.5 border-b border-white/10 flex justify-between items-center bg-white/5">
                             <span class="text-xs md:text-base">⭐</span> 
                             <span id="levelDisplay" class="font-poppins text-[10px] md:text-xs font-bold text-white tracking-widest">EASY</span>
@@ -161,7 +161,7 @@
                     </div>
 
                     <!-- Progress Group -->
-                    <div class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-28 md:w-32 transform transition-all hover:scale-105">
+                    <div id="hud-progress-group" class="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg flex flex-col overflow-hidden w-28 md:w-32 transform transition-all hover:scale-105">
                         <div class="px-3 py-1.5 border-b border-white/10 flex justify-between items-center bg-white/5">
                             <span class="text-xs md:text-base text-green-400">🗑️</span> 
                             <span id="scoreDisplay" class="font-poppins text-xs md:text-sm font-bold text-white">0/50</span>
@@ -178,7 +178,7 @@
             <!-- Bottom Bar (Controls & Info) -->
             <div class="flex flex-col items-center gap-3 pointer-events-auto pb-1 w-full">
                 <!-- In-Game Difficulty Control -->
-                <div class="flex gap-2 bg-black/20 backdrop-blur-md p-1 md:p-1.5 rounded-xl border border-white/10 shadow-lg max-w-full overflow-x-auto">
+                <div id="difficulty-container" class="flex gap-2 bg-black/20 backdrop-blur-md p-1 md:p-1.5 rounded-xl border border-white/10 shadow-lg max-w-full overflow-x-auto pointer-events-auto">
                     <button id="hud-btn-easy" onclick="startGame('easy')" class="px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold font-poppins transition-all bg-green-600 text-white border border-green-400">
                         EASY
                     </button>
@@ -274,84 +274,34 @@
         </div>
         <?php endif; ?>
 
-        <!-- Instruction Modal (How to Play) -->
-        <div id="instruction-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-500 ease-out hidden pointer-events-auto p-4">
-            <div id="instruction-modal-content" class="bg-gradient-to-br from-deep-900 to-ocean-900 border-2 border-ocean-500/40 p-6 md:p-8 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto text-center shadow-2xl relative transform scale-90 opacity-0 transition-all duration-500 ease-out flex flex-col h-full md:h-auto min-h-[500px]">
-                
-                <!-- Close Button -->
-                <button id="close-instruction-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full z-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                
-                <!-- Header (Top Anchor) -->
-                <div class="mb-4 flex-none mt-2">
-                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-1 font-poppins tracking-wide flex items-center justify-center gap-3">
-                        <span class="text-3xl">📜</span>
-                        How to Play
-                    </h2>
-                    <p class="text-gray-500 font-poppins text-sm">Ocean Guardian</p>
-                </div>
-                
-                <!-- Centered Content Wrapper -->
-                <div class="flex-grow flex flex-col justify-center w-full">
-                    <!-- Instructions Content - Horizontal Grid -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 w-full">
-                        <!-- Mission Card -->
-                        <div class="bg-gradient-to-br from-green-900/20 to-green-800/10 border border-green-500/20 rounded-xl p-4 text-center group hover:border-green-500/40 transition-all hover:shadow-lg hover:shadow-green-500/10 flex flex-col items-center justify-center h-full">
-                            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🎯</div>
-                            <h3 class="text-green-400 font-bold font-poppins text-sm mb-2">Your Mission</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">Click debris before it hits the turtle</p>
-                        </div>
-                        
-                        <!-- Health Card -->
-                        <div class="bg-gradient-to-br from-red-900/20 to-red-800/10 border border-red-500/20 rounded-xl p-4 text-center group hover:border-red-500/40 transition-all hover:shadow-lg hover:shadow-red-500/10 flex flex-col items-center justify-center h-full">
-                            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">❤️</div>
-                            <h3 class="text-red-400 font-bold font-poppins text-sm mb-2">Health System</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">100 HP, -20 per hit. 0 = Game Over</p>
-                        </div>
-                        
-                        <!-- Win Card -->
-                        <div class="bg-gradient-to-br from-cyan-900/20 to-cyan-800/10 border border-cyan-500/20 rounded-xl p-4 text-center group hover:border-cyan-500/40 transition-all hover:shadow-lg hover:shadow-cyan-500/10 flex flex-col items-center justify-center h-full">
-                            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🗑️</div>
-                            <h3 class="text-cyan-400 font-bold font-poppins text-sm mb-2">Win Condition</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">Collect 50 trash pieces per level</p>
-                        </div>
-                        
-                        <!-- Difficulty Card -->
-                        <div class="bg-gradient-to-br from-yellow-900/20 to-yellow-800/10 border border-yellow-500/20 rounded-xl p-4 text-center group hover:border-yellow-500/40 transition-all hover:shadow-lg hover:shadow-yellow-500/10 flex flex-col items-center justify-center h-full">
-                            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">⭐</div>
-                            <h3 class="text-yellow-400 font-bold font-poppins text-sm mb-2">Difficulty</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">Unlock <span class="text-yellow-400">Medium</span> & <span class="text-red-400">Hard</span></p>
-                        </div>
-                    </div>
+        <!-- Interactive Tutorial System (Replaces Old Popup) -->
+        <div id="game-tutorial-overlay" class="fixed inset-0 z-[10000] pointer-events-none hidden transition-all duration-500">
+            <!-- Dark Hole Backdrop -->
+            <div id="tutorial-spotlight" class="absolute inset-0 bg-black/80 transition-all duration-500" style="clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%);"></div>
+            
+            <!-- Tutorial Content -->
+            <div id="tutorial-content" class="absolute z-[10001] pointer-events-auto flex flex-col items-center transition-all duration-500 w-full max-w-[90%] md:max-w-md">
+                <!-- Speech Bubble -->
+                <div id="tutorial-bubble" class="bg-gradient-to-br from-indigo-900/95 to-deep-900/95 border-2 border-cyan-500/40 p-5 md:p-6 rounded-2xl shadow-2xl backdrop-blur-xl relative">
+                    <!-- Dynamic Tail -->
+                    <div id="tutorial-tail" class="absolute w-6 h-6 bg-indigo-900 border-indigo-400 rotate-45 z-0"></div>
                     
-                    <!-- Voice-over Indicator -->
-                    <div id="voice-indicator" class="mb-4 flex items-center justify-center gap-2 text-ocean-400 text-sm font-poppins hidden">
-                        <svg class="animate-pulse h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
-                        </svg>
-                        <span id="voice-status">Playing instructions...</span>
-                    </div>
-                    
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col md:flex-row gap-3">
-                        <button id="replay-instructions-btn" class="flex-1 py-3.5 bg-ocean-600/50 hover:bg-ocean-600 text-white rounded-xl font-bold font-poppins transition-all shadow-lg border border-ocean-500/30 flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            Replay Instructions
-                        </button>
-                        <button id="start-playing-btn" class="flex-1 py-3.5 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold font-poppins transition-all shadow-lg hover:shadow-green-500/50 border border-white/10 text-lg">
-                            START PLAYING
-                        </button>
-                    </div>
-                    
-                    <!-- Skip Option -->
-                    <p class="text-gray-500 text-xs mt-4 font-poppins">
-                        Press ESC or click the X button to skip
+                    <h3 id="tutorial-title" class="text-xl font-bold text-cyan-400 mb-2 font-poppins">Welcome, Guardian!</h3>
+                    <p id="tutorial-text" class="text-gray-200 text-sm md:text-base leading-relaxed font-poppins mb-6">
+                        I am your guide. Let me show you how to protect our oceans.
                     </p>
+
+                    <div class="flex items-center justify-between gap-4">
+                        <button id="tutorial-skip" class="text-xs text-gray-500 hover:text-white uppercase tracking-widest font-bold transition-colors">Skip Tutorial</button>
+                        <button id="tutorial-next" class="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-bold text-sm transition-all shadow-lg shadow-cyan-500/20 border border-cyan-400/30 flex items-center gap-2">
+                            <span>Next</span>
+                            <i class="fas fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-center gap-1.5" id="tutorial-dots">
+                        <!-- Dots added via JS -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -597,154 +547,279 @@
         // Standard Turbo Init - Executed immediately as script is at end of body
         initPawikanAudio();
 
-        // ===== INSTRUCTION MODAL SYSTEM =====
-        const instructionModal = document.getElementById('instruction-modal');
-        const instructionModalContent = document.getElementById('instruction-modal-content');
-        const instructionVoice = document.getElementById('instruction-voice');
-        const closeInstructionBtn = document.getElementById('close-instruction-btn');
-        const replayInstructionsBtn = document.getElementById('replay-instructions-btn');
-        const startPlayingBtn = document.getElementById('start-playing-btn');
-        const voiceIndicator = document.getElementById('voice-indicator');
-        const voiceStatus = document.getElementById('voice-status');
+        // ===== INTERACTIVE TUTORIAL SYSTEM =====
+        const tutorialOverlay = document.getElementById('game-tutorial-overlay');
+        const tutorialContent = document.getElementById('tutorial-content');
+        const tutorialSpotlight = document.getElementById('tutorial-spotlight');
+        const tutorialTitle = document.getElementById('tutorial-title');
+        const tutorialText = document.getElementById('tutorial-text');
+        const tutorialNext = document.getElementById('tutorial-next');
+        const tutorialSkip = document.getElementById('tutorial-skip');
+        const tutorialDots = document.getElementById('tutorial-dots');
 
-        let hasSeenInstructions = false;
-        
-        // Check if user has seen instructions before (using localStorage)
-        try {
-            const storageKey = <?php if(auth()->guard()->check()): ?> '<?php echo e(Auth::id()); ?>_ocean_guardian_instructions_seen' <?php else: ?> 'ocean_guardian_instructions_seen' <?php endif; ?>;
-            hasSeenInstructions = localStorage.getItem(storageKey) === 'true';
-        } catch (e) {
-            console.log('LocalStorage not available');
+        let currentStep = 0;
+        const tutorialSteps = [
+            {
+                title: "Welcome, Guardian!",
+                text: "I am the Ocean Guardian. Our waters are being filled with trash, and I need your help to protect our home!",
+                targetId: null, // Fullscreen
+                position: 'center'
+            },
+            {
+                title: "Your Mission",
+                text: "Debris like plastic bags and nets will float towards the center. Click or tap them to clear them away before they hit me!",
+                targetId: 'gameCanvas',
+                position: 'center'
+            },
+            {
+                title: "Stay Healthy",
+                text: "Your <b>Health (❤️)</b> is crucial! It drops by <b>-20</b> every time trash hits me. Watch the difficulty level (⭐) too!",
+                targetId: 'hud-status-group',
+                position: 'below'
+            },
+            {
+                title: "Track Progress",
+                text: "Fill the <b>Score (🗑️)</b> by clearing trash! You need 50 items to win. The <b>Timer (⏱️)</b> tracks your speed.",
+                targetId: 'hud-progress-group',
+                position: 'below'
+            },
+            {
+                title: "Battle Levels",
+                text: "You can choose your challenge here. Complete <b>Easy</b> to unlock <b>Medium</b>, and then <b>Hard</b>!",
+                targetId: 'difficulty-container',
+                position: 'above'
+            },
+            {
+                title: "Sound & Music",
+                text: "You can toggle the ocean atmosphere and adjust volume here.",
+                targetId: 'music-toggle',
+                position: 'above-right'
+            },
+            {
+                title: "Ready to Defend?",
+                text: "Click this button to start the defense! Good luck, the ocean is counting on you!",
+                targetId: 'mainStartContainer',
+                position: 'below'
+            }
+        ];
+
+        function updateSpotlight(targetId) {
+            const tail = document.getElementById('tutorial-tail');
+            const bubble = document.getElementById('tutorial-bubble');
+            
+            if (!targetId) {
+                tutorialSpotlight.style.clipPath = 'polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%)';
+                if (tail) tail.classList.add('hidden');
+                
+                // Position center
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                const contentRect = tutorialContent.getBoundingClientRect();
+                tutorialContent.style.top = (h / 2 - contentRect.height / 2) + 'px';
+                tutorialContent.style.left = (w / 2 - contentRect.width / 2) + 'px';
+                tutorialContent.style.transform = 'none';
+                return;
+            }
+
+            const el = document.getElementById(targetId);
+            if (!el) return;
+
+            const rect = el.getBoundingClientRect();
+            const padding = 15;
+            const top = rect.top - padding;
+            const left = rect.left - padding;
+            const bottom = rect.bottom + padding;
+            const right = rect.right + padding;
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+            // Update hole
+            tutorialSpotlight.style.clipPath = `polygon(
+                0% 0%, 0% 100%, ${left}px 100%, 
+                ${left}px ${top}px, ${right}px ${top}px, ${right}px ${bottom}px, ${left}px ${bottom}px, 
+                ${left}px 100%, 100% 100%, 100% 0%
+            )`;
+
+            // Position bubble and tail
+            if (tail) tail.classList.remove('hidden');
+            const step = tutorialSteps[currentStep];
+            const contentRect = tutorialContent.getBoundingClientRect();
+            
+            let contentTop, contentLeft;
+            
+            // Default tail styles
+            tail.style.cssText = ''; 
+            tail.className = "absolute w-4 h-4 bg-indigo-900 rotate-45 border-cyan-500/40 border-l-2 border-t-2";
+
+            if (step.position === 'below') {
+                contentTop = bottom + 25;
+                contentLeft = rect.left + (rect.width / 2) - (contentRect.width / 2);
+                tail.style.top = '-8px';
+                tail.style.left = '50%';
+                tail.style.marginLeft = '-8px';
+            } else if (step.position === 'above') {
+                contentTop = top - contentRect.height - 25;
+                contentLeft = rect.left + (rect.width / 2) - (contentRect.width / 2);
+                tail.style.bottom = '-8px';
+                tail.style.left = '50%';
+                tail.style.marginLeft = '-8px';
+                tail.className = "absolute w-4 h-4 bg-indigo-900 rotate-45 border-cyan-500/40 border-r-2 border-b-2";
+            } else if (step.position === 'above-right') {
+                contentTop = top - contentRect.height - 25;
+                contentLeft = rect.left;
+                tail.style.bottom = '-8px';
+                tail.style.left = '20px';
+                tail.className = "absolute w-4 h-4 bg-indigo-900 rotate-45 border-cyan-500/40 border-r-2 border-b-2";
+            } else {
+                // center/custom
+                contentTop = (h / 2) - (contentRect.height / 2);
+                contentLeft = (w / 2) - (contentRect.width / 2);
+                if (tail) tail.classList.add('hidden');
+            }
+
+            // Boundary checks
+            contentLeft = Math.max(20, Math.min(contentLeft, w - contentRect.width - 20));
+            contentTop = Math.max(80, Math.min(contentTop, h - contentRect.height - 40));
+
+            tutorialContent.style.top = contentTop + 'px';
+            tutorialContent.style.left = contentLeft + 'px';
+            tutorialContent.style.transform = 'none';
         }
 
-        // Show instruction modal
-        function showInstructionModal() {
-            if (!instructionModal || !instructionModalContent) return;
+        // Voice-over helper
+        function speakTutorial(text) {
+            if ('speechSynthesis' in window) {
+                // Cancel any existing speech
+                window.speechSynthesis.cancel();
+                
+                // Create text-only version (strip HTML)
+                const div = document.createElement('div');
+                div.innerHTML = text;
+                const cleanText = div.textContent || div.innerText || "";
+                
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                
+                // Try to use a good voice
+                const triggerSpeech = () => {
+                    const voices = window.speechSynthesis.getVoices();
+                    // Prefer male/David/Google US English as per existing trivia style, or just default
+                    const preferredVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Google US English'));
+                    if (preferredVoice) utterance.voice = preferredVoice;
+                    
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.0;
+                    utterance.volume = 1.0;
+                    
+                    window.speechSynthesis.speak(utterance);
+                };
+
+                if (window.speechSynthesis.getVoices().length > 0) {
+                    triggerSpeech();
+                } else {
+                    window.speechSynthesis.onvoiceschanged = triggerSpeech;
+                }
+            }
+        }
+
+        function showStep(index) {
+            currentStep = index;
+            const step = tutorialSteps[index];
             
-            // Pause background music
-            if (bgMusic && !bgMusic.paused) {
+            // Update Text
+            tutorialTitle.textContent = step.title;
+            tutorialText.innerHTML = step.text;
+            tutorialNext.querySelector('span').textContent = index === tutorialSteps.length - 1 ? 'Finish' : 'Next';
+
+            // Update Dots
+            tutorialDots.innerHTML = tutorialSteps.map((_, i) => 
+                `<div class="w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === index ? 'bg-cyan-400 w-4' : 'bg-gray-600'}"></div>`
+            ).join('');
+
+            // Highlight
+            updateSpotlight(step.targetId);
+            
+            // Speak
+            speakTutorial(step.text);
+        }
+
+        function startTutorial() {
+            if (!tutorialOverlay) return;
+            
+            // Force pause music to prioritize voice-over
+            if (bgMusic) {
                 bgMusic.pause();
                 isMusicPlaying = false;
                 updateMusicIcon();
             }
-            
-            instructionModal.classList.remove('hidden');
+
+            tutorialOverlay.classList.remove('hidden');
             setTimeout(() => {
-                instructionModalContent.classList.remove('scale-90', 'opacity-0');
-                instructionModalContent.classList.add('scale-100', 'opacity-100');
-                
-                // Auto-play voice-over after modal animation
-                setTimeout(() => {
-                    playInstructionVoice();
-                }, 300);
+                tutorialOverlay.classList.remove('opacity-0');
+                showStep(0);
             }, 100);
         }
 
-        // Close instruction modal
-        function closeInstructionModal() {
-            if (!instructionModal || !instructionModalContent) return;
-            
-            // Stop voice-over
-            if (instructionVoice) {
-                instructionVoice.pause();
-                instructionVoice.currentTime = 0;
+        function endTutorial() {
+            // Stop speech
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
             }
-            
-            // Hide voice indicator
-            if (voiceIndicator) voiceIndicator.classList.add('hidden');
-            
-            // Animate out
-            instructionModalContent.classList.remove('scale-100', 'opacity-100');
-            instructionModalContent.classList.add('scale-90', 'opacity-0');
-            
+
+            tutorialOverlay.classList.add('opacity-0');
             setTimeout(() => {
-                instructionModal.classList.add('hidden');
-                
-                // Resume background music
+                tutorialOverlay.classList.add('hidden');
                 window.startPawikanMusic();
             }, 500);
-            
+
             // Mark as seen
             try {
-                const storageKey = <?php if(auth()->guard()->check()): ?> '<?php echo e(Auth::id()); ?>_ocean_guardian_instructions_seen' <?php else: ?> 'ocean_guardian_instructions_seen' <?php endif; ?>;
+                const storageKey = <?php if(auth()->guard()->check()): ?> '<?php echo e(Auth::id()); ?>_ocean_guardian_tutorial_seen' <?php else: ?> 'ocean_guardian_tutorial_seen_v2' <?php endif; ?>;
                 localStorage.setItem(storageKey, 'true');
-                hasSeenInstructions = true;
-            } catch (e) {
-                console.log('Could not save instruction state');
-            }
+            } catch (e) {}
         }
 
-        // Play instruction voice-over
-        function playInstructionVoice() {
-            if (!instructionVoice) return;
-            
-            // Show voice indicator
-            if (voiceIndicator) {
-                voiceIndicator.classList.remove('hidden');
-                if (voiceStatus) voiceStatus.textContent = 'Playing instructions...';
-            }
-            
-            instructionVoice.volume = 0.8;
-            instructionVoice.currentTime = 0;
-            
-            instructionVoice.play()
-                .then(() => {
-                    console.log('Instruction voice-over playing');
-                })
-                .catch(e => {
-                    console.log('Voice-over autoplay prevented:', e);
-                    if (voiceStatus) voiceStatus.textContent = 'Click "Replay Instructions" to hear audio';
-                });
-            
-            // Update indicator when voice ends
-            instructionVoice.addEventListener('ended', () => {
-                if (voiceStatus) voiceStatus.textContent = 'Instructions complete';
-                setTimeout(() => {
-                    if (voiceIndicator) voiceIndicator.classList.add('hidden');
-                }, 2000);
-            }, { once: true });
-        }
-
-        // Event Listeners for Instruction Modal
-        if (closeInstructionBtn) {
-            closeInstructionBtn.addEventListener('click', closeInstructionModal);
-        }
-
-        if (replayInstructionsBtn) {
-            replayInstructionsBtn.addEventListener('click', () => {
+        // Listeners
+        if (tutorialNext) {
+            tutorialNext.addEventListener('click', () => {
                 playClickSound();
-                playInstructionVoice();
+                if (currentStep < tutorialSteps.length - 1) {
+                    showStep(currentStep + 1);
+                } else {
+                    endTutorial();
+                }
             });
         }
 
-        if (startPlayingBtn) {
-            startPlayingBtn.addEventListener('click', () => {
+        if (tutorialSkip) {
+            tutorialSkip.addEventListener('click', () => {
                 playClickSound();
-                closeInstructionModal();
+                endTutorial();
             });
         }
 
-        // ESC key to close instruction modal
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && instructionModal && !instructionModal.classList.contains('hidden')) {
-                closeInstructionModal();
-            }
-        });
-
-        // Show instructions automatically (after guest modal if present)
+        // Auto-show
         setTimeout(() => {
             const guestModal = document.getElementById('guest-modal');
             const isGuestModalVisible = guestModal && !guestModal.classList.contains('hidden');
             
-            // Show instructions automatically if guest modal is not showing (e.g. for logged in users)
-            if (!isGuestModalVisible) {
-                showInstructionModal();
-            }
-        }, 1000);
+            let hasSeenTutorial = false;
+            try {
+                const storageKey = <?php if(auth()->guard()->check()): ?> '<?php echo e(Auth::id()); ?>_ocean_guardian_tutorial_seen' <?php else: ?> 'ocean_guardian_tutorial_seen_v2' <?php endif; ?>;
+                hasSeenTutorial = localStorage.getItem(storageKey) === 'true';
+            } catch (e) {}
 
-        // Expose function to manually show instructions
-        window.showGameInstructions = showInstructionModal;
-        // ===== END INSTRUCTION MODAL SYSTEM =====
+            if (!isGuestModalVisible && !hasSeenTutorial) {
+                startTutorial();
+            }
+        }, 1200);
+
+        window.showGameInstructions = startTutorial;
+        window.addEventListener('resize', () => {
+            if (!tutorialOverlay.classList.contains('hidden')) {
+                updateSpotlight(tutorialSteps[currentStep].targetId);
+            }
+        });
+        // ===== END INTERACTIVE TUTORIAL SYSTEM =====
 
 
         function updateMusicIcon() {

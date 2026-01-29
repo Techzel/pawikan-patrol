@@ -755,9 +755,9 @@
                                 <span>Get Location on Map</span>
                             </button>
 
-                            <button id="cancel-location-btn" type="button" onclick="clearLocation()" class="w-full px-6 py-2 border border-gray-600 text-gray-400 hover:bg-gray-700/50 hover:text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium hidden" style="font-family: 'Poppins', sans-serif;">
+                            <button id="cancel-location-btn" type="button" onclick="clearLocation()" class="w-full px-6 py-2 bg-red-500/10 border border-red-500/30 text-red-100 hover:bg-red-500 hover:text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium hidden" style="font-family: 'Poppins', sans-serif;">
                                 <i class="fas fa-times"></i>
-                                <span>Clear Selected Location</span>
+                                <span>Cancel</span>
                             </button>
                             
                             <p class="mt-2 text-xs text-gray-400 text-center" style="font-family: 'Poppins', sans-serif;">
@@ -898,7 +898,7 @@
                 <!-- Submit Buttons -->
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('patroller.dashboard') }}" 
-                       class="px-6 py-3 border border-gray-300 rounded-md text-gray-300 hover:text-white hover:border-white transition duration-300" style="font-family: 'Poppins', sans-serif;">
+                       class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-md font-medium transition duration-300" style="font-family: 'Poppins', sans-serif;">
                         Cancel
                     </a>
                     <button type="submit" 
