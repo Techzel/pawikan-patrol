@@ -157,7 +157,17 @@
 
 @section('content')
 @php
-    $metadata = \App\Models\ResourceMetadata::all()->keyBy('filename');
+    // Failsafe for missing database table during initial deployment
+    $metadata = collect();
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('resource_metadata')) {
+            $metadata = \App\Models\ResourceMetadata::all()->keyBy('filename');
+        }
+    } catch (\Exception $e) {
+        // Table not found or database connection issue - proceed with empty metadata
+        \Illuminate\Support\Facades\Log::warning('Resource metadata table not found: ' . $e->getMessage());
+    }
+
     $files = collect(\Illuminate\Support\Facades\Storage::disk('public')->files('resources'))
         ->filter(function ($file) {
             return str_ends_with(strtolower($file), '.pdf');
