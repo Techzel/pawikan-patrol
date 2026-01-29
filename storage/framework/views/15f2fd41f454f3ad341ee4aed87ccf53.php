@@ -627,7 +627,7 @@
     <div class="orb orb-2"></div>
 
     <!-- Back Button & Instructions -->
-    <div id="game-nav-container" style="position: fixed; top: 120px; left: 30px; z-index: 100; display: flex; gap: 12px; align-items: center;">
+    <div id="game-nav-container" style="position: fixed; top: 120px; left: 30px; z-index: 1000; display: flex; gap: 12px; align-items: center;">
         <a href="<?php echo e(route('games.index')); ?>" onclick="window.showPageLoader()" 
            class="flex items-center gap-2 bg-black/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-all h-10">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -646,9 +646,9 @@
     <!-- View Previous Results Button (Top Right) -->
     <?php if(auth()->guard()->check()): ?>
         <?php if(isset($lastQuiz) && $lastQuiz->metadata): ?>
-            <div id="prev-results-btn" style="position: fixed; top: 110px; right: 30px; z-index: 100;">
+            <div id="prev-results-btn" style="position: fixed; top: 110px; right: 30px; z-index: 1000;">
                 <button onclick="showHistory()" 
-                   class="flex items-center gap-2 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 backdrop-blur-md px-4 py-2 rounded-xl border border-indigo-500/30 text-indigo-300 hover:text-indigo-200 hover:border-indigo-400/50 transition-all shadow-lg hover:shadow-indigo-500/20">
+                   class="flex items-center gap-2 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 backdrop-blur-md px-4 py-2 rounded-xl border border-indigo-500/30 text-indigo-300 hover:text-indigo-200 hover:border-indigo-400/50 transition-all shadow-lg hover:shadow-indigo-500/20 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>

@@ -73,15 +73,20 @@
         <source src="{{ asset('audio/game-saved.mp3') }}" type="audio/mpeg">
     </audio>
 
-    <!-- Back Button & How to Play -->
-    <div class="fixed top-24 left-4 z-50 mb-4 flex gap-2">
+    <!-- Back Button -->
+    <div class="fixed top-24 left-4 z-50 mb-4">
         <a href="{{ route('games.index') }}" onclick="window.showPageLoader()" class="bg-deep-800/80 p-2 rounded-full border border-ocean-500/30 text-ocean-300 hover:bg-ocean-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center group" title="Back to Games">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
         </a>
-        <button onclick="window.showGameInstructions()" class="bg-deep-800/80 px-4 py-2 rounded-xl border border-green-500/30 text-green-300 hover:bg-green-900/80 transition-all shadow-md backdrop-blur-sm flex items-center justify-center gap-2 group font-poppins text-sm font-bold tracking-wide">
-            <span>How to Play</span>
+    </div>
+
+    <!-- How to Play Floating Button -->
+    <div class="fixed bottom-8 right-4 z-50">
+        <button onclick="window.showGameInstructions()" class="bg-deep-800/80 p-3 md:px-4 md:py-2 rounded-full md:rounded-xl border border-green-500/30 text-green-300 hover:bg-green-900/80 transition-all shadow-lg backdrop-blur-sm flex items-center justify-center gap-2 group font-poppins text-xs md:text-sm font-bold tracking-wide">
+            <span class="text-base md:text-lg">❓</span>
+            <span class="hidden md:inline">How to Play</span>
         </button>
     </div>
 
