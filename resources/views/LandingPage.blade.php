@@ -1685,10 +1685,24 @@
                 </div>
                 <p class="text-blue-200/50 text-[10px] font-medium tracking-wider uppercase">Marine Educational Materials</p>
             </div>
+
+            <!-- Search Input -->
+            <div class="px-4 py-3 border-b border-white/5 bg-slate-800/30">
+                <div class="relative group/search">
+                    <input type="text" id="resourceSearch" placeholder="Search resources..." 
+                        class="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-2 pl-9 text-xs text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+                        oninput="filterResources()">
+                    <div class="absolute left-3 top-2.5 text-white/20 group-focus-within/search:text-blue-400 transition-colors duration-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
             
-            <div class="max-h-[400px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
+            <div id="resource-list" class="max-h-[400px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
                 @foreach($files as $file)
-                    <div class="group/item relative bg-white/5 hover:bg-blue-600/10 border border-white/10 rounded-xl p-4 transition-all duration-300 cursor-pointer" 
+                    <div class="resource-item group/item relative bg-white/5 hover:bg-blue-600/10 border border-white/10 rounded-xl p-4 transition-all duration-300 cursor-pointer" 
                          onclick="openPdfPreview('{{ $file['url'] }}', {{ json_encode($file['title']) }}, {{ json_encode($file['description']) }}, '{{ date('M d, Y', strtotime($file['published_date'])) }}')">
                         <div class="flex items-center gap-4">
                             <!-- Icon -->
@@ -1721,6 +1735,13 @@
                         </div>
                     </div>
                 @endforeach
+                
+                <!-- No Results State -->
+                <div id="no-resources" class="hidden py-8 px-4 text-center">
+                    <div class="text-3xl mb-2">🔍</div>
+                    <p class="text-white font-bold text-sm mb-1">No matches found</p>
+                    <p class="text-gray-500 text-xs">Try a different search term</p>
+                </div>
             </div>
             
         </div>
@@ -1810,6 +1831,40 @@
         } else {
             panel.classList.remove('scale-0', 'opacity-0');
             panel.classList.add('scale-100', 'opacity-100');
+            // Clear search when opening
+            const search = document.getElementById('resourceSearch');
+            if (search) {
+                search.value = '';
+                filterResources();
+            }
+        }
+    }
+
+    // Resource Filtering Logic
+    function filterResources() {
+        const query = document.getElementById('resourceSearch').value.toLowerCase();
+        const items = document.querySelectorAll('.resource-item');
+        const noResults = document.getElementById('no-resources');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const title = item.querySelector('h4').textContent.toLowerCase();
+            const desc = item.querySelector('p').textContent.toLowerCase();
+            
+            if (title.includes(query) || desc.includes(query)) {
+                item.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+
+        if (noResults) {
+            if (visibleCount === 0 && query !== '') {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
         }
     }
 
