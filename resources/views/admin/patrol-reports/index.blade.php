@@ -293,8 +293,8 @@
                         <i class="fas fa-chart-bar text-ocean-400 opacity-50"></i>
                     </div>
                 </div>
-                <div class="p-6" style="height: 300px; position: relative;">
-                    <canvas id="activityChart"></canvas>
+                <div class="p-4" style="min-height: 350px;">
+                    <div id="activityChart"></div>
                 </div>
             </div>
 
@@ -868,96 +868,102 @@ function rejectReport(reportId) {
 
 </script>
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener('turbo:load', function() {
         if (!document.getElementById('activityChart')) return;
 
-        const ctx = document.getElementById('activityChart').getContext('2d');
-        
         // Prepare data from PHP
         const rawData = {!! json_encode($analytics['recent_reports'] ?? []) !!};
-        const labels = Object.keys(rawData).map(date => {
+        const categories = Object.keys(rawData).map(date => {
             const d = new Date(date);
             return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         });
-        const values = Object.values(rawData);
+        const seriesData = Object.values(rawData);
 
-        // Create Gradient
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(20, 184, 166, 0.4)');
-        gradient.addColorStop(1, 'rgba(20, 184, 166, 0)');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Daily Reports',
-                    data: values,
-                    backgroundColor: gradient,
-                    borderColor: '#14b8a6',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    hoverBackgroundColor: '#14b8a6',
-                }]
+        const options = {
+            series: [{
+                name: 'Reports',
+                data: seriesData
+            }],
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: { show: false },
+                background: 'transparent',
+                foreColor: 'rgba(255, 255, 255, 0.6)',
+                fontFamily: 'Poppins, sans-serif'
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                        titleFont: { family: 'Cinzel', size: 12 },
-                        bodyFont: { family: 'Poppins', size: 13 },
-                        padding: 12,
-                        cornerRadius: 10,
-                        displayColors: false,
-                        borderColor: 'rgba(20, 184, 166, 0.3)',
-                        borderWidth: 1,
-                        callbacks: {
-                            label: function(context) {
-                                return context.parsed.y + ' Reports Submitted';
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.5)',
-                            font: { size: 10, family: 'Poppins' },
-                            maxRotation: 45,
-                            minRotation: 45
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)',
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.5)',
-                            font: { size: 10, family: 'Poppins' },
-                            stepSize: 1,
-                            precision: 0
-                        }
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
+            plotOptions: {
+                bar: {
+                    borderRadius: 6,
+                    columnWidth: '60%',
+                    distributed: false,
+                    dataLabels: { position: 'top' }
                 }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) { return val > 0 ? val : ""; },
+                offsetY: -20,
+                style: {
+                    fontSize: '10px',
+                    colors: ["#14b8a6"]
+                }
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: categories,
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                labels: {
+                    rotate: -45,
+                    style: { fontSize: '10px' }
+                }
+            },
+            yaxis: {
+                title: { text: undefined },
+                labels: {
+                    formatter: function(val) { return Math.floor(val); },
+                    style: { fontSize: '10px' }
+                }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'dark',
+                    type: "vertical",
+                    shadeIntensity: 0.1,
+                    gradientToColors: ['#0d9488'], // darker teal
+                    inverseColors: true,
+                    opacityFrom: 0.85,
+                    opacityTo: 0.55,
+                    stops: [0, 100]
+                }
+            },
+            colors: ['#14b8a6'],
+            grid: {
+                borderColor: 'rgba(255, 255, 255, 0.05)',
+                strokeDashArray: 4,
+                yaxis: { lines: { show: true } }
+            },
+            tooltip: {
+                theme: 'dark',
+                y: {
+                    title: {
+                        formatter: function() { return 'Submissions:'; }
+                    }
+                },
+                style: { fontSize: '12px' }
             }
-        });
+        };
+
+        const chart = new ApexCharts(document.querySelector("#activityChart"), options);
+        chart.render();
     });
 </script>
 @endpush
