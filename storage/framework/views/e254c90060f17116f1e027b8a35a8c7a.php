@@ -173,12 +173,18 @@
         ->map(function ($file) use ($metadata) {
             $filename = basename($file);
             $fileMeta = $metadata->get($filename);
+            $encodedFilename = rawurlencode($filename);
+            $isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') === true;
+            $url = \Illuminate\Support\Facades\Storage::url($file);
+            
+            if ($isVercel || file_exists(public_path('resources/' . $filename))) {
+                $url = asset('resources/' . $encodedFilename);
+            }
+
             return [
                 'name' => $filename,
                 'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
-                'url' => file_exists(public_path('resources/' . $filename)) 
-                    ? asset('resources/' . $filename) 
-                    : \Illuminate\Support\Facades\Storage::url($file),
+                'url' => $url,
                 'description' => $fileMeta ? $fileMeta->description : 'No description provided.',
                 'published_date' => $fileMeta ? $fileMeta->published_date : date('Y-m-d', \Illuminate\Support\Facades\Storage::disk('public')->lastModified($file))
             ];
@@ -1650,7 +1656,13 @@
                 </div>
             </div>
             <iframe id="pdfIframe" src="" class="w-full h-full border-0" onload="document.getElementById('pdfLoading').classList.add('hidden')">
-                <p class="text-white p-10 text-center">Your browser does not support iframes. <a id="pdfFallbackLink" href="#" target="_blank" class="text-blue-400 underline">Click here to view the PDF.</a></p>
+                <div class="text-white p-10 text-center">
+                    <p class="mb-4 text-lg">Your browser does not support iframes.</p>
+                    <a id="pdfFallbackLink" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-lg text-white font-bold transition-all inline-block mb-4">
+                        Open PDF Document
+                    </a>
+                    <p class="text-xs text-gray-500">Requested URL: <span id="pdfDebugUrl" class="break-all"></span></p>
+                </div>
             </iframe>
         </div>
     </div>
@@ -1752,6 +1764,7 @@
         const title = document.getElementById('pdfSidebarTitle');
         const downloadLink = document.getElementById('pdfDownloadLink');
         const fallbackLink = document.getElementById('pdfFallbackLink');
+        const debugUrl = document.getElementById('pdfDebugUrl');
         const loader = document.getElementById('pdfLoading');
         const descEl = document.getElementById('pdfSidebarDescription');
         const dateEl = document.getElementById('pdfSidebarDate');
@@ -1763,6 +1776,7 @@
         dateEl.textContent = date || 'N/A';
         downloadLink.href = url;
         if (fallbackLink) fallbackLink.href = url;
+        if (debugUrl) debugUrl.textContent = url;
         loader.classList.remove('hidden');
         iframe.src = url;
 

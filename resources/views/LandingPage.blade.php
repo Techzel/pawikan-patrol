@@ -173,6 +173,8 @@
             return str_ends_with(strtolower($file), '.pdf');
         })
         ->map(function ($file) use ($metadata) {
+            $filename = basename($file);
+            $fileMeta = $metadata->get($filename);
             $encodedFilename = rawurlencode($filename);
             $isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') === true;
             $url = \Illuminate\Support\Facades\Storage::url($file);
