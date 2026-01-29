@@ -10,6 +10,19 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Games\GameActivityController;
 
 
+// TEMPORARY: Database Migration Route (Visit yoursite.com/force-migrate-db to fix the error)
+Route::get('/force-migrate-db', function () {
+    if (!auth()->check() || auth()->user()->role !== 'admin') {
+        return "Please login as Admin first to run migrations.";
+    }
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "<h1>Migration Successful!</h1><p>The database is now synced. <b>Please tell the AI to remove this route now.</b></p><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "<h1>Migration Failed</h1><pre>" . $e->getMessage() . "</pre>";
+    }
+});
+
 // Public Routes
 Route::get('/', function () {
     return view('LandingPage');
