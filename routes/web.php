@@ -15,6 +15,9 @@ Route::get('/', function () {
     return view('LandingPage');
 });
 
+// PDF Proxy Route - Critical for cross-environment PDF viewing
+Route::get('/view-resource/{filename}', [AdminController::class, 'viewPdf'])->name('view-resource');
+
 // Helper for initial database setup on Vercel
 Route::get('/migrate-db', function () {
     try {
