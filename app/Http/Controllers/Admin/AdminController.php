@@ -747,15 +747,13 @@ class AdminController extends Controller
                 return str_ends_with(strtolower($file), '.pdf');
             })
             ->map(function ($file) use ($metadata) {
-                $filename = basename($file);
-                $fileMeta = $metadata->get($filename);
-
-                $isVercel = env('VERCEL') === true;
+                $encodedFilename = rawurlencode($filename);
+                $isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') === true;
                 $url = Storage::url($file);
                 
                 // On Vercel, use the direct public resources path as storage link is unavailable
                 if ($isVercel || file_exists(public_path('resources/' . $filename))) {
-                    $url = asset('resources/' . $filename);
+                    $url = asset('resources/' . $encodedFilename);
                 }
 
                 return [

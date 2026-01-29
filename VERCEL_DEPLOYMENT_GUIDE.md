@@ -69,3 +69,5 @@ If deployment still fails:
 2. Verify `api/lambda.php` exists in your repository
 3. Ensure `public/build/` folder is committed with assets
 4. Confirm Framework Preset is set to "Other" in dashboard
+5. **If PDFs still 404:** Check the "Requested URL" shown in the PDF viewer's fallback link. It should look like `https://your-site.vercel.app/resources/filename.pdf`. If the path is different, verify your `vercel.json` routing rules.
+6. **Commit Assets**: Ensure you have committed the files in `public/resources/` to your repository.

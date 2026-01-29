@@ -286,7 +286,13 @@
                 </div>
             </div>
             <iframe id="pdfIframe" src="" class="w-full h-full border-0" onload="document.getElementById('pdfLoading').classList.add('hidden')">
-                <p class="text-white p-10 text-center font-poppins">Your browser does not support iframes. <a id="pdfFallbackLink" href="#" target="_blank" class="text-blue-400 underline italic">Click here to view the PDF.</a></p>
+                <div class="text-white p-10 text-center font-poppins">
+                    <p class="mb-4 text-lg">Your browser does not support iframes.</p>
+                    <a id="pdfFallbackLink" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-lg text-white font-bold transition-all inline-block mb-4">
+                        Open PDF Document
+                    </a>
+                    <p class="text-xs text-gray-500">Requested URL: <span id="pdfDebugUrl" class="break-all"></span></p>
+                </div>
             </iframe>
         </div>
     </div>
@@ -331,6 +337,7 @@
         const title = document.getElementById('pdfSidebarTitle');
         const downloadLink = document.getElementById('pdfDownloadLink');
         const fallbackLink = document.getElementById('pdfFallbackLink');
+        const debugUrl = document.getElementById('pdfDebugUrl');
         const loader = document.getElementById('pdfLoading');
         const descEl = document.getElementById('pdfSidebarDescription');
         const dateEl = document.getElementById('pdfSidebarDate');
@@ -340,6 +347,7 @@
         dateEl.textContent = date || 'N/A';
         downloadLink.href = url;
         if (fallbackLink) fallbackLink.href = url;
+        if (debugUrl) debugUrl.textContent = url;
         loader.classList.remove('hidden');
         iframe.src = url;
 
