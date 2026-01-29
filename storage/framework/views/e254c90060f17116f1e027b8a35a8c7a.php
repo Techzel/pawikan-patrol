@@ -155,7 +155,17 @@
 
 <?php $__env->startSection('content'); ?>
 <?php
-    $metadata = \App\Models\ResourceMetadata::all()->keyBy('filename');
+    // Failsafe for missing database table during initial deployment
+    $metadata = collect();
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('resource_metadata')) {
+            $metadata = \App\Models\ResourceMetadata::all()->keyBy('filename');
+        }
+    } catch (\Exception $e) {
+        // Table not found or database connection issue - proceed with empty metadata
+        \Illuminate\Support\Facades\Log::warning('Resource metadata table not found: ' . $e->getMessage());
+    }
+
     $files = collect(\Illuminate\Support\Facades\Storage::disk('public')->files('resources'))
         ->filter(function ($file) {
             return str_ends_with(strtolower($file), '.pdf');
@@ -166,7 +176,9 @@
             return [
                 'name' => $filename,
                 'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
-                'url' => \Illuminate\Support\Facades\Storage::url($file),
+                'url' => file_exists(public_path('resources/' . $filename)) 
+                    ? asset('resources/' . $filename) 
+                    : \Illuminate\Support\Facades\Storage::url($file),
                 'description' => $fileMeta ? $fileMeta->description : 'No description provided.',
                 'published_date' => $fileMeta ? $fileMeta->published_date : date('Y-m-d', \Illuminate\Support\Facades\Storage::disk('public')->lastModified($file))
             ];
@@ -1623,7 +1635,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <span>Resource Details</span>
             </div>
-            <p id="pdfSidebarDescription" class="text-gray-300 text-sm italic mb-3"></p>
+            <p id="pdfSidebarDescription" class="text-gray-300 text-sm italic mb-3 whitespace-pre-wrap"></p>
             <div class="flex items-center gap-2 text-gray-400 text-xs">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 <span>Published on: <span id="pdfSidebarDate" class="text-gray-200"></span></span>
@@ -1637,7 +1649,9 @@
                     <p class="text-gray-400 text-sm font-poppins">Loading PDF Content...</p>
                 </div>
             </div>
-            <iframe id="pdfIframe" src="" class="w-full h-full border-0" onload="document.getElementById('pdfLoading').classList.add('hidden')"></iframe>
+            <iframe id="pdfIframe" src="" class="w-full h-full border-0" onload="document.getElementById('pdfLoading').classList.add('hidden')">
+                <p class="text-white p-10 text-center">Your browser does not support iframes. <a id="pdfFallbackLink" href="#" target="_blank" class="text-blue-400 underline">Click here to view the PDF.</a></p>
+            </iframe>
         </div>
     </div>
 
@@ -1665,7 +1679,7 @@
             <div class="max-h-[400px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
                 <?php $__currentLoopData = $files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="group/item relative bg-white/5 hover:bg-blue-600/10 border border-white/10 rounded-xl p-4 transition-all duration-300 cursor-pointer" 
-                         onclick="openPdfPreview('<?php echo e($file['url']); ?>', '<?php echo e(addslashes($file['title'])); ?>', '<?php echo e(addslashes($file['description'])); ?>', '<?php echo e(date('M d, Y', strtotime($file['published_date']))); ?>')">
+                         onclick="openPdfPreview('<?php echo e($file['url']); ?>', <?php echo e(json_encode($file['title'])); ?>, <?php echo e(json_encode($file['description'])); ?>, '<?php echo e(date('M d, Y', strtotime($file['published_date']))); ?>')">
                         <div class="flex items-center gap-4">
                             <!-- Icon -->
                             <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-white/5 flex-shrink-0 group-hover/item:scale-110 transition-transform">
@@ -1737,6 +1751,7 @@
         const iframe = document.getElementById('pdfIframe');
         const title = document.getElementById('pdfSidebarTitle');
         const downloadLink = document.getElementById('pdfDownloadLink');
+        const fallbackLink = document.getElementById('pdfFallbackLink');
         const loader = document.getElementById('pdfLoading');
         const descEl = document.getElementById('pdfSidebarDescription');
         const dateEl = document.getElementById('pdfSidebarDate');
@@ -1747,6 +1762,7 @@
         descEl.textContent = description || 'No description provided.';
         dateEl.textContent = date || 'N/A';
         downloadLink.href = url;
+        if (fallbackLink) fallbackLink.href = url;
         loader.classList.remove('hidden');
         iframe.src = url;
 
