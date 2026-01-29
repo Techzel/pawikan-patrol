@@ -178,7 +178,7 @@
             return [
                 'name' => $filename,
                 'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
-                'url' => file_exists(public_path('resources/' . $filename)) 
+                'url' => (env('VERCEL') === true || file_exists(public_path('resources/' . $filename)))
                     ? asset('resources/' . $filename) 
                     : \Illuminate\Support\Facades\Storage::url($file),
                 'description' => $fileMeta ? $fileMeta->description : 'No description provided.',

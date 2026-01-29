@@ -750,12 +750,20 @@ class AdminController extends Controller
                 $filename = basename($file);
                 $fileMeta = $metadata->get($filename);
 
+                $isVercel = env('VERCEL') === true;
+                $url = Storage::url($file);
+                
+                // On Vercel, use the direct public resources path as storage link is unavailable
+                if ($isVercel || file_exists(public_path('resources/' . $filename))) {
+                    $url = asset('resources/' . $filename);
+                }
+
                 return [
                     'path' => $file,
                     'name' => $filename,
                     'last_modified' => Storage::disk('public')->lastModified($file),
                     'size' => Storage::disk('public')->size($file),
-                    'url' => Storage::url($file),
+                    'url' => $url,
                     'title' => $fileMeta && $fileMeta->title ? $fileMeta->title : $filename,
                     'description' => $fileMeta ? $fileMeta->description : 'No description provided.',
                     'published_date' => $fileMeta ? $fileMeta->published_date : date('Y-m-d', Storage::disk('public')->lastModified($file))
