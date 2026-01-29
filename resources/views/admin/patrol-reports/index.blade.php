@@ -288,9 +288,9 @@
                     <div class="flex items-center gap-4">
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-ocean-500 shadow-[0_0_8px_rgba(20,184,166,0.6)]"></span>
-                            <span class="text-[10px] text-gray-400 uppercase tracking-tighter font-bold">Daily Reports</span>
+                            <span class="text-[10px] text-gray-400 uppercase tracking-tighter font-bold">Daily Count</span>
                         </div>
-                        <i class="fas fa-chart-area text-ocean-400 opacity-50"></i>
+                        <i class="fas fa-chart-bar text-ocean-400 opacity-50"></i>
                     </div>
                 </div>
                 <div class="p-6" style="height: 300px; position: relative;">
@@ -889,25 +889,17 @@ function rejectReport(reportId) {
         gradient.addColorStop(1, 'rgba(20, 184, 166, 0)');
 
         new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Daily Reports',
                     data: values,
-                    borderColor: '#14b8a6',
-                    borderWidth: 3,
                     backgroundColor: gradient,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#14b8a6',
-                    pointBorderColor: 'rgba(255, 255, 255, 0.2)',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#14b8a6',
-                    pointHoverBorderWidth: 3
+                    borderColor: '#14b8a6',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    hoverBackgroundColor: '#14b8a6',
                 }]
             },
             options: {
