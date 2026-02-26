@@ -17,14 +17,12 @@ class AdminSeeder extends Seeder
     {
         // Create default DENR admin account
         $admin = User::create([
-            'name'            => 'DENR Administrator',
-            'username'        => 'denr_admin',
-            'email'           => 'admin@denr.gov.ph',
-            'password'        => Hash::make('DenrAdmin2024!'),
-            'role'            => 'admin',
-            'is_active'       => true,
-            'phone'           => '+63-2-928-XXXX',
-            'area_assignment' => 'National',
+            'name'      => 'DENR Administrator',
+            'username'  => 'denr_admin',
+            'email'     => 'admin@denr.gov.ph',
+            'password'  => Hash::make('DenrAdmin2024!'),
+            'role'      => 'admin',
+            'is_active' => true,
         ]);
 
         $this->command->info('Default DENR Admin account created:');
