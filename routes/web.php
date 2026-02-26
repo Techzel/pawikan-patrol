@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PatrolReportController;
 use App\Http\Controllers\Admin\PatrollerController;
@@ -9,6 +10,46 @@ use App\Http\Controllers\Admin\UserVerificationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Games\GameActivityController;
 
+
+// ─── Database Utility Routes (for Vercel + Railway setup) ────────────────────
+Route::get('/db-test', function () {
+    try {
+        $pdo = DB::connection()->getPdo();
+        $dbName = DB::connection()->getDatabaseName();
+        $host   = config('database.connections.mysql.host');
+        $port   = config('database.connections.mysql.port');
+        return response()->json([
+            'status'   => '✅ Connected!',
+            'database' => $dbName,
+            'host'     => $host,
+            'port'     => $port,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => '❌ Connection Failed',
+            'error'  => $e->getMessage(),
+            'host'   => config('database.connections.mysql.host'),
+            'port'   => config('database.connections.mysql.port'),
+        ], 500);
+    }
+});
+
+Route::get('/migrate-db', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        $output = Artisan::output();
+        return response()->json([
+            'status'  => '✅ Migration completed successfully!',
+            'output'  => $output,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => '❌ Migration Failed',
+            'error'  => $e->getMessage(),
+        ], 500);
+    }
+});
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Public Routes
 Route::get('/', function () {
