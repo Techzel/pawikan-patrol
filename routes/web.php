@@ -49,6 +49,34 @@ Route::get('/migrate-db', function () {
         ], 500);
     }
 });
+
+Route::get('/seed-admin', function () {
+    try {
+        // Check if admin already exists
+        $existing = \App\Models\User::where('email', 'admin@denr.gov.ph')->first();
+        if ($existing) {
+            return response()->json([
+                'status'  => '⚠️ Admin already exists!',
+                'email'   => 'admin@denr.gov.ph',
+                'message' => 'No action taken.',
+            ]);
+        }
+        Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
+        $output = Artisan::output();
+        return response()->json([
+            'status'    => '✅ Admin account created!',
+            'email'     => 'admin@denr.gov.ph',
+            'password'  => 'DenrAdmin2024!',
+            'username'  => 'denr_admin',
+            'output'    => $output,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => '❌ Seeding Failed',
+            'error'  => $e->getMessage(),
+        ], 500);
+    }
+});
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Public Routes
